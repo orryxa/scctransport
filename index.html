@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Transport Management System - Records</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: #f3f4f6;
+        }
+        
+        /* Clean White Header */
+        .clean-header {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Card Design */
+        .clean-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background: #f9fafb;
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            font-size: 13px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .data-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 14px;
+        }
+        
+        .data-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            max-width: 90%;
+            width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        .modal-content-large {
+            max-width: 95%;
+            width: 1200px;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Form Input Styles */
+        .form-input {
+            transition: all 0.2s ease;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .form-input:focus {
+            background: white;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+            outline: none;
+        }
+        
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: white;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+        
+        /* Action Buttons - Mobile Friendly */
+        .action-btn-view {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .action-btn-view:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+        }
+        
+        .action-btn-update {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .action-btn-update:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e5e7eb;
+            border-top-color: #8b5cf6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Toast */
+        .toast-notification {
+            animation: toastSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes toastSlideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        
+        .filter-select {
+            padding: 10px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        /* Search Input with Icon */
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        
+        .search-wrapper input {
+            padding-left: 38px;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 16px;
+        }
+        
+        /* Responsive Table */
+        @media (max-width: 768px) {
+            .data-table thead {
+                display: none;
+            }
+            
+            .data-table tbody tr {
+                display: block;
+                margin-bottom: 12px;
+                border: 1px solid #e5e7eb;
+                border-radius: 12px;
+                padding: 12px;
+                background: white;
+            }
+            
+            .data-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 0;
+                border: none;
+                font-size: 13px;
+            }
+            
+            .data-table tbody td:before {
+                content: attr(data-label);
+                font-weight: 600;
+                margin-right: 10px;
+                color: #6b7280;
+                font-size: 12px;
+            }
+            
+            /* Action buttons in mobile */
+            .data-table tbody td:last-child {
+                justify-content: center;
+                gap: 10px;
+                margin-top: 5px;
+            }
+            
+            .action-btn-view, .action-btn-update {
+                padding: 10px 20px;
+                font-size: 14px;
+                flex: 1;
+                justify-content: center;
+            }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8b5cf6;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    
+    <!-- Clean White Header -->
+    <div class="clean-header sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex justify-between items-center flex-wrap gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center">
+                        <span class="text-white text-xl">🚛</span>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">Transport Management System</h1>
+                        <p class="text-xs text-gray-500">Manage and update transport records</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="window.location.href='transportform.html'" class="btn-primary text-white px-5 py-2 rounded-xl font-medium text-sm flex items-center gap-2">
+                        <span>➕</span> Add Details
+                    </button>
+                    <button onclick="location.reload()" class="btn-secondary px-5 py-2 rounded-xl font-medium text-sm flex items-center gap-2">
+                        <span>🔄</span> Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <!-- Filters Card -->
+        <div class="clean-card p-5 mb-6">
+            <h2 class="text-base font-semibold text-gray-800 mb-4">🔍 Filter Records</h2>
+            <div class="filter-bar">
+                <div class="flex-1 min-w-[180px]">
+                    <label class="block text-xs text-gray-500 mb-1">Select Sheet</label>
+                    <select id="sheet-select" class="filter-select w-full">
+                        <option value="">Loading sheets...</option>
+                    </select>
+                </div>
+                
+                <div class="flex-1 min-w-[160px]">
+                    <label class="block text-xs text-gray-500 mb-1">Sort By</label>
+                    <select id="sort-by" class="filter-select w-full">
+                        <option value="newest">Newly Added</option>
+                        <option value="oldest">Old Added</option>
+                        <option value="date_asc">Date (Oldest First)</option>
+                        <option value="date_desc">Date (Newest First)</option>
+                        <option value="vehicle_asc">Vehicle (A to Z)</option>
+                        <option value="vehicle_desc">Vehicle (Z to A)</option>
+                    </select>
+                </div>
+                
+                <div class="flex-1 min-w-[200px]">
+                    <label class="block text-xs text-gray-500 mb-1">Search Vehicle or Driver</label>
+                    <div class="search-wrapper">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="search-input" placeholder="Type to search..." class="form-input w-full px-4 py-2 rounded-xl text-sm" style="padding-left: 38px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Records Card -->
+        <div class="clean-card p-5">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-base font-semibold text-gray-800">📋 Transport Records</h2>
+                <span id="record-count" class="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">0 records</span>
+            </div>
+            
+            <!-- Loading Spinner -->
+            <div id="loading-container" class="text-center py-12">
+                <div class="spinner mx-auto"></div>
+                <p class="text-gray-500 mt-4 text-sm">Loading records...</p>
+            </div>
+            
+            <!-- Table View -->
+            <div id="table-view" class="hidden overflow-x-auto">
+                <table class="data-table" id="data-table">
+                    <thead id="table-header">
+                        <!-- Dynamic header will be inserted here -->
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+            
+            <!-- No Data Message -->
+            <div id="no-data-message" class="hidden text-center py-12">
+                <p class="text-gray-500">📭 No records found</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- View Details Modal -->
+    <div id="view-modal" class="modal">
+        <div class="modal-content">
+            <div class="sticky top-0 bg-white border-b px-5 py-4 rounded-t-2xl flex justify-between items-center">
+                <h3 class="text-lg font-bold text-gray-800">📄 Record Details</h3>
+                <button onclick="closeViewModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <div id="view-details-content" class="p-5">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+            <div class="sticky bottom-0 bg-white border-t px-5 py-4 rounded-b-2xl">
+                <button onclick="closeViewModal()" class="btn-secondary w-full px-5 py-2 rounded-xl font-medium text-sm">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Update Modal -->
+    <div id="update-modal" class="modal">
+        <div class="modal-content modal-content-large">
+            <div class="sticky top-0 bg-white border-b px-5 py-4 rounded-t-2xl flex justify-between items-center">
+                <h3 class="text-lg font-bold text-gray-800">✏️ Update Record</h3>
+                <button onclick="closeUpdateModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <div id="update-form-content" class="p-5 max-h-[70vh] overflow-y-auto">
+                <!-- Dynamic update form will be inserted here -->
+            </div>
+            <div class="sticky bottom-0 bg-white border-t px-5 py-4 rounded-b-2xl flex gap-3">
+                <button onclick="submitUpdate()" class="btn-primary flex-1 px-5 py-2 rounded-xl text-white font-medium text-sm">💾 Save Changes</button>
+                <button onclick="closeUpdateModal()" class="btn-secondary px-5 py-2 rounded-xl font-medium text-sm">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+    
+    <script>
+        // Configuration
+        const SPREADSHEET_ID = "1j4OfSOIIoNZIjjz1LIq5dvJAGuA7hjZZJBX5KHTN7vw";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyRuPw7KI6u5qOHCwcdbmmXGH_xEB0f8EnHPDzPlboNBKh_LqJmP-KQua3XFMyGWurXpg/exec";
+        
+        let allSheets = [];
+        let currentSheet = null;
+        let currentSheetType = 'transport';
+        let allRecords = [];
+        let filteredRecords = [];
+        
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast-notification bg-white rounded-xl shadow-xl p-3 min-w-[250px] border-l-4 ${type === 'success' ? 'border-green-500' : 'border-red-500'}`;
+            toast.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <div>${type === 'success' ? '✅' : '❌'}</div>
+                    <p class="text-sm font-medium text-gray-900">${message}</p>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-gray-400 hover:text-gray-600">×</button>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        async function loadSheets() {
+            try {
+                const url = `${SCRIPT_URL}?action=getSheets&spreadsheetId=${SPREADSHEET_ID}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                let sheetNames = [];
+                if (Array.isArray(data)) {
+                    sheetNames = data;
+                } else if (data && data.data && Array.isArray(data.data)) {
+                    sheetNames = data.data;
+                } else if (data && data.sheets && Array.isArray(data.sheets)) {
+                    sheetNames = data.sheets;
+                } else if (typeof data === 'string') {
+                    sheetNames = data.split(',').map(s => s.trim().replace(/["[\]]/g, ''));
+                }
+                
+                allSheets = sheetNames;
+                
+                const sheetSelect = document.getElementById('sheet-select');
+                sheetSelect.innerHTML = '<option value="">Select a sheet</option>';
+                allSheets.forEach(sheet => {
+                    const option = document.createElement('option');
+                    option.value = sheet;
+                    option.textContent = sheet;
+                    sheetSelect.appendChild(option);
+                });
+                
+                // Auto-select first sheet
+                if (allSheets.length > 0) {
+                    sheetSelect.value = allSheets[0];
+                    await loadData();
+                }
+                
+                showToast(`Loaded ${allSheets.length} sheets`, 'success');
+                
+            } catch (error) {
+                console.error('Error loading sheets:', error);
+                showToast('Failed to load sheets', 'error');
+            }
+        }
+        
+        async function loadData() {
+            const sheetName = document.getElementById('sheet-select').value;
+            
+            if (!sheetName) return;
+            
+            currentSheet = sheetName;
+            currentSheetType = sheetName === 'Driver_Salary' ? 'driver_salary' : 'transport';
+            
+            document.getElementById('loading-container').classList.remove('hidden');
+            document.getElementById('table-view').classList.add('hidden');
+            document.getElementById('no-data-message').classList.add('hidden');
+            
+            try {
+                const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${encodeURIComponent(sheetName)}`;
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                let data = [];
+                if (result && result.data && Array.isArray(result.data)) {
+                    data = result.data;
+                } else if (Array.isArray(result)) {
+                    data = result;
+                }
+                
+                if (currentSheetType === 'driver_salary') {
+                    allRecords = data.map((row, index) => ({
+                        sl: row['S.L'] || row['sl'] || (index + 1),
+                        vehicleNumber: row['VEHICLE NUMBER'] || row['vehiclenumber'] || row['VehicleNumber'] || '',
+                        driverName: row['DRIVERS NAME'] || row['driversname'] || row['DriversName'] || '',
+                        balanceAmount: row['BALANCE AMOUNT'] || row['balanceamount'] || '0',
+                        noOfDays: row['NO OF DAY\'S'] || row['noofdays'] || '0',
+                        absent: row['ABSENT'] || row['absent'] || '0',
+                        noOfDaysWork: row['NO OF DAY\'S WORK'] || row['noofdayswork'] || '0',
+                        salary: row['SALARY'] || row['salary'] || '0',
+                        tripAdvance: row['TRIP ADVANCE'] || row['tripadvance'] || '0',
+                        advSalary: row['ADV SALARY'] || row['advsalary'] || '0'
+                    }));
+                } else {
+                    allRecords = data.map((row, index) => ({
+                        sl: row['SL'] || row['sl'] || (index + 1),
+                        date: row['DATE'] || row['date'] || '',
+                        vehicleNo: row['VEHICLE NO'] || row['vehicleno'] || row['VehicleNo'] || '',
+                        driverName: row['DRIVER NAME'] || row['drivername'] || row['DriverName'] || '',
+                        lrno: row['LR NO'] || row['lrno'] || '',
+                        mileage: row['MILEAGE'] || row['mileage'] || 'FIX',
+                        destination: row['DESTINATION'] || row['destination'] || '',
+                        openingKm: row['OPENING KM'] || row['openingkm'] || '0',
+                        closingKm: row['CLOSING KM'] || row['closingkm'] || '0',
+                        km: row['KM'] || row['km'] || '0',
+                        cngRate: row['CNG OR DIESEL RATE'] || row['cngordieselrate'] || '90.26',
+                        amount: row['AMOUNT'] || row['amount'] || '0',
+                        lul: row['L & UL'] || row['l&ul'] || '0',
+                        driverBata: row['DRIVER BATA'] || row['driverbata'] || '0',
+                        otherExp: row['OTHER EXP'] || row['otherexp'] || '0',
+                        totalAmount: row['TOTAL AMOUNT'] || row['totalamount'] || '0',
+                        actualIndent: row['ACTUAL INDENT'] || row['actualindent'] || '0',
+                        driverDifference: row['DRIVER DIFFERENCE AMOUNT'] || row['driverdifference'] || '0',
+                        otherExpRemarks: row['OTHER EXP REMARKS'] || row['otherexpremarks'] || '',
+                        podStatus: row['POD STATUS'] || row['podstatus'] || '',
+                        note: row['NOTE'] || row['note'] || ''
+                    }));
+                }
+                
+                applyFilters();
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showToast('Failed to load data', 'error');
+                document.getElementById('loading-container').classList.add('hidden');
+                document.getElementById('no-data-message').classList.remove('hidden');
+            }
+        }
+        
+        function applyFilters() {
+            const sortBy = document.getElementById('sort-by').value;
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            
+            filteredRecords = [...allRecords];
+            
+            if (searchTerm) {
+                if (currentSheetType === 'driver_salary') {
+                    filteredRecords = filteredRecords.filter(record => 
+                        record.vehicleNumber.toLowerCase().includes(searchTerm) ||
+                        record.driverName.toLowerCase().includes(searchTerm)
+                    );
+                } else {
+                    filteredRecords = filteredRecords.filter(record => 
+                        record.vehicleNo.toLowerCase().includes(searchTerm) ||
+                        record.driverName.toLowerCase().includes(searchTerm)
+                    );
+                }
+            }
+            
+            // Sort records
+            switch(sortBy) {
+                case 'newest':
+                    filteredRecords.sort((a, b) => b.sl - a.sl);
+                    break;
+                case 'oldest':
+                    filteredRecords.sort((a, b) => a.sl - b.sl);
+                    break;
+                case 'date_asc':
+                    if (currentSheetType !== 'driver_salary') {
+                        filteredRecords.sort((a, b) => {
+                            const dateA = parseDate(a.date);
+                            const dateB = parseDate(b.date);
+                            return dateA - dateB;
+                        });
+                    }
+                    break;
+                case 'date_desc':
+                    if (currentSheetType !== 'driver_salary') {
+                        filteredRecords.sort((a, b) => {
+                            const dateA = parseDate(a.date);
+                            const dateB = parseDate(b.date);
+                            return dateB - dateA;
+                        });
+                    }
+                    break;
+                case 'vehicle_asc':
+                    if (currentSheetType === 'driver_salary') {
+                        filteredRecords.sort((a, b) => a.vehicleNumber.localeCompare(b.vehicleNumber));
+                    } else {
+                        filteredRecords.sort((a, b) => a.vehicleNo.localeCompare(b.vehicleNo));
+                    }
+                    break;
+                case 'vehicle_desc':
+                    if (currentSheetType === 'driver_salary') {
+                        filteredRecords.sort((a, b) => b.vehicleNumber.localeCompare(a.vehicleNumber));
+                    } else {
+                        filteredRecords.sort((a, b) => b.vehicleNo.localeCompare(a.vehicleNo));
+                    }
+                    break;
+                default:
+                    filteredRecords.sort((a, b) => b.sl - a.sl);
+            }
+            
+            document.getElementById('record-count').textContent = `${filteredRecords.length} records`;
+            
+            if (filteredRecords.length === 0) {
+                document.getElementById('loading-container').classList.add('hidden');
+                document.getElementById('table-view').classList.add('hidden');
+                document.getElementById('no-data-message').classList.remove('hidden');
+            } else {
+                displayRecords();
+            }
+        }
+        
+        function parseDate(dateStr) {
+            if (!dateStr) return 0;
+            const parts = dateStr.split('/');
+            if (parts.length === 3) {
+                return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
+            }
+            return new Date(dateStr).getTime();
+        }
+        
+        function formatDateForDisplay(dateStr) {
+            if (!dateStr) return '-';
+            if (dateStr.includes('/')) return dateStr;
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+        
+        function displayRecords() {
+            const tableBody = document.getElementById('table-body');
+            const tableHeader = document.getElementById('table-header');
+            tableBody.innerHTML = '';
+            
+            if (currentSheetType === 'driver_salary') {
+                tableHeader.innerHTML = `
+                    <tr>
+                        <th>S.L</th>
+                        <th>Vehicle Number</th>
+                        <th>Driver Name</th>
+                        <th>Balance Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                `;
+            } else {
+                tableHeader.innerHTML = `
+                    <tr>
+                        <th>SL</th>
+                        <th>Date</th>
+                        <th>Vehicle Number</th>
+                        <th>Driver Name</th>
+                        <th>Actions</th>
+                    </tr>
+                `;
+            }
+            
+            filteredRecords.forEach((record, index) => {
+                const row = document.createElement('tr');
+                
+                if (currentSheetType === 'driver_salary') {
+                    row.innerHTML = `
+                        <td data-label="S.L">${record.sl}</td>
+                        <td data-label="Vehicle Number">${record.vehicleNumber}</td>
+                        <td data-label="Driver Name">${record.driverName}</td>
+                        <td data-label="Balance Amount">₹${parseFloat(record.balanceAmount).toFixed(2)}</td>
+                        <td data-label="Actions">
+                            <button onclick="viewRecord(${index})" class="action-btn-view">
+                                <span>👁️</span> <span>View</span>
+                            </button>
+                            <button onclick="updateRecord(${index})" class="action-btn-update ml-2">
+                                <span>✏️</span> <span>Update</span>
+                            </button>
+                        </td>
+                    `;
+                } else {
+                    row.innerHTML = `
+                        <td data-label="SL">${record.sl}</td>
+                        <td data-label="Date">${formatDateForDisplay(record.date)}</td>
+                        <td data-label="Vehicle Number">${record.vehicleNo}</td>
+                        <td data-label="Driver Name">${record.driverName}</td>
+                        <td data-label="Actions">
+                            <button onclick="viewRecord(${index})" class="action-btn-view">
+                                <span>👁️</span> <span>View</span>
+                            </button>
+                            <button onclick="updateRecord(${index})" class="action-btn-update ml-2">
+                                <span>✏️</span> <span>Update</span>
+                            </button>
+                        </td>
+                    `;
+                }
+                tableBody.appendChild(row);
+            });
+            
+            document.getElementById('loading-container').classList.add('hidden');
+            document.getElementById('table-view').classList.remove('hidden');
+            document.getElementById('no-data-message').classList.add('hidden');
+        }
+        
+        function viewRecord(index) {
+            const record = filteredRecords[index];
+            const modal = document.getElementById('view-modal');
+            const content = document.getElementById('view-details-content');
+            
+            if (currentSheetType === 'driver_salary') {
+                content.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="bg-gray-50 p-3 rounded-lg flex justify-between">
+                            <span class="text-sm text-gray-600">S.L:</span>
+                            <span class="font-medium">${record.sl}</span>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg flex justify-between">
+                            <span class="text-sm text-gray-600">Vehicle Number:</span>
+                            <span class="font-medium">${record.vehicleNumber}</span>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg flex justify-between">
+                            <span class="text-sm text-gray-600">Driver Name:</span>
+                            <span class="font-medium">${record.driverName}</span>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg flex justify-between">
+                            <span class="text-sm text-gray-600">No of Day's:</span>
+                            <span class="font-medium">${record.noOfDays}</span>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg flex justify-between">
+                            <span class="text-sm text-gray-600">Absent:</span>
+                            <span class="font-medium">${record.absent}</span>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg flex justify-between">
+                            <span class="text-sm text-gray-600">No of Day's Work:</span>
+                            <span class="font-medium">${record.noOfDaysWork}</span>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg flex justify-between">
+                            <span class="text-sm text-gray-600">Salary:</span>
+                            <span class="font-medium">₹${parseFloat(record.salary).toFixed(2)}</span>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg flex justify-between">
+                            <span class="text-sm text-gray-600">Trip Advance:</span>
+                            <span class="font-medium">₹${parseFloat(record.tripAdvance).toFixed(2)}</span>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg flex justify-between">
+                            <span class="text-sm text-gray-600">Adv Salary:</span>
+                            <span class="font-medium">₹${parseFloat(record.advSalary).toFixed(2)}</span>
+                        </div>
+                        <div class="bg-gray-100 p-3 rounded-lg flex justify-between">
+                            <span class="text-sm font-semibold text-gray-700">Balance Amount:</span>
+                            <span class="font-bold text-purple-600">₹${parseFloat(record.balanceAmount).toFixed(2)}</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                content.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">SL</div>
+                            <div class="font-medium">${record.sl}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">Date</div>
+                            <div class="font-medium">${formatDateForDisplay(record.date)}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">LR NO</div>
+                            <div class="font-medium">${record.lrno || '-'}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">Vehicle Number</div>
+                            <div class="font-medium">${record.vehicleNo}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">Driver Name</div>
+                            <div class="font-medium">${record.driverName}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">Mileage</div>
+                            <div class="font-medium">${record.mileage}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">Destination</div>
+                            <div class="font-medium">${record.destination || '-'}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">Opening KM</div>
+                            <div class="font-medium">${record.openingKm}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">Closing KM</div>
+                            <div class="font-medium">${record.closingKm}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">KM</div>
+                            <div class="font-medium">${record.km}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">CNG/Diesel Rate</div>
+                            <div class="font-medium">${record.cngRate}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">Amount</div>
+                            <div class="font-medium">₹${record.amount}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">L & UL</div>
+                            <div class="font-medium">₹${record.lul}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">Driver Bata</div>
+                            <div class="font-medium">₹${record.driverBata}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">Other Exp</div>
+                            <div class="font-medium">₹${record.otherExp}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">Total Amount</div>
+                            <div class="font-medium">₹${record.totalAmount}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">Actual Indent</div>
+                            <div class="font-medium">₹${record.actualIndent}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">Driver Difference</div>
+                            <div class="font-medium">₹${record.driverDifference}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg md:col-span-2">
+                            <div class="text-xs text-gray-500">Other Exp Remarks</div>
+                            <div class="font-medium">${record.otherExpRemarks || '-'}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500">POD Status</div>
+                            <div class="font-medium">${record.podStatus || '-'}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg md:col-span-2">
+                            <div class="text-xs text-gray-500">Note</div>
+                            <div class="font-medium">${record.note || '-'}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            modal.classList.add('active');
+        }
+        
+        function updateRecord(index) {
+            const record = filteredRecords[index];
+            const modal = document.getElementById('update-modal');
+            const content = document.getElementById('update-form-content');
+            
+            if (currentSheetType === 'driver_salary') {
+                content.innerHTML = `
+                    <form id="update-form" class="space-y-4">
+                        <input type="hidden" id="update-sl" value="${record.sl}">
+                        <input type="hidden" id="update-index" value="${index}">
+                        <input type="hidden" id="update-type" value="driver_salary">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">S.L</label>
+                                <input type="text" class="form-input w-full px-4 py-2 rounded-xl bg-gray-50" value="${record.sl}" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Vehicle Number *</label>
+                                <input type="text" id="update-vehicle" class="form-input w-full px-4 py-2 rounded-xl" value="${record.vehicleNumber}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Driver Name *</label>
+                                <input type="text" id="update-driver" class="form-input w-full px-4 py-2 rounded-xl" value="${record.driverName}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">No of Day's</label>
+                                <input type="number" id="update-noofdays" class="form-input w-full px-4 py-2 rounded-xl" value="${record.noOfDays}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Absent</label>
+                                <input type="number" id="update-absent" class="form-input w-full px-4 py-2 rounded-xl" value="${record.absent}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Salary</label>
+                                <input type="number" id="update-salary" class="form-input w-full px-4 py-2 rounded-xl" value="${record.salary}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Trip Advance</label>
+                                <input type="number" id="update-tripadvance" class="form-input w-full px-4 py-2 rounded-xl" value="${record.tripAdvance}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Adv Salary</label>
+                                <input type="number" id="update-advsalary" class="form-input w-full px-4 py-2 rounded-xl" value="${record.advSalary}">
+                            </div>
+                        </div>
+                    </form>
+                `;
+            } else {
+                content.innerHTML = `
+                    <form id="update-form" class="space-y-4">
+                        <input type="hidden" id="update-sl" value="${record.sl}">
+                        <input type="hidden" id="update-index" value="${index}">
+                        <input type="hidden" id="update-type" value="transport">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">DATE *</label>
+                                <input type="date" id="update-date" class="form-input w-full px-4 py-2 rounded-xl" value="${convertDateToInput(record.date)}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">LR NO</label>
+                                <input type="text" id="update-lrno" class="form-input w-full px-4 py-2 rounded-xl" value="${record.lrno || ''}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">VEHICLE NO *</label>
+                                <input type="text" id="update-vehicleno" class="form-input w-full px-4 py-2 rounded-xl" value="${record.vehicleNo}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">DRIVER NAME *</label>
+                                <input type="text" id="update-drivername" class="form-input w-full px-4 py-2 rounded-xl" value="${record.driverName}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">MILEAGE</label>
+                                <input type="text" id="update-mileage" class="form-input w-full px-4 py-2 rounded-xl" value="${record.mileage}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">DESTINATION</label>
+                                <input type="text" id="update-destination" class="form-input w-full px-4 py-2 rounded-xl" value="${record.destination || ''}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">OPENING KM</label>
+                                <input type="number" id="update-openingkm" class="form-input w-full px-4 py-2 rounded-xl" value="${record.openingKm}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">CLOSING KM</label>
+                                <input type="number" id="update-closingkm" class="form-input w-full px-4 py-2 rounded-xl" value="${record.closingKm}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">CNG OR DIESEL RATE</label>
+                                <input type="number" id="update-cngrate" class="form-input w-full px-4 py-2 rounded-xl" value="${record.cngRate}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">AMOUNT</label>
+                                <input type="number" id="update-amount" class="form-input w-full px-4 py-2 rounded-xl" value="${record.amount}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">L & UL</label>
+                                <input type="number" id="update-lul" class="form-input w-full px-4 py-2 rounded-xl" value="${record.lul}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">DRIVER BATA</label>
+                                <input type="number" id="update-driverbata" class="form-input w-full px-4 py-2 rounded-xl" value="${record.driverBata}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">OTHER EXP</label>
+                                <input type="number" id="update-otherexp" class="form-input w-full px-4 py-2 rounded-xl" value="${record.otherExp}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">ACTUAL INDENT</label>
+                                <input type="number" id="update-actualindent" class="form-input w-full px-4 py-2 rounded-xl" value="${record.actualIndent}">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">OTHER EXP REMARKS</label>
+                                <textarea id="update-otherexpremarks" rows="2" class="form-input w-full px-4 py-2 rounded-xl">${record.otherExpRemarks || ''}</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">POD STATUS</label>
+                                <input type="text" id="update-podstatus" class="form-input w-full px-4 py-2 rounded-xl" value="${record.podStatus || ''}">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">NOTE</label>
+                                <textarea id="update-note" rows="2" class="form-input w-full px-4 py-2 rounded-xl">${record.note || ''}</textarea>
+                            </div>
+                        </div>
+                    </form>
+                `;
+            }
+            
+            modal.classList.add('active');
+        }
+        
+        function convertDateToInput(dateStr) {
+            if (!dateStr) return '';
+            if (dateStr.includes('/')) {
+                const parts = dateStr.split('/');
+                if (parts.length === 3) {
+                    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                }
+            }
+            return dateStr.split('T')[0];
+        }
+        
+        async function submitUpdate() {
+            const updateType = document.getElementById('update-type').value;
+            const sl = document.getElementById('update-sl').value;
+            const index = parseInt(document.getElementById('update-index').value);
+            
+            showToast('Updating record...', 'success');
+            
+            try {
+                let updateData = {
+                    action: 'update',
+                    spreadsheetId: SPREADSHEET_ID,
+                    sheetName: currentSheet,
+                    rowIndex: parseInt(sl) + 1
+                };
+                
+                if (updateType === 'driver_salary') {
+                    const vehicleNumber = document.getElementById('update-vehicle').value;
+                    const driverName = document.getElementById('update-driver').value;
+                    const noOfDays = document.getElementById('update-noofdays').value || '0';
+                    const absent = document.getElementById('update-absent').value || '0';
+                    const noOfDaysWork = parseInt(noOfDays) - parseInt(absent);
+                    const salary = document.getElementById('update-salary').value || '0';
+                    const tripAdvance = document.getElementById('update-tripadvance').value || '0';
+                    const advSalary = document.getElementById('update-advsalary').value || '0';
+                    const balanceAmount = parseFloat(salary) - (parseFloat(tripAdvance) + parseFloat(advSalary));
+                    
+                    Object.assign(updateData, {
+                        'S.L': sl,
+                        'VEHICLE NUMBER': vehicleNumber,
+                        'DRIVERS NAME': driverName,
+                        'NO OF DAY\'S': noOfDays,
+                        'ABSENT': absent,
+                        'NO OF DAY\'S WORK': noOfDaysWork,
+                        'SALARY': salary,
+                        'TRIP ADVANCE': tripAdvance,
+                        'ADV SALARY': advSalary,
+                        'BALANCE AMOUNT': balanceAmount.toFixed(2)
+                    });
+                } else {
+                    const dateValue = document.getElementById('update-date').value;
+                    const openingKm = parseFloat(document.getElementById('update-openingkm').value) || 0;
+                    const closingKm = parseFloat(document.getElementById('update-closingkm').value) || 0;
+                    const km = closingKm - openingKm;
+                    const mileage = document.getElementById('update-mileage').value;
+                    const cngRate = parseFloat(document.getElementById('update-cngrate').value) || 0;
+                    let amount = parseFloat(document.getElementById('update-amount').value) || 0;
+                    
+                    if (mileage !== 'FIX' && mileage !== 'fix' && mileage !== 'FIXED') {
+                        const mileageNum = parseFloat(mileage) || 1;
+                        amount = (km / mileageNum) * cngRate;
+                    }
+                    
+                    const lul = parseFloat(document.getElementById('update-lul').value) || 0;
+                    const driverBata = parseFloat(document.getElementById('update-driverbata').value) || 0;
+                    const otherExp = parseFloat(document.getElementById('update-otherexp').value) || 0;
+                    const totalAmount = amount + lul + driverBata + otherExp;
+                    const actualIndent = parseFloat(document.getElementById('update-actualindent').value) || 0;
+                    const driverDifference = actualIndent - totalAmount;
+                    
+                    const formattedDate = dateValue ? formatDateToDMY(dateValue) : '';
+                    
+                    Object.assign(updateData, {
+                        'SL': sl,
+                        'DATE': formattedDate,
+                        'LR NO': document.getElementById('update-lrno').value || '',
+                        'VEHICLE NO': document.getElementById('update-vehicleno').value,
+                        'DRIVER NAME': document.getElementById('update-drivername').value,
+                        'MILEAGE': mileage,
+                        'DESTINATION': document.getElementById('update-destination').value || '',
+                        'OPENING KM': openingKm,
+                        'CLOSING KM': closingKm,
+                        'KM': km,
+                        'CNG OR DIESEL RATE': cngRate,
+                        'AMOUNT': amount.toFixed(2),
+                        'L & UL': lul,
+                        'DRIVER BATA': driverBata,
+                        'OTHER EXP': otherExp,
+                        'TOTAL AMOUNT': totalAmount.toFixed(2),
+                        'ACTUAL INDENT': actualIndent,
+                        'DRIVER DIFFERENCE AMOUNT': driverDifference.toFixed(2),
+                        'OTHER EXP REMARKS': document.getElementById('update-otherexpremarks').value || '',
+                        'POD STATUS': document.getElementById('update-podstatus').value || '',
+                        'NOTE': document.getElementById('update-note').value || ''
+                    });
+                }
+                
+                const formBody = new URLSearchParams();
+                for (let key in updateData) {
+                    formBody.append(key, updateData[key]);
+                }
+                
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: formBody,
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showToast('Record updated successfully!', 'success');
+                    closeUpdateModal();
+                    await loadData();
+                } else {
+                    showToast('Error: ' + (result.message || 'Unknown error'), 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error updating record:', error);
+                showToast('Network error. Please try again.', 'error');
+            }
+        }
+        
+        function formatDateToDMY(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+        
+        function closeViewModal() {
+            document.getElementById('view-modal').classList.remove('active');
+        }
+        
+        function closeUpdateModal() {
+            document.getElementById('update-modal').classList.remove('active');
+        }
+        
+        function resetFilters() {
+            document.getElementById('sort-by').value = 'newest';
+            document.getElementById('search-input').value = '';
+            if (currentSheet) {
+                loadData();
+            }
+        }
+        
+        // Real-time search - apply filter on every keystroke
+        document.getElementById('search-input').addEventListener('input', function() {
+            applyFilters();
+        });
+        
+        // Apply sort when changed
+        document.getElementById('sort-by').addEventListener('change', function() {
+            applyFilters();
+        });
+        
+        // Load data when sheet changes
+        document.getElementById('sheet-select').addEventListener('change', loadData);
+        
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const viewModal = document.getElementById('view-modal');
+            const updateModal = document.getElementById('update-modal');
+            if (event.target === viewModal) closeViewModal();
+            if (event.target === updateModal) closeUpdateModal();
+        }
+        
+        // Initialize
+        loadSheets();
+    </script>
+</body>
+</html>
