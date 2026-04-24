@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Transport Management System - Form 1039</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            padding: 28px 32px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .holiday-checkbox-container {
+            position: absolute;
+            top: 28px;
+            right: 32px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .holiday-checkbox-container:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .holiday-checkbox-container input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #1a73e8;
+        }
+
+        .holiday-checkbox-container label {
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .holiday-checkbox-container {
+                position: static;
+                margin-top: 16px;
+                justify-content: center;
+                background: rgba(255, 255, 255, 0.15);
+            }
+            .header {
+                text-align: center;
+                padding-bottom: 20px;
+            }
+        }
+
+        .form-container {
+            padding: 32px;
+        }
+
+        .trip-selection {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+        }
+
+        .trip-selection label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-right: 16px;
+        }
+
+        .trip-selection select {
+            padding: 12px 24px;
+            font-size: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 40px;
+            background: white;
+            cursor: pointer;
+            min-width: 200px;
+        }
+
+        .trip-selection select:focus {
+            outline: none;
+            border-color: #1a73e8;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        @media (min-width: 1024px) {
+            .form-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .full-width {
+                grid-column: span 3;
+            }
+            .double-width {
+                grid-column: span 2;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .full-width {
+                grid-column: span 2;
+            }
+            .double-width {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .full-width, .double-width {
+                grid-column: span 1;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1f2937;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label .calculated {
+            color: #1a73e8;
+            font-size: 10px;
+            font-weight: normal;
+            margin-left: 6px;
+            text-transform: none;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            background: #ffffff;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+
+        .form-group input.calculated-field {
+            background-color: #f8fafc;
+            font-weight: 500;
+            color: #1a73e8;
+            border-color: #e2e8f0;
+        }
+
+        .form-group input:read-only {
+            background-color: #f8fafc;
+            cursor: default;
+        }
+
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin-top: 4px;
+        }
+
+        .autocomplete-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .autocomplete-item:hover {
+            background: #f0f7ff;
+            color: #1a73e8;
+        }
+
+        .file-group {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 16px;
+            border: 1.5px dashed #d1d5db;
+            transition: all 0.2s;
+        }
+
+        .file-group:hover {
+            border-color: #1a73e8;
+            background: #f5f9ff;
+        }
+
+        .file-status {
+            font-size: 12px;
+            margin-top: 8px;
+            color: #10b981;
+            display: none;
+        }
+
+        .file-status.show {
+            display: block;
+        }
+
+        .button-group {
+            margin-top: 32px;
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            box-shadow: 0 2px 6px rgba(26, 115, 232, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(26, 115, 232, 0.35);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #e5e7eb;
+        }
+
+        .time-picker-modal {
+            display: none;
+            position: fixed;
+            z-index: 10020;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .time-picker-modal.active {
+            display: flex;
+        }
+
+        .time-picker-content {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 320px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .time-picker-header {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        .time-picker-body {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .time-picker-body input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.2rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .time-picker-footer {
+            padding: 16px 20px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* Enhanced Holiday Modal */
+        .holiday-modal {
+            display: none;
+            position: fixed;
+            z-index: 10030;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .holiday-modal.active {
+            display: flex;
+        }
+
+        .holiday-modal-content {
+            background: white;
+            border-radius: 28px;
+            width: 90%;
+            max-width: 480px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            animation: holidaySlideIn 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
+            position: relative;
+        }
+
+        @keyframes holidaySlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .holiday-modal-header {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            padding: 24px;
+            text-align: center;
+            position: relative;
+        }
+
+        .holiday-modal-header h3 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .holiday-modal-header p {
+            opacity: 0.9;
+            font-size: 0.85rem;
+        }
+
+        .holiday-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            font-size: 28px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .holiday-close-btn:hover {
+            transform: rotate(90deg);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .holiday-modal-body {
+            padding: 28px;
+        }
+
+        .holiday-form-group {
+            margin-bottom: 24px;
+        }
+
+        .holiday-form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            color: #1f2937;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .holiday-form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 14px;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+
+        .holiday-form-group input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+
+        .holiday-form-group input:disabled {
+            background-color: #f8fafc;
+            cursor: not-allowed;
+        }
+
+        .holiday-modal-footer {
+            padding: 20px 28px 28px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* Spinner overlay INSIDE modal - above content */
+        .holiday-spinner-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 10031;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 16px;
+            border-radius: 28px;
+        }
+
+        .holiday-spinner-overlay.active {
+            display: flex;
+        }
+
+        .holiday-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .holiday-spinner-text {
+            color: #1a73e8;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Custom Alert Popup */
+        .custom-alert {
+            display: none;
+            position: fixed;
+            z-index: 10050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .custom-alert.active {
+            display: flex;
+        }
+
+        .custom-alert-content {
+            background: white;
+            border-radius: 28px;
+            width: 90%;
+            max-width: 420px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            animation: alertSlideIn 0.3s ease-out;
+            text-align: center;
+        }
+
+        @keyframes alertSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .custom-alert-header {
+            padding: 24px;
+            color: white;
+        }
+
+        .custom-alert-header.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .custom-alert-header.error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .custom-alert-header h3 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .custom-alert-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .custom-alert-body {
+            padding: 24px;
+            text-align: left;
+        }
+
+        .custom-alert-message {
+            font-size: 1rem;
+            color: #1f2937;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .custom-alert-details {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #374151;
+        }
+
+        .custom-alert-details strong {
+            color: #1a73e8;
+        }
+
+        .custom-alert-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: center;
+        }
+
+        .alert-close-btn {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            padding: 12px 32px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .alert-close-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 11px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            background: white;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-hint {
+            font-size: 10px;
+            color: #6b7280;
+            margin-top: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 20px;
+            }
+            .btn {
+                width: 100%;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Custom Alert Popup -->
+    <div id="customAlert" class="custom-alert">
+        <div class="custom-alert-content">
+            <div class="custom-alert-header" id="alertHeader">
+                <h3 id="alertTitle">Success</h3>
+                <p id="alertSubtitle">Operation completed</p>
+            </div>
+            <div class="custom-alert-body">
+                <div class="custom-alert-message" id="alertMessage">Your action was successful!</div>
+                <div id="alertDetails" class="custom-alert-details" style="display: none;"></div>
+            </div>
+            <div class="custom-alert-footer">
+                <button class="alert-close-btn" onclick="closeCustomAlert()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🚛 Transport Management System</h1>
+            <p>Form 1039 - Trip Management</p>
+            <div class="holiday-checkbox-container">
+                <input type="checkbox" id="holidayCheckbox">
+                <label for="holidayCheckbox">🎉 Holiday</label>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <div class="trip-selection">
+                <label>Select Trip:</label>
+                <select id="tripTypeSelect">
+                    <option value="">-- Select --</option>
+                    <option value="available">Trip Available</option>
+                    <option value="notavailable">Trip Not Available</option>
+                </select>
+            </div>
+
+            <!-- Trip Available Form -->
+            <div id="tripAvailableForm" class="form-section">
+                <form id="availableForm" enctype="multipart/form-data">
+                    <div class="form-grid">
+                        <div class="form-group"><label>SL</label><input type="text" id="availSl" readonly style="background:#f8fafc;"></div>
+                        <div class="form-group"><label>TRIP NO.</label><input type="text" id="tripNo" readonly style="background:#f8fafc;"></div>
+                        <div class="form-group"><label>DATE</label><input type="date" id="availDate" max=""><div class="error-message" id="availDateError">Future dates not allowed</div></div>
+                        <div class="form-group"><label>LR /CONSIGNMENT NO</label><input type="text" id="lrNo" placeholder="Enter LR/Consignment No"></div>
+                        <div class="form-group"><label>INVOICE NO/REFERENCE NO</label><input type="text" id="invoiceNo" placeholder="Enter Invoice/Reference No"></div>
+                        <div class="form-group"><label>CONSIGNEE NAME</label><input type="text" id="consigneeName" placeholder="Type or select..." autocomplete="off"><div id="consigneeDropdown" class="autocomplete-list" style="display:none;"></div></div>
+                        <div class="form-group"><label>VEHICLE NO</label><input type="text" id="availVehicleNo" placeholder="Type or select..." autocomplete="off"><div id="availVehicleDropdown" class="autocomplete-list" style="display:none;"></div></div>
+                        <div class="form-group"><label>TRUCK TYPE</label><input type="text" id="truckType" placeholder="Type or select..." autocomplete="off"><div id="truckTypeDropdown" class="autocomplete-list" style="display:none;"></div></div>
+                        <div class="form-group"><label>DRIVER NAME</label><input type="text" id="availDriverName" placeholder="Type or select..." autocomplete="off"><div id="availDriverDropdown" class="autocomplete-list" style="display:none;"></div></div>
+                        <div class="form-group"><label>FROM</label><input type="text" id="fromLocation" placeholder="Type or select..." autocomplete="off"><div id="fromDropdown" class="autocomplete-list" style="display:none;"></div></div>
+                        <div class="form-group"><label>DESTINATION</label><input type="text" id="availDestination" placeholder="Type or select..." autocomplete="off"><div id="availDestDropdown" class="autocomplete-list" style="display:none;"></div></div>
+                        <div class="form-group"><label>BOXES</label><input type="number" id="boxes" step="1" placeholder="Number of boxes"></div>
+                        <div class="form-group"><label>START TIME</label><input type="text" id="startTime" value="09:00 AM" readonly style="cursor:pointer; background:#f8fafc;"></div>
+                        <div class="form-group"><label>END TIME</label><input type="text" id="endTime" readonly style="cursor:pointer; background:#f8fafc;"></div>
+                        <div class="form-group"><label>START KM</label><input type="number" id="startKm" step="1" placeholder="Starting KM"></div>
+                        <div class="form-group"><label>END KM</label><input type="number" id="endKm" step="1" placeholder="Ending KM"></div>
+                        <div class="form-group"><label>KM RUN <span class="calculated">(Auto)</span></label><input type="number" id="kmRun" readonly class="calculated-field" placeholder="Auto calculated"></div>
+                        <div class="form-group"><label>NO OF LABOUR</label><input type="number" id="noOfLabour" step="1" value="1"></div>
+                        <div class="form-group"><label>ISSUE (IF ANY)</label><input type="text" id="issue" placeholder="Any issues"></div>
+						<div class="form-group"><label>TRIP ADVANCE</label><input type="number" id="tripAdv" placeholder="Trip Advance"></div>
+                        <div class="form-group"><label>REMARKS</label><input type="text" id="remarks" placeholder="Remarks"></div>
+                        <div class="form-group"><label>TOLL CHARGES (₹)</label><input type="number" id="tollCharges" step="1" placeholder="Toll charges"></div>
+                        <div class="form-group"><label>MATHADI CHARGES (₹)</label><input type="number" id="mathadiCharges" step="1" placeholder="Mathadi charges"></div>
+                        <div class="form-group"><label>MATHADI RECIEVED NO</label><input type="number" id="mathadiReceivedNo" step="1" placeholder="Receipt number"></div>
+                        <div class="form-group file-group full-width"><label>FILE</label><input type="file" id="availFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"><div class="file-info">Supported: PDF, JPG, PNG, DOC (Max 5MB)</div><div class="file-status" id="availFileStatus"></div></div>
+                        <div class="form-group full-width"><label>NOTE</label><textarea id="availNote" rows="3" placeholder="Additional notes"></textarea></div>
+                    </div>
+                    <div class="button-group"><button type="button" class="btn btn-secondary" onclick="resetAvailableForm()">Reset Form</button><button type="submit" class="btn btn-primary">Save Trip Details</button></div>
+                </form>
+            </div>
+
+            <!-- Trip Not Available Form -->
+            <div id="tripNotAvailableForm" class="form-section">
+                <form id="notAvailableForm" enctype="multipart/form-data">
+                    <div class="form-grid">
+                        <div class="form-group"><label>SL</label><input type="text" id="notAvailSl" readonly style="background:#f8fafc;"></div>
+                        <div class="form-group"><label>DATE</label><input type="date" id="notAvailDate" max=""><div class="error-message" id="notAvailDateError">Future dates not allowed</div></div>
+                        <div class="form-group"><label>LR /CONSIGNMENT NO</label><input type="text" id="notLrNo" placeholder="Enter LR/Consignment No"></div>
+                        <div class="form-group"><label>INVOICE NO/REFERENCE NO</label><input type="text" id="notInvoiceNo" placeholder="Enter Invoice/Reference No"></div>
+                        <div class="form-group"><label>CONSIGNEE NAME</label><input type="text" id="notConsigneeName" placeholder="Type or select..." autocomplete="off"><div id="notConsigneeDropdown" class="autocomplete-list" style="display:none;"></div></div>
+                        <div class="form-group"><label>VEHICLE NO</label><input type="text" id="notVehicleNo" placeholder="Type or select..." autocomplete="off"><div id="notVehicleDropdown" class="autocomplete-list" style="display:none;"></div></div>
+                        <div class="form-group"><label>TRUCK TYPE</label><input type="text" id="notTruckType" placeholder="Type or select..." autocomplete="off"><div id="notTruckTypeDropdown" class="autocomplete-list" style="display:none;"></div></div>
+                        <div class="form-group"><label>DRIVER NAME</label><input type="text" id="notDriverName" placeholder="Type or select..." autocomplete="off"><div id="notDriverDropdown" class="autocomplete-list" style="display:none;"></div></div>
+                        <div class="form-group"><label>FROM</label><input type="text" id="notFromLocation" placeholder="Type or select..." autocomplete="off"><div id="notFromDropdown" class="autocomplete-list" style="display:none;"></div></div>
+                        <div class="form-group"><label>DESTINATION</label><input type="text" id="notDestination" placeholder="Type or select..." autocomplete="off"><div id="notDestDropdown" class="autocomplete-list" style="display:none;"></div></div>
+                        <div class="form-group"><label>BOXES</label><input type="number" id="notBoxes" step="1" placeholder="Number of boxes"></div>
+                        <div class="form-group"><label>START TIME</label><input type="text" id="notStartTime" value="09:00 AM" readonly style="cursor:pointer; background:#f8fafc;"></div>
+                        <div class="form-group"><label>END TIME</label><input type="text" id="notEndTime" readonly style="cursor:pointer; background:#f8fafc;"></div>
+                    </div>
+                    <div class="button-group"><button type="button" class="btn btn-secondary" onclick="resetNotAvailableForm()">Reset Form</button><button type="submit" class="btn btn-primary">Save Trip Details</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Time Picker Modal -->
+    <div id="timePickerModal" class="time-picker-modal">
+        <div class="time-picker-content">
+            <div class="time-picker-header"><h3>Select Time</h3></div>
+            <div class="time-picker-body"><input type="time" id="timePickerInput" step="60"></div>
+            <div class="time-picker-footer"><button class="btn btn-secondary" onclick="closeTimePicker()">Cancel</button><button class="btn btn-primary" onclick="confirmTime()">OK</button></div>
+        </div>
+    </div>
+
+    <!-- Enhanced Holiday Modal with Spinner Overlay -->
+    <div id="holidayModal" class="holiday-modal">
+        <div class="holiday-modal-content">
+            <div class="holiday-spinner-overlay" id="holidaySpinnerOverlay">
+                <div class="holiday-spinner"></div>
+                <div class="holiday-spinner-text">Saving holiday data...</div>
+            </div>
+            <div class="holiday-modal-header">
+                <div class="holiday-close-btn" onclick="closeHolidayModal()">&times;</div>
+                <h3>🎉 Add Holiday</h3>
+                <p>Record special holiday or Sunday</p>
+            </div>
+            <div class="holiday-modal-body">
+                <div class="holiday-form-group">
+                    <label>SL</label>
+                    <input type="text" id="holidaySl" readonly style="background:#f8fafc;">
+                </div>
+                <div class="holiday-form-group">
+                    <label>DATE</label>
+                    <input type="date" id="holidayDate" max="">
+                    <div class="error-message" id="holidayDateError">Future dates not allowed</div>
+                </div>
+                <div class="holiday-form-group">
+                    <label>HOLIDAY NAME</label>
+                    <input type="text" id="holidayName" value="Sunday" placeholder="Enter holiday name">
+                </div>
+            </div>
+            <div class="holiday-modal-footer">
+                <button class="btn btn-secondary" id="holidayCancelBtn" onclick="closeHolidayModal()">Cancel</button>
+                <button class="btn btn-primary" id="holidaySaveBtn" onclick="saveHoliday()">Save Holiday</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+         // ======================== CONFIGURATION ========================
+const SPREADSHEET_ID = '1E2QTcv7iN_yN4CSxAhKsA2_lr0rbi43cxKqf6FsVXEs';
+const SHEET_NAME = '5039';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5NBh26tyNs3Ae7UiyBThu8tTV3xFV21pJR16WnPBXnNvzKRyyLYKsmShdln9yRRexUA/exec';
+const DRIVE_FOLDER_ID = '1KCS4l-0n8D-kjaZYmAHJsPKGT_7aj4b4';
+
+// Global variables
+let allData = [];
+let currentTimeField = null;
+let tripDataByMonth = new Map(); // Store trip numbers by month
+
+// Autocomplete data arrays
+let consigneeNames = [];
+let vehicleNos = [];
+let truckTypes = [];
+let driverNames = [];
+let fromLocations = [];
+let destinations = [];
+
+// ======================== HELPER FUNCTIONS ========================
+
+/**
+ * Escape HTML to prevent XSS attacks
+ */
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+/**
+ * Parse date from various formats
+ */
+function parseDate(dateValue) {
+    if (!dateValue) return null;
+    
+    let day, month, year;
+    
+    // Check if it's in dd/MM/yyyy format
+    if (typeof dateValue === 'string' && dateValue.includes('/')) {
+        const parts = dateValue.split('/');
+        if (parts.length === 3) {
+            day = parseInt(parts[0]);
+            month = parseInt(parts[1]);
+            year = parseInt(parts[2]);
+            if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                return new Date(year, month - 1, day);
+            }
+        }
+    }
+    
+    // Try standard date parsing
+    const date = new Date(dateValue);
+    if (!isNaN(date.getTime())) {
+        return date;
+    }
+    
+    return null;
+}
+
+/**
+ * Get month-year key for grouping (format: YYYY-M)
+ */
+function getMonthYearKey(date) {
+    if (!date || !(date instanceof Date) || isNaN(date.getTime())) return null;
+    return `${date.getFullYear()}-${date.getMonth() + 1}`;
+}
+
+/**
+ * Organize trips by month from fetched data
+ */
+function organizeTripsByMonth(data) {
+    const tripsByMonth = new Map();
+    
+    data.forEach(row => {
+        const dateValue = row['DATE'];
+        const tripNo = row['TRIP NO.'];
+        
+        if (dateValue && tripNo && !isNaN(parseInt(tripNo))) {
+            const date = parseDate(dateValue);
+            if (date && !isNaN(date.getTime())) {
+                const monthKey = getMonthYearKey(date);
+                if (!tripsByMonth.has(monthKey)) {
+                    tripsByMonth.set(monthKey, []);
+                }
+                tripsByMonth.get(monthKey).push({
+                    date: date,
+                    tripNo: parseInt(tripNo),
+                    originalDate: dateValue
+                });
+            }
+        }
+    });
+    
+    // Sort trips within each month by date
+    for (const [monthKey, trips] of tripsByMonth.entries()) {
+        trips.sort((a, b) => a.date - b.date);
+    }
+    
+    return tripsByMonth;
+}
+
+/**
+ * Get next trip number for a specific date
+ */
+async function getNextTripNumberForDate(dateValue) {
+    await fetchAllData(); // Ensure data is loaded
+    
+    if (!dateValue) return 1;
+    
+    const selectedDate = parseDate(dateValue);
+    if (!selectedDate || isNaN(selectedDate.getTime())) return 1;
+    
+    const selectedMonthKey = getMonthYearKey(selectedDate);
+    
+    // Get trips for the selected month
+    const monthTrips = tripDataByMonth.get(selectedMonthKey) || [];
+    
+    if (monthTrips.length === 0) {
+        // No trips found in this month, start from 1
+        return 1;
+    }
+    
+    // Get the maximum trip number in this month
+    const maxTripNo = Math.max(...monthTrips.map(t => t.tripNo));
+    
+    // Return next number
+    return maxTripNo + 1;
+}
+
+/**
+ * Get trip count and info for display
+ */
+function getMonthTripInfo(dateValue) {
+    if (!dateValue) return null;
+    
+    const selectedDate = parseDate(dateValue);
+    if (!selectedDate || isNaN(selectedDate.getTime())) return null;
+    
+    const selectedMonthKey = getMonthYearKey(selectedDate);
+    const monthTrips = tripDataByMonth.get(selectedMonthKey) || [];
+    
+    if (monthTrips.length === 0) {
+        return {
+            hasTrips: false,
+            count: 0,
+            nextTripNo: 1,
+            trips: []
+        };
+    }
+    
+    const maxTripNo = Math.max(...monthTrips.map(t => t.tripNo));
+    
+    return {
+        hasTrips: true,
+        count: monthTrips.length,
+        nextTripNo: maxTripNo + 1,
+        trips: monthTrips,
+        maxTripNo: maxTripNo
+    };
+}
+
+/**
+ * Display month information to user
+ */
+function displayMonthInfo(dateValue) {
+    const monthInfoDiv = document.getElementById('monthInfo');
+    if (!monthInfoDiv) return;
+    
+    if (!dateValue) {
+        monthInfoDiv.classList.remove('show');
+        return;
+    }
+    
+    const info = getMonthTripInfo(dateValue);
+    const selectedDate = parseDate(dateValue);
+    
+    if (!selectedDate || isNaN(selectedDate.getTime())) {
+        monthInfoDiv.classList.remove('show');
+        return;
+    }
+    
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthName = monthNames[selectedDate.getMonth()];
+    const year = selectedDate.getFullYear();
+    
+    if (!info.hasTrips) {
+        monthInfoDiv.innerHTML = `
+            📅 ${monthName} ${year}: No trips recorded yet.<br>
+            <strong>Next Trip No: 1</strong> (Starting fresh for this month)
+        `;
+        monthInfoDiv.classList.add('show');
+    } else {
+        monthInfoDiv.innerHTML = `
+            📅 ${monthName} ${year}: ${info.count} trip(s) recorded.<br>
+            Last Trip No: ${info.maxTripNo} → <strong>Next Trip No: ${info.nextTripNo}</strong>
+            <span class="trip-info-badge">Auto-incrementing</span>
+        `;
+        monthInfoDiv.classList.add('show');
+    }
+}
+
+/**
+ * Update Trip No based on selected date
+ */
+async function updateTripNoByDate(dateValue) {
+    const tripNoField = document.getElementById('tripNo');
+    if (!tripNoField) return;
+    
+    if (!dateValue) {
+        tripNoField.value = '';
+        return;
+    }
+    
+    const nextTripNo = await getNextTripNumberForDate(dateValue);
+    tripNoField.value = nextTripNo;
+    
+    // Display month information
+    displayMonthInfo(dateValue);
+}
+
+// ======================== CUSTOM ALERT FUNCTIONS ========================
+
+function showCustomAlert(type, title, subtitle, message, details = null) {
+    const alertElement = document.getElementById('customAlert');
+    const headerElement = document.getElementById('alertHeader');
+    const titleElement = document.getElementById('alertTitle');
+    const subtitleElement = document.getElementById('alertSubtitle');
+    const messageElement = document.getElementById('alertMessage');
+    const detailsElement = document.getElementById('alertDetails');
+    
+    if (!alertElement) return;
+    
+    headerElement.className = 'custom-alert-header ' + type;
+    titleElement.textContent = title;
+    subtitleElement.textContent = subtitle;
+    messageElement.textContent = message;
+    
+    if (details) {
+        detailsElement.innerHTML = details;
+        detailsElement.style.display = 'block';
+    } else {
+        detailsElement.style.display = 'none';
+    }
+    
+    alertElement.classList.add('active');
+}
+
+function closeCustomAlert() {
+    const alertElement = document.getElementById('customAlert');
+    if (alertElement) {
+        alertElement.classList.remove('active');
+    }
+}
+
+// ======================== DATA FETCHING ========================
+
+async function fetchAllData() {
+    try {
+        const response = await fetch(`${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`);
+        const data = await response.json();
+        
+        if (data.status === 'success' && data.data) {
+            allData = data.data;
+            
+            // Organize trips by month for efficient lookup
+            tripDataByMonth = organizeTripsByMonth(allData);
+            
+            // Populate autocomplete arrays
+            consigneeNames = [...new Set(allData.map(r => r['CONSIGNEE NAME']).filter(v => v && v.toString().trim()))].sort();
+            vehicleNos = [...new Set(allData.map(r => r['VEHICLE NO']).filter(v => v && v.toString().trim()))].sort();
+            truckTypes = [...new Set(allData.map(r => r['TRUCK TYPE']).filter(v => v && v.toString().trim()))].sort();
+            driverNames = [...new Set(allData.map(r => r['DRIVER NAME']).filter(v => v && v.toString().trim()))].sort();
+            fromLocations = [...new Set(allData.map(r => r['FROM']).filter(v => v && v.toString().trim()))].sort();
+            destinations = [...new Set(allData.map(r => r['DESTINATION']).filter(v => v && v.toString().trim()))].sort();
+            
+            return allData.length;
+        }
+        return 0;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return 0;
+    }
+}
+
+async function getNextSl() {
+    await fetchAllData();
+    return allData.length + 1;
+}
+
+async function updateSlAndTrip() {
+    const sl = await getNextSl();
+    const availSlField = document.getElementById('availSl');
+    const notAvailSlField = document.getElementById('notAvailSl');
+    
+    if (availSlField) availSlField.value = sl;
+    if (notAvailSlField) notAvailSlField.value = sl;
+    
+    // Don't auto-set trip number - it will be set when date is selected
+    const currentDate = document.getElementById('availDate')?.value;
+    if (currentDate) {
+        await updateTripNoByDate(currentDate);
+    } else {
+        const tripNoField = document.getElementById('tripNo');
+        if (tripNoField) tripNoField.value = '';
+    }
+}
+
+// ======================== AUTOCOMPLETE SETUP ========================
+
+function setupAutocomplete(inputId, dropdownId, dataList) {
+    const input = document.getElementById(inputId);
+    const dropdown = document.getElementById(dropdownId);
+    if (!input || !dropdown) return;
+    
+    function showDropdown() {
+        const value = input.value.toLowerCase().trim();
+        let filtered = dataList;
+        if (value) {
+            filtered = dataList.filter(item => item.toLowerCase().includes(value));
+        }
+        if (filtered.length > 0) {
+            dropdown.innerHTML = filtered.map(item => `<div class="autocomplete-item">${escapeHtml(item)}</div>`).join('');
+            dropdown.querySelectorAll('.autocomplete-item').forEach(el => {
+                el.onclick = () => { 
+                    input.value = el.textContent; 
+                    dropdown.style.display = 'none'; 
+                    input.focus();
+                    // Trigger change event for any dependent calculations
+                    const event = new Event('change', { bubbles: true });
+                    input.dispatchEvent(event);
+                };
+            });
+            dropdown.style.display = 'block';
+        } else {
+            dropdown.style.display = 'none';
+        }
+    }
+    
+    input.addEventListener('input', function() { showDropdown(); });
+    input.addEventListener('focus', function() { showDropdown(); });
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+            setTimeout(() => showDropdown(), 10);
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (e.target !== input && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+}
+
+// ======================== CALCULATIONS ========================
+
+function calculateKmRun() {
+    const start = parseFloat(document.getElementById('startKm')?.value);
+    const end = parseFloat(document.getElementById('endKm')?.value);
+    const kmRunField = document.getElementById('kmRun');
+    
+    if (kmRunField && !isNaN(start) && !isNaN(end) && start !== '' && end !== '') {
+        const kmRun = Math.round(end - start);
+        kmRunField.value = kmRun >= 0 ? kmRun : '';
+    } else if (kmRunField) {
+        kmRunField.value = '';
+    }
+}
+
+// ======================== TIME PICKER FUNCTIONS ========================
+
+function openTimePicker(inputElement) {
+    currentTimeField = inputElement;
+    const modal = document.getElementById('timePickerModal');
+    const timeInput = document.getElementById('timePickerInput');
+    
+    if (!modal || !timeInput) return;
+    
+    let currentVal = currentTimeField.value;
+    if (currentVal && currentVal.includes(' ')) {
+        let [time, period] = currentVal.split(' ');
+        let [hour, minute] = time.split(':');
+        let hour24 = parseInt(hour);
+        if (period === 'PM' && hour24 !== 12) hour24 += 12;
+        if (period === 'AM' && hour24 === 12) hour24 = 0;
+        timeInput.value = `${hour24.toString().padStart(2,'0')}:${minute}`;
+    } else {
+        timeInput.value = '09:00';
+    }
+    
+    modal.classList.add('active');
+}
+
+function closeTimePicker() {
+    const modal = document.getElementById('timePickerModal');
+    if (modal) modal.classList.remove('active');
+}
+
+function confirmTime() {
+    if (currentTimeField) {
+        let timeVal = document.getElementById('timePickerInput')?.value;
+        if (timeVal) {
+            let [hour, minute] = timeVal.split(':');
+            let hour24 = parseInt(hour);
+            let period = hour24 >= 12 ? 'PM' : 'AM';
+            let hour12 = hour24 % 12 || 12;
+            currentTimeField.value = `${hour12.toString().padStart(2,'0')}:${minute} ${period}`;
+            
+            // Trigger change event
+            const event = new Event('change', { bubbles: true });
+            currentTimeField.dispatchEvent(event);
+        }
+    }
+    closeTimePicker();
+}
+
+// ======================== FILE HANDLING ========================
+
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+// ======================== FORM RESET FUNCTIONS ========================
+
+function resetAvailableForm() {
+    const form = document.getElementById('availableForm');
+    if (form) form.reset();
+    
+    const availDateField = document.getElementById('availDate');
+    if (availDateField) availDateField.value = '';
+    
+    const startTimeField = document.getElementById('startTime');
+    if (startTimeField) startTimeField.value = '09:00 AM';
+    
+    const endTimeField = document.getElementById('endTime');
+    if (endTimeField) endTimeField.value = '';
+    
+    const noOfLabourField = document.getElementById('noOfLabour');
+    if (noOfLabourField) noOfLabourField.value = '1';
+	
+	const tripAdvField = document.getElementById('tripAdv');
+    if (tripAdvField) tripAdvField.value = '';
+    
+    const kmRunField = document.getElementById('kmRun');
+    if (kmRunField) kmRunField.value = '';
+    
+    const tripNoField = document.getElementById('tripNo');
+    if (tripNoField) tripNoField.value = '';
+    
+    const fileStatus = document.getElementById('availFileStatus');
+    if (fileStatus) fileStatus.classList.remove('show');
+    
+    const monthInfo = document.getElementById('monthInfo');
+    if (monthInfo) monthInfo.classList.remove('show');
+    
+    const dateError = document.getElementById('availDateError');
+    if (dateError) dateError.classList.remove('show');
+}
+
+function resetNotAvailableForm() {
+    const form = document.getElementById('notAvailableForm');
+    if (form) form.reset();
+    
+    const notAvailDateField = document.getElementById('notAvailDate');
+    if (notAvailDateField) notAvailDateField.value = '';
+    
+    const notStartTimeField = document.getElementById('notStartTime');
+    if (notStartTimeField) notStartTimeField.value = '09:00 AM';
+    
+    const notEndTimeField = document.getElementById('notEndTime');
+    if (notEndTimeField) notEndTimeField.value = '';
+    
+    const dateError = document.getElementById('notAvailDateError');
+    if (dateError) dateError.classList.remove('show');
+}
+
+// ======================== HOLIDAY FUNCTIONS ========================
+
+async function openHolidayModal() {
+    const modal = document.getElementById('holidayModal');
+    const spinnerOverlay = document.getElementById('holidaySpinnerOverlay');
+    const saveBtn = document.getElementById('holidaySaveBtn');
+    const cancelBtn = document.getElementById('holidayCancelBtn');
+    
+    if (!modal) return;
+    
+    modal.classList.add('active');
+    if (spinnerOverlay) spinnerOverlay.classList.add('active');
+    if (saveBtn) saveBtn.disabled = true;
+    if (cancelBtn) cancelBtn.disabled = true;
+    
+    try {
+        const sl = await getNextSl();
+        const holidaySlField = document.getElementById('holidaySl');
+        if (holidaySlField) holidaySlField.value = sl;
+        await new Promise(resolve => setTimeout(resolve, 300));
+    } catch (error) {
+        console.error('Error loading holiday data:', error);
+    } finally {
+        if (spinnerOverlay) spinnerOverlay.classList.remove('active');
+        if (saveBtn) saveBtn.disabled = false;
+        if (cancelBtn) cancelBtn.disabled = false;
+    }
+}
+
+function closeHolidayModal() {
+    const modal = document.getElementById('holidayModal');
+    const checkbox = document.getElementById('holidayCheckbox');
+    const holidayDateField = document.getElementById('holidayDate');
+    const holidayNameField = document.getElementById('holidayName');
+    const dateError = document.getElementById('holidayDateError');
+    const saveBtn = document.getElementById('holidaySaveBtn');
+    const cancelBtn = document.getElementById('holidayCancelBtn');
+    const spinnerOverlay = document.getElementById('holidaySpinnerOverlay');
+    
+    if (modal) modal.classList.remove('active');
+    if (checkbox) checkbox.checked = false;
+    
+    const today = new Date().toISOString().split('T')[0];
+    if (holidayDateField) holidayDateField.value = today;
+    if (holidayNameField) holidayNameField.value = 'Sunday';
+    if (dateError) dateError.classList.remove('show');
+    if (saveBtn) saveBtn.disabled = false;
+    if (cancelBtn) cancelBtn.disabled = false;
+    if (spinnerOverlay) spinnerOverlay.classList.remove('active');
+}
+
+async function saveHoliday() {
+    const holidayDate = document.getElementById('holidayDate')?.value;
+    const holidayName = document.getElementById('holidayName')?.value.trim();
+    const dateError = document.getElementById('holidayDateError');
+    const spinnerOverlay = document.getElementById('holidaySpinnerOverlay');
+    const saveBtn = document.getElementById('holidaySaveBtn');
+    const cancelBtn = document.getElementById('holidayCancelBtn');
+    
+    if (holidayDate && new Date(holidayDate) > new Date()) {
+        if (dateError) dateError.classList.add('show');
+        return;
+    }
+    if (dateError) dateError.classList.remove('show');
+    
+    if (!holidayName) {
+        showCustomAlert('error', 'Validation Error', 'Please check', 'Holiday name is required', null);
+        return;
+    }
+    
+    if (spinnerOverlay) spinnerOverlay.classList.add('active');
+    if (saveBtn) saveBtn.disabled = true;
+    if (cancelBtn) cancelBtn.disabled = true;
+    
+    try {
+        const formData = new FormData();
+        formData.append('spreadsheetId', SPREADSHEET_ID);
+        formData.append('sheetName', SHEET_NAME);
+        formData.append('driveFolderId', DRIVE_FOLDER_ID);
+        formData.append('action', 'insert');
+        formData.append('SL', document.getElementById('holidaySl')?.value || '');
+        formData.append('DATE', holidayDate);
+        formData.append('DRIVER NAME', holidayName);
+        formData.append('fileCount', '0');
+        
+        const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            const details = `<strong>📅 Date:</strong> ${holidayDate}<br><strong>🎉 Holiday Name:</strong> ${holidayName}`;
+            showCustomAlert('success', 'Holiday Saved!', 'Successfully recorded', 'The holiday has been added to the Google Sheet.', details);
+            closeHolidayModal();
+            await updateSlAndTrip();
+            await fetchAllData(); // Refresh data
+        } else {
+            throw new Error(result.message || 'Failed to save holiday');
+        }
+    } catch (error) {
+        showCustomAlert('error', 'Error!', 'Failed to Save', error.message, null);
+        if (spinnerOverlay) spinnerOverlay.classList.remove('active');
+        if (saveBtn) saveBtn.disabled = false;
+        if (cancelBtn) cancelBtn.disabled = false;
+    }
+}
+
+// ======================== FORM SUBMISSION HANDLERS ========================
+
+async function handleAvailableFormSubmit(e) {
+    e.preventDefault();
+    
+    // Validate date is selected
+    const selectedDate = document.getElementById('availDate')?.value;
+    if (!selectedDate) {
+        showCustomAlert('error', 'Validation Error', 'Date Required', 
+            'Please select a date before saving.', null);
+        return;
+    }
+    
+    const loading = document.getElementById('loading');
+    if (loading) loading.classList.add('active');
+    
+    try {
+        const formData = new FormData();
+        formData.append('spreadsheetId', SPREADSHEET_ID);
+        formData.append('sheetName', SHEET_NAME);
+        formData.append('driveFolderId', DRIVE_FOLDER_ID);
+        formData.append('action', 'insert');
+        
+        const fields = {
+            'SL': document.getElementById('availSl')?.value || '',
+            'TRIP NO.': document.getElementById('tripNo')?.value || '',
+            'DATE': selectedDate,
+            'LR /CONSIGNMENT NO': document.getElementById('lrNo')?.value || '',
+            'INVOICE NO/REFERENCE NO': document.getElementById('invoiceNo')?.value || '',
+            'CONSIGNEE NAME': document.getElementById('consigneeName')?.value || '',
+            'VEHICLE NO': document.getElementById('availVehicleNo')?.value || '',
+            'TRUCK TYPE': document.getElementById('truckType')?.value || '',
+            'DRIVER NAME': document.getElementById('availDriverName')?.value || '',
+            'FROM': document.getElementById('fromLocation')?.value || '',
+            'DESTINATION': document.getElementById('availDestination')?.value || '',
+            'BOXES': document.getElementById('boxes')?.value || '',
+            'START TIME': document.getElementById('startTime')?.value || '',
+            'END TIME': document.getElementById('endTime')?.value || '',
+            'START KM': document.getElementById('startKm')?.value || '',
+            'END KM': document.getElementById('endKm')?.value || '',
+            'KM RUN': document.getElementById('kmRun')?.value || '',
+            'NO OF LABOUR': document.getElementById('noOfLabour')?.value || '',
+            'ISSUE (IF ANY)': document.getElementById('issue')?.value || '',
+            'REMARKS': document.getElementById('remarks')?.value || '',
+			'TRIP ADVANCE': document.getElementById('tripAdv')?.value || '',
+            'TOLL CHARGES': Math.round(document.getElementById('tollCharges')?.value) || '',
+            'MATHADI CHARGES': Math.round(document.getElementById('mathadiCharges')?.value) || '',
+            'MATHADI RECIEVED NO': document.getElementById('mathadiReceivedNo')?.value || '',
+            'NOTE': document.getElementById('availNote')?.value || ''
+        };
+        
+        for (const [k, v] of Object.entries(fields)) {
+            formData.append(k, v || '');
+        }
+        
+        let fileCount = 0;
+        const fileInput = document.getElementById('availFile');
+        if (fileInput && fileInput.files && fileInput.files[0]) {
+            const file = fileInput.files[0];
+            const fileData = await fileToBase64(file);
+            fileCount = 1;
+            formData.append('fileData1', fileData);
+            formData.append('fileName1', file.name);
+            formData.append('fileType1', file.type);
+            formData.append('fileColumn1', 'FILE');
+        }
+        formData.append('fileCount', fileCount);
+        
+        const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            const selectedDateObj = parseDate(selectedDate);
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                               'July', 'August', 'September', 'October', 'November', 'December'];
+            const monthName = selectedDateObj ? monthNames[selectedDateObj.getMonth()] : '';
+            
+            const details = `<strong>📅 Date:</strong> ${selectedDate}<br>
+                            <strong>📋 Trip No:</strong> ${document.getElementById('tripNo')?.value || 'N/A'}<br>
+                            <strong>📆 Month:</strong> ${monthName}<br>
+                            <strong>🚛 LR No:</strong> ${document.getElementById('lrNo')?.value || 'N/A'}`;
+            
+            showCustomAlert('success', 'Success!', 'Trip Saved', 
+                `Trip details for ${monthName} have been saved successfully.`, details);
+            
+            resetAvailableForm();
+            await updateSlAndTrip();
+            await fetchAllData(); // Refresh data to update month statistics
+        } else {
+            throw new Error(result.message || 'Failed to save trip');
+        }
+    } catch (error) {
+        console.error('Error saving trip:', error);
+        showCustomAlert('error', 'Error!', 'Failed to Save', error.message, null);
+    } finally {
+        if (loading) loading.classList.remove('active');
+    }
+}
+
+async function handleNotAvailableFormSubmit(e) {
+    e.preventDefault();
+    
+    const loading = document.getElementById('loading');
+    if (loading) loading.classList.add('active');
+    
+    try {
+        const formData = new FormData();
+        formData.append('spreadsheetId', SPREADSHEET_ID);
+        formData.append('sheetName', SHEET_NAME);
+        formData.append('driveFolderId', DRIVE_FOLDER_ID);
+        formData.append('action', 'insert');
+        
+        const fields = {
+            'SL': document.getElementById('notAvailSl')?.value || '',
+            'DATE': document.getElementById('notAvailDate')?.value || '',
+            'LR /CONSIGNMENT NO': document.getElementById('notLrNo')?.value || '',
+            'INVOICE NO/REFERENCE NO': document.getElementById('notInvoiceNo')?.value || '',
+            'CONSIGNEE NAME': document.getElementById('notConsigneeName')?.value || '',
+            'VEHICLE NO': document.getElementById('notVehicleNo')?.value || '',
+            'TRUCK TYPE': document.getElementById('notTruckType')?.value || '',
+            'DRIVER NAME': document.getElementById('notDriverName')?.value || '',
+            'FROM': document.getElementById('notFromLocation')?.value || '',
+            'DESTINATION': document.getElementById('notDestination')?.value || '',
+            'BOXES': document.getElementById('notBoxes')?.value || '',
+            'START TIME': document.getElementById('notStartTime')?.value || '',
+            'END TIME': document.getElementById('notEndTime')?.value || ''
+        };
+        
+        for (const [k, v] of Object.entries(fields)) {
+            formData.append(k, v || '');
+        }
+        
+        formData.append('fileCount', '0');
+        
+        const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            showCustomAlert('success', 'Success!', 'Trip Saved', 
+                'Trip details have been saved successfully to the Google Sheet.', null);
+            resetNotAvailableForm();
+            await updateSlAndTrip();
+            await fetchAllData();
+        } else {
+            throw new Error(result.message || 'Failed to save trip');
+        }
+    } catch (error) {
+        console.error('Error saving trip:', error);
+        showCustomAlert('error', 'Error!', 'Failed to Save', error.message, null);
+    } finally {
+        if (loading) loading.classList.remove('active');
+    }
+}
+
+// ======================== EVENT LISTENERS SETUP ========================
+
+function setupEventListeners() {
+    // Date change listener for Trip Available form
+    const availDateField = document.getElementById('availDate');
+    if (availDateField) {
+        availDateField.addEventListener('change', async function(e) {
+            const selectedDate = this.value;
+            if (selectedDate) {
+                // Validate future date
+                if (new Date(selectedDate) > new Date()) {
+                    const dateError = document.getElementById('availDateError');
+                    if (dateError) dateError.classList.add('show');
+                    this.value = '';
+                    const tripNoField = document.getElementById('tripNo');
+                    if (tripNoField) tripNoField.value = '';
+                    const monthInfo = document.getElementById('monthInfo');
+                    if (monthInfo) monthInfo.classList.remove('show');
+                    return;
+                }
+                const dateError = document.getElementById('availDateError');
+                if (dateError) dateError.classList.remove('show');
+                
+                // Update trip number based on selected date
+                await updateTripNoByDate(selectedDate);
+            } else {
+                const tripNoField = document.getElementById('tripNo');
+                if (tripNoField) tripNoField.value = '';
+                const monthInfo = document.getElementById('monthInfo');
+                if (monthInfo) monthInfo.classList.remove('show');
+            }
+        });
+    }
+    
+    // KM calculation listeners
+    const startKmField = document.getElementById('startKm');
+    const endKmField = document.getElementById('endKm');
+    if (startKmField) startKmField.addEventListener('input', calculateKmRun);
+    if (endKmField) endKmField.addEventListener('input', calculateKmRun);
+    
+    // Time picker listeners
+    const startTimeField = document.getElementById('startTime');
+    const endTimeField = document.getElementById('endTime');
+    const notStartTimeField = document.getElementById('notStartTime');
+    const notEndTimeField = document.getElementById('notEndTime');
+    
+    if (startTimeField) startTimeField.addEventListener('click', () => openTimePicker(startTimeField));
+    if (endTimeField) endTimeField.addEventListener('click', () => openTimePicker(endTimeField));
+    if (notStartTimeField) notStartTimeField.addEventListener('click', () => openTimePicker(notStartTimeField));
+    if (notEndTimeField) notEndTimeField.addEventListener('click', () => openTimePicker(notEndTimeField));
+    
+    // Trip type selection - FIXED VERSION
+const tripSelect = document.getElementById('tripTypeSelect');
+const availableFormDiv = document.getElementById('tripAvailableForm');
+const notAvailableFormDiv = document.getElementById('tripNotAvailableForm');
+
+if (tripSelect) {
+    tripSelect.addEventListener('change', async function() {
+        const selectedValue = this.value;
+        
+        if (selectedValue === 'available') {
+            // Hide not available form
+            if (notAvailableFormDiv) notAvailableFormDiv.classList.remove('active');
+            
+            // Show and initialize available form
+            if (availableFormDiv) {
+                availableFormDiv.classList.add('active');
+                
+                // Force re-initialization of available form
+                await updateSlAndTrip();
+                
+                const currentDate = document.getElementById('availDate')?.value;
+                if (currentDate) {
+                    await updateTripNoByDate(currentDate);
+                } else {
+                    // If no date selected, set trip number to empty
+                    const tripNoField = document.getElementById('tripNo');
+                    if (tripNoField) tripNoField.value = '';
+                }
+                
+                // Trigger any pending calculations
+                calculateKmRun();
+                
+                // Ensure file status is properly displayed
+                const availFileInput = document.getElementById('availFile');
+                const fileStatus = document.getElementById('availFileStatus');
+                if (availFileInput && availFileInput.files && availFileInput.files.length > 0 && fileStatus) {
+                    fileStatus.textContent = `✓ ${availFileInput.files[0].name} selected`;
+                    fileStatus.classList.add('show');
+                }
+            }
+            
+        } else if (selectedValue === 'notavailable') {
+            // Hide available form
+            if (availableFormDiv) availableFormDiv.classList.remove('active');
+            
+            // Show and initialize not available form
+            if (notAvailableFormDiv) {
+                notAvailableFormDiv.classList.add('active');
+                await updateSlAndTrip();
+                
+                // Set default start time if empty
+                const notStartTime = document.getElementById('notStartTime');
+                if (notStartTime && !notStartTime.value) {
+                    notStartTime.value = '09:00 AM';
+                }
+            }
+            
+        } else {
+            // Hide both forms when no selection
+            if (availableFormDiv) availableFormDiv.classList.remove('active');
+            if (notAvailableFormDiv) notAvailableFormDiv.classList.remove('active');
+        }
+    });
+    
+    // Trigger initial state if there's a default selection
+    if (tripSelect.value === 'available') {
+        setTimeout(() => {
+            tripSelect.dispatchEvent(new Event('change'));
+        }, 100);
+    }
+}
+
+        // Add this function to initialize form visibility state
+function initializeFormVisibility() {
+    const tripSelect = document.getElementById('tripTypeSelect');
+    const availableFormDiv = document.getElementById('tripAvailableForm');
+    const notAvailableFormDiv = document.getElementById('tripNotAvailableForm');
+    
+    // Ensure both forms are hidden initially
+    if (availableFormDiv) availableFormDiv.classList.remove('active');
+    if (notAvailableFormDiv) notAvailableFormDiv.classList.remove('active');
+    
+    // If there's a preselected value, trigger the change event
+    if (tripSelect && tripSelect.value) {
+        setTimeout(() => {
+            tripSelect.dispatchEvent(new Event('change'));
+        }, 100);
+    }
+}
+    
+    // Form submissions
+    const availableForm = document.getElementById('availableForm');
+    const notAvailableForm = document.getElementById('notAvailableForm');
+    
+    if (availableForm) availableForm.addEventListener('submit', handleAvailableFormSubmit);
+    if (notAvailableForm) notAvailableForm.addEventListener('submit', handleNotAvailableFormSubmit);
+    
+    // File input change listener
+    const availFileInput = document.getElementById('availFile');
+    if (availFileInput) {
+        availFileInput.addEventListener('change', function(e) {
+            const status = document.getElementById('availFileStatus');
+            if (status && e.target.files && e.target.files[0]) {
+                status.textContent = `✓ ${e.target.files[0].name} selected (${(e.target.files[0].size / 1024).toFixed(2)} KB)`;
+                status.classList.add('show');
+            } else if (status) {
+                status.classList.remove('show');
+            }
+        });
+    }
+    
+    // Holiday checkbox
+    const holidayCheckbox = document.getElementById('holidayCheckbox');
+    if (holidayCheckbox) {
+        holidayCheckbox.addEventListener('change', async function() {
+            if (this.checked) {
+                await openHolidayModal();
+            }
+        });
+    }
+    
+    // Modal close on outside click
+    window.onclick = function(event) {
+        const holidayModal = document.getElementById('holidayModal');
+        const timePickerModal = document.getElementById('timePickerModal');
+        
+        if (event.target === holidayModal) {
+            closeHolidayModal();
+        }
+        if (event.target === timePickerModal) {
+            closeTimePicker();
+        }
+    };
+}
+
+// ======================== INITIALIZATION ========================
+
+async function init() {
+    // Set max dates
+    const today = new Date().toISOString().split('T')[0];
+    
+    const availDateField = document.getElementById('availDate');
+    const notAvailDateField = document.getElementById('notAvailDate');
+    const holidayDateField = document.getElementById('holidayDate');
+    
+    if (availDateField) availDateField.max = today;
+    if (notAvailDateField) notAvailDateField.max = today;
+    if (holidayDateField) {
+        holidayDateField.max = today;
+        holidayDateField.value = today;
+    }
+    
+    // Fetch data and setup autocomplete
+    await fetchAllData();
+    
+    // Setup all autocomplete fields
+    setupAutocomplete('consigneeName', 'consigneeDropdown', consigneeNames);
+    setupAutocomplete('availVehicleNo', 'availVehicleDropdown', vehicleNos);
+    setupAutocomplete('truckType', 'truckTypeDropdown', truckTypes);
+    setupAutocomplete('availDriverName', 'availDriverDropdown', driverNames);
+    setupAutocomplete('fromLocation', 'fromDropdown', fromLocations);
+    setupAutocomplete('availDestination', 'availDestDropdown', destinations);
+    setupAutocomplete('notConsigneeName', 'notConsigneeDropdown', consigneeNames);
+    setupAutocomplete('notVehicleNo', 'notVehicleDropdown', vehicleNos);
+    setupAutocomplete('notTruckType', 'notTruckTypeDropdown', truckTypes);
+    setupAutocomplete('notDriverName', 'notDriverDropdown', driverNames);
+    setupAutocomplete('notFromLocation', 'notFromDropdown', fromLocations);
+    setupAutocomplete('notDestination', 'notDestDropdown', destinations);
+    
+    // Initialize SL and trip number
+    await updateSlAndTrip();
+    
+    // Setup all event listeners
+    setupEventListeners();
+	
+	// Initialize form visibility
+    initializeFormVisibility();
+}
+
+// Start the application when DOM is loaded
+document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

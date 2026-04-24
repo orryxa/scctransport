@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Trip Management System - Complete Trip Details</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            padding: 28px 32px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        /* Holiday Checkbox Styles - Right Side Corner */
+        .holiday-checkbox-container {
+            position: absolute;
+            top: 28px;
+            right: 32px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .holiday-checkbox-container:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .holiday-checkbox-container input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #1a73e8;
+        }
+
+        .holiday-checkbox-container label {
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .holiday-checkbox-container {
+                position: static;
+                margin-top: 16px;
+                justify-content: center;
+                background: rgba(255, 255, 255, 0.15);
+            }
+            .header {
+                text-align: center;
+                padding-bottom: 20px;
+            }
+        }
+
+        .form-container {
+            padding: 32px;
+        }
+
+        /* Grid Layout */
+        .form-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        @media (min-width: 1024px) {
+            .form-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .full-width {
+                grid-column: span 3;
+            }
+            .double-width {
+                grid-column: span 2;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .full-width {
+                grid-column: span 2;
+            }
+            .double-width {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .full-width, .double-width {
+                grid-column: span 1;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1f2937;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label .optional {
+            color: #6b7280;
+            font-size: 11px;
+            font-weight: normal;
+            text-transform: none;
+        }
+
+        .form-group label .calculated {
+            color: #1a73e8;
+            font-size: 10px;
+            font-weight: normal;
+            margin-left: 6px;
+            text-transform: none;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            background: #ffffff;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+
+        .form-group input.calculated-field {
+            background-color: #f8fafc;
+            font-weight: 500;
+            color: #1a73e8;
+            border-color: #e2e8f0;
+        }
+
+        .form-group input:read-only {
+            background-color: #f8fafc;
+            cursor: default;
+        }
+
+        /* Toggle Button Style for Mileage */
+        .mileage-toggle {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .toggle-btn {
+            padding: 8px 20px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 40px;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            color: #6b7280;
+        }
+
+        .toggle-btn.active {
+            background: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+        }
+
+        .toggle-btn:hover:not(.active) {
+            background: #f0f7ff;
+            border-color: #1a73e8;
+        }
+
+        /* Autocomplete Dropdown Styles */
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 4px;
+        }
+
+        .autocomplete-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .autocomplete-item:hover {
+            background: #f0f7ff;
+            color: #1a73e8;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 11px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .file-group {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 16px;
+            border: 1.5px dashed #d1d5db;
+            transition: all 0.2s;
+        }
+
+        .file-group:hover {
+            border-color: #1a73e8;
+            background: #f5f9ff;
+        }
+
+        .file-group label {
+            color: #1a73e8;
+        }
+
+        .file-info {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 6px;
+        }
+
+        .file-status {
+            font-size: 12px;
+            margin-top: 8px;
+            color: #10b981;
+            display: none;
+        }
+
+        .file-status.show {
+            display: block;
+        }
+
+        .button-group {
+            margin-top: 32px;
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            box-shadow: 0 2px 6px rgba(26, 115, 232, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(26, 115, 232, 0.35);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        /* Holiday Popup Modal */
+        .holiday-modal {
+            display: none;
+            position: fixed;
+            z-index: 10001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .holiday-modal.active {
+            display: flex;
+        }
+
+        .holiday-modal-content {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 500px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalFadeIn 0.25s ease-out;
+            position: relative;
+            z-index: 10002;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .holiday-modal-header {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .holiday-modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .close-holiday-modal {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .close-holiday-modal:hover {
+            transform: rotate(90deg);
+        }
+
+        .holiday-modal-body {
+            padding: 24px;
+        }
+
+        .holiday-form-group {
+            margin-bottom: 20px;
+        }
+
+        .holiday-form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            color: #1f2937;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .holiday-form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .holiday-form-group input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+
+        .holiday-form-group input:disabled {
+            background-color: #f8fafc;
+            cursor: not-allowed;
+        }
+
+        .holiday-btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .btn-holiday-save {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-holiday-save:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+        }
+
+        .btn-holiday-save:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-holiday-cancel {
+            background: #f3f4f6;
+            color: #374151;
+            padding: 10px 24px;
+            border: 1px solid #e5e7eb;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-holiday-cancel:hover:not(:disabled) {
+            background: #e5e7eb;
+        }
+
+        /* Modal-specific loading overlay */
+        .holiday-modal-loading {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 10003;
+            justify-content: center;
+            align-items: center;
+            border-radius: 24px;
+        }
+
+        .holiday-modal-loading.active {
+            display: flex;
+        }
+
+        .modal-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Custom Alert Popup */
+        .custom-alert {
+            display: none;
+            position: fixed;
+            z-index: 10010;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .custom-alert.active {
+            display: flex;
+        }
+
+        .custom-alert-content {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 420px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.25s ease-out;
+            text-align: center;
+        }
+
+        .custom-alert-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 20px;
+        }
+
+        .custom-alert-header.error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .custom-alert-header.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .custom-alert-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .custom-alert-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .custom-alert-body {
+            padding: 24px;
+            text-align: left;
+        }
+
+        .custom-alert-body .alert-details {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 12px;
+            margin: 16px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .custom-alert-body .alert-details strong {
+            color: #1a73e8;
+        }
+
+        .custom-alert-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: center;
+        }
+
+        .alert-close-btn {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            padding: 12px 32px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .alert-close-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+        }
+
+        /* Global loading overlay */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            background: white;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            background: #10b981;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: none;
+            animation: slideDown 0.3s ease;
+            font-size: 14px;
+        }
+
+        .error-message-box {
+            background: #ef4444;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: none;
+            animation: slideDown 0.3s ease;
+            font-size: 14px;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-12px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .info-hint {
+            font-size: 10px;
+            color: #6b7280;
+            margin-top: 6px;
+        }
+
+        .vehicle-format-hint {
+            font-size: 10px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 20px;
+            }
+            .btn {
+                width: 100%;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+            .header h1 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Custom Alert Popup -->
+    <div id="customAlert" class="custom-alert">
+        <div class="custom-alert-content">
+            <div class="custom-alert-header" id="alertHeader">
+                <h3 id="alertTitle">Success</h3>
+                <p id="alertSubtitle">Operation completed</p>
+            </div>
+            <div class="custom-alert-body">
+                <div id="alertMessage">Your action was successful!</div>
+                <div id="alertDetails" class="alert-details" style="display: none;"></div>
+            </div>
+            <div class="custom-alert-footer">
+                <button class="alert-close-btn" onclick="closeCustomAlertAndReset()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🚛 Trip Management System</h1>
+            <p>Complete trip details with smart calculations and autocomplete</p>
+            <div class="holiday-checkbox-container">
+                <input type="checkbox" id="holidayCheckbox">
+                <label for="holidayCheckbox">🎉 Holiday</label>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <div id="successMessage" class="success-message"></div>
+            <div id="errorMessage" class="error-message-box"></div>
+
+            <form id="tripForm" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>SL</label>
+                        <input type="text" id="sl" readonly style="background: #f8fafc;">
+                    </div>
+                    <div class="form-group">
+                        <label>DATE</label>
+                        <input type="date" id="tripDate" max="">
+                        <div class="error-message" id="dateError">Future dates not allowed</div>
+                    </div>
+                    <div class="form-group">
+                        <label>LR NO</label>
+                        <input type="text" id="lrNo" placeholder="Enter LR Number">
+                    </div>
+                    <div class="form-group" id="vehicleGroup">
+                        <label>VEHICLE NO</label>
+                        <input type="text" id="vehicleNo" placeholder="AA 00 AA 0000" autocomplete="off" maxlength="15">
+                        <div id="vehicleDropdown" class="autocomplete-list" style="display: none;"></div>
+                        <div class="vehicle-format-hint">Format: AA 00 AA 0000 (e.g., MH 12 AB 1234)</div>
+                    </div>
+                    <div class="form-group" id="driverGroup">
+                        <label>DRIVER NAME</label>
+                        <input type="text" id="driverName" placeholder="Start typing driver name..." autocomplete="off">
+                        <div id="driverDropdown" class="autocomplete-list" style="display: none;"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>MILEAGE</label>
+                        <div class="mileage-toggle">
+                            <button type="button" id="mileageFixBtn" class="toggle-btn active">FIX</button>
+                            <button type="button" id="mileageManualBtn" class="toggle-btn">Manual Entry</button>
+                        </div>
+                        <input type="text" id="mileage" placeholder="FIX (Fixed mileage) or enter value" value="FIX">
+                        <div class="info-hint">Select "FIX" for fixed mileage or "Manual Entry" to type custom value</div>
+                    </div>
+                    <div class="form-group">
+                        <label>DESTINATION</label>
+                        <input type="text" id="destination" placeholder="Enter destination">
+                    </div>
+                    <div class="form-group">
+                        <label>OPENING KM</label>
+                        <input type="number" id="openingKm" step="1" placeholder="Opening kilometer reading">
+                    </div>
+                    <div class="form-group">
+                        <label>CLOSING KM</label>
+                        <input type="number" id="closingKm" step="1" placeholder="Closing kilometer reading">
+                    </div>
+                    <div class="form-group">
+                        <label>KM <span class="calculated">(Auto Rounded)</span></label>
+                        <input type="number" id="km" readonly class="calculated-field" placeholder="Auto calculated">
+                    </div>
+                    <div class="form-group">
+                        <label>CNG OR DIESEL RATE</label>
+                        <input type="number" id="fuelRate" step="0.01" placeholder="Rate per unit" value="90.26">
+                    </div>
+                    <div class="form-group">
+                        <label>AMOUNT <span class="calculated">(Auto Rounded/Manual)</span></label>
+                        <input type="number" id="amount" step="1" placeholder="Auto calculated or type manually" class="calculated-field">
+                        <div class="info-hint">Auto-calculates and rounds to nearest whole number</div>
+                    </div>
+					
+					<div class="form-group">
+                        <label>TRIP ADVANCE</label>
+                        <input type="number" id="TripAdv" step="0.01" placeholder="Trip Advance Amount">
+                    </div>
+					
+                    <div class="form-group">
+                        <label>L and UL (₹)</label>
+                        <input type="number" id="lAndUl" step="0.01" placeholder="Loading & Unloading charges">
+                    </div>
+                    <div class="form-group">
+                        <label>DRIVER BATA (₹)</label>
+                        <input type="number" id="driverBata" step="0.01" placeholder="Driver bata amount">
+                    </div>
+                    <div class="form-group">
+                        <label>OTHER EXP (₹)</label>
+                        <input type="number" id="otherExp" step="0.01" placeholder="Other expenses">
+                    </div>
+                    <div class="form-group">
+                        <label>TOTAL AMOUNT <span class="calculated">(Auto Rounded)</span></label>
+                        <input type="number" id="totalAmount" readonly class="calculated-field" placeholder="Auto calculated">
+                    </div>
+                    <div class="form-group">
+                        <label>ACTUAL INDENT (₹)</label>
+                        <input type="number" id="actualIndent" step="0.01" placeholder="Actual indent amount">
+                    </div>
+                    <div class="form-group">
+                        <label>OTHER EXP REMARKS</label>
+                        <input type="text" id="otherExpRemarks" placeholder="Remarks for other expenses">
+                    </div>
+                    <div class="form-group">
+                        <label>POD STATUS</label>
+                        <input type="text" id="podStatus" placeholder="POD status">
+                    </div>
+                    <div class="form-group">
+                        <label>DRIVER DIFFERENCE AMOUNT <span class="calculated">(Auto Rounded)</span></label>
+                        <input type="number" id="driverDifference" readonly class="calculated-field" placeholder="Auto calculated">
+                    </div>
+                    <div class="form-group file-group full-width">
+                        <label>FILE</label>
+                        <input type="file" id="tripFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                        <div class="file-info">Supported: PDF, JPG, PNG, DOC (Max 5MB)</div>
+                        <div class="file-status" id="fileStatus"></div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>NOTE</label>
+                        <textarea id="note" rows="3" placeholder="Any additional notes or remarks about this trip"></textarea>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary" onclick="resetTripForm()">Reset Form</button>
+                    <button type="submit" class="btn btn-primary">Save Trip Details</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Holiday Popup Modal -->
+    <div id="holidayModal" class="holiday-modal">
+        <div class="holiday-modal-content">
+            <div class="holiday-modal-loading" id="holidayModalLoading">
+                <div class="modal-spinner"></div>
+            </div>
+            <div class="holiday-modal-header">
+                <h3>🎉 Add Holiday</h3>
+                <span class="close-holiday-modal" onclick="closeHolidayModal()">&times;</span>
+            </div>
+            <div class="holiday-modal-body">
+                <div class="holiday-form-group">
+                    <label>SL</label>
+                    <input type="text" id="holidaySl" readonly style="background: #f8fafc;">
+                </div>
+                <div class="holiday-form-group">
+                    <label>DATE</label>
+                    <input type="date" id="holidayDate" max="">
+                    <div class="error-message" id="holidayDateError">Future dates not allowed</div>
+                </div>
+                <div class="holiday-form-group">
+                    <label>HOLIDAY NAME</label>
+                    <input type="text" id="holidayName" value="Sunday" placeholder="Enter holiday name">
+                </div>
+                <div class="holiday-btn-group">
+                    <button type="button" class="btn-holiday-cancel" id="holidayCancelBtn" onclick="closeHolidayModal()">Cancel</button>
+                    <button type="button" class="btn-holiday-save" id="holidaySaveBtn" onclick="saveHoliday()">Save Holiday</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ======================== CONFIGURATION ========================
+        const SPREADSHEET_ID = '1FD2a8gQnymefWKmp0A4A0LTtVtuPZ0DXVaN-JK0sRCs';
+        const SHEET_NAME = 'CamTaloja_3106';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5NBh26tyNs3Ae7UiyBThu8tTV3xFV21pJR16WnPBXnNvzKRyyLYKsmShdln9yRRexUA/exec';
+        const DRIVE_FOLDER_ID = '1KCS4l-0n8D-kjaZYmAHJsPKGT_7aj4b4';
+
+        // Data storage for autocomplete
+        let uniqueVehicleNos = [];
+        let uniqueDriverNames = [];
+        let isMileageFixMode = true;
+
+        // Custom Alert Function with auto reset
+        let pendingResetCallback = null;
+
+        function showCustomAlert(type, title, subtitle, message, details = null, onClose = null) {
+            const alertElement = document.getElementById('customAlert');
+            const headerElement = document.getElementById('alertHeader');
+            const titleElement = document.getElementById('alertTitle');
+            const subtitleElement = document.getElementById('alertSubtitle');
+            const messageElement = document.getElementById('alertMessage');
+            const detailsElement = document.getElementById('alertDetails');
+            
+            headerElement.className = 'custom-alert-header ' + type;
+            titleElement.textContent = title;
+            subtitleElement.textContent = subtitle;
+            messageElement.textContent = message;
+            
+            if (details) {
+                detailsElement.innerHTML = details;
+                detailsElement.style.display = 'block';
+            } else {
+                detailsElement.style.display = 'none';
+            }
+            
+            pendingResetCallback = onClose;
+            alertElement.classList.add('active');
+        }
+
+        function closeCustomAlertAndReset() {
+            const alertElement = document.getElementById('customAlert');
+            alertElement.classList.remove('active');
+            if (pendingResetCallback) {
+                pendingResetCallback();
+                pendingResetCallback = null;
+            }
+        }
+
+        // Reset form function (same as the Reset Form button)
+        function resetTripForm() {
+            document.getElementById('tripForm').reset();
+            const todayDate = new Date().toISOString().split('T')[0];
+            document.getElementById('tripDate').value = todayDate;
+            document.getElementById('km').value = '';
+            document.getElementById('totalAmount').value = '';
+            document.getElementById('driverDifference').value = '';
+            document.getElementById('fuelRate').value = '90.26';
+            document.getElementById('fileStatus').classList.remove('show');
+            const amountFieldEl = document.getElementById('amount');
+            amountFieldEl.removeAttribute('data-manual');
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            setMileageMode('fix');
+            updateSl();
+        }
+
+        // Set max date to today
+        const today = new Date().toISOString().split('T')[0];
+        const dateInput = document.getElementById('tripDate');
+        dateInput.setAttribute('max', today);
+        dateInput.value = today;
+
+        const holidayDateInput = document.getElementById('holidayDate');
+        holidayDateInput.setAttribute('max', today);
+        holidayDateInput.value = today;
+
+        // ======================== HOLIDAY CHECKBOX FUNCTIONALITY ========================
+        const holidayCheckbox = document.getElementById('holidayCheckbox');
+        const holidayModal = document.getElementById('holidayModal');
+        const holidaySaveBtn = document.getElementById('holidaySaveBtn');
+        const holidayCancelBtn = document.getElementById('holidayCancelBtn');
+        const holidayModalLoading = document.getElementById('holidayModalLoading');
+
+        holidayCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                openHolidayModal();
+            }
+        });
+
+        function openHolidayModal() {
+            resetHolidayForm();
+            getNextHolidaySl().then(sl => {
+                document.getElementById('holidaySl').value = sl;
+            });
+            holidayModal.classList.add('active');
+        }
+
+        function resetHolidayForm() {
+            document.getElementById('holidayDate').value = today;
+            document.getElementById('holidayName').value = 'Sunday';
+            document.getElementById('holidayDateError').classList.remove('show');
+            holidaySaveBtn.disabled = false;
+            holidayCancelBtn.disabled = false;
+        }
+
+        function closeHolidayModal() {
+            holidayModal.classList.remove('active');
+            holidayCheckbox.checked = false;
+            resetHolidayForm();
+        }
+
+        async function getNextHolidaySl() {
+            try {
+                const response = await fetch(`${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`);
+                const data = await response.json();
+                if (data.status === 'success' && data.data) {
+                    return data.data.length + 1;
+                }
+                return 1;
+            } catch (error) {
+                console.error('Error fetching SL for holiday:', error);
+                return 1;
+            }
+        }
+
+        async function saveHoliday() {
+            const holidayDate = document.getElementById('holidayDate').value;
+            const holidayName = document.getElementById('holidayName').value.trim();
+            
+            if (holidayDate && new Date(holidayDate) > new Date()) {
+                document.getElementById('holidayDateError').classList.add('show');
+                return;
+            }
+            document.getElementById('holidayDateError').classList.remove('show');
+            
+            if (!holidayName) {
+                showCustomAlert('error', 'Validation Error', 'Please check', 'Holiday name is required', null, null);
+                return;
+            }
+            
+            holidaySaveBtn.disabled = true;
+            holidayCancelBtn.disabled = true;
+            holidayModalLoading.classList.add('active');
+            
+            try {
+                const formData = new FormData();
+                formData.append('spreadsheetId', SPREADSHEET_ID);
+                formData.append('sheetName', SHEET_NAME);
+                formData.append('driveFolderId', DRIVE_FOLDER_ID);
+                formData.append('action', 'insert');
+                formData.append('SL', document.getElementById('holidaySl').value);
+                formData.append('DATE', holidayDate);
+                formData.append('DRIVER NAME', holidayName);
+                formData.append('fileCount', '0');
+                
+                const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    const details = `<strong>📅 Date:</strong> ${holidayDate}<br><strong>🎉 Holiday Name:</strong> ${holidayName}`;
+                    showCustomAlert('success', 'Holiday Saved!', 'Successfully recorded', 'The holiday has been added to the Google Sheet.', details, () => {
+                        closeHolidayModal();
+                        resetHolidayForm();
+                    });
+                } else {
+                    throw new Error(result.message || 'Failed to save holiday');
+                }
+            } catch (error) {
+                showCustomAlert('error', 'Error', 'Failed to save', error.message, null, null);
+                holidaySaveBtn.disabled = false;
+                holidayCancelBtn.disabled = false;
+            } finally {
+                holidayModalLoading.classList.remove('active');
+            }
+        }
+
+        window.onclick = function(event) {
+            if (event.target === holidayModal) {
+                closeHolidayModal();
+            }
+        }
+
+        // ======================== VEHICLE NUMBER FORMATTING ========================
+        function formatVehicleNumber(value) {
+            let formatted = value.toUpperCase();
+            formatted = formatted.replace(/[^A-Z0-9]/g, '');
+            if (formatted.length >= 2 && formatted.length < 4) {
+                formatted = formatted.slice(0, 2) + ' ' + formatted.slice(2);
+            } else if (formatted.length >= 4 && formatted.length < 6) {
+                formatted = formatted.slice(0, 2) + ' ' + formatted.slice(2, 4) + ' ' + formatted.slice(4);
+            } else if (formatted.length >= 6 && formatted.length < 10) {
+                formatted = formatted.slice(0, 2) + ' ' + formatted.slice(2, 4) + ' ' + formatted.slice(4, 6) + ' ' + formatted.slice(6);
+            } else if (formatted.length >= 10) {
+                formatted = formatted.slice(0, 2) + ' ' + formatted.slice(2, 4) + ' ' + formatted.slice(4, 6) + ' ' + formatted.slice(6, 10);
+            }
+            return formatted;
+        }
+
+        const vehicleNoInput = document.getElementById('vehicleNo');
+        vehicleNoInput.addEventListener('input', function(e) {
+            let cursorPosition = this.selectionStart;
+            let rawValue = this.value.replace(/\s/g, '');
+            let formattedValue = formatVehicleNumber(rawValue);
+            this.value = formattedValue;
+            let newPosition = cursorPosition;
+            if (formattedValue.length > rawValue.length + Math.floor(rawValue.length / 3)) {
+                newPosition = cursorPosition + 1;
+            }
+            this.setSelectionRange(newPosition, newPosition);
+        });
+
+        // ======================== FETCH EXISTING DATA FOR AUTOCOMPLETE ========================
+        async function fetchExistingData() {
+            try {
+                const response = await fetch(`${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`);
+                const data = await response.json();
+                if (data.status === 'success' && data.data && data.data.length > 0) {
+                    const vehicles = data.data.map(row => row['VEHICLE NO']).filter(v => v && v.toString().trim() !== '');
+                    uniqueVehicleNos = [...new Set(vehicles)].sort();
+                    const drivers = data.data.map(row => row['DRIVER NAME']).filter(d => d && d.toString().trim() !== '');
+                    uniqueDriverNames = [...new Set(drivers)].sort();
+                }
+            } catch (error) {
+                console.error('Error fetching autocomplete data:', error);
+            }
+        }
+
+        function setupAutocomplete(inputId, dropdownId, dataList) {
+            const input = document.getElementById(inputId);
+            const dropdown = document.getElementById(dropdownId);
+            if (!input || !dropdown) return;
+            input.addEventListener('input', function() {
+                const value = this.value.toLowerCase().trim();
+                if (value === '') {
+                    dropdown.style.display = 'none';
+                    return;
+                }
+                const filtered = dataList.filter(item => item.toLowerCase().includes(value));
+                if (filtered.length > 0) {
+                    dropdown.innerHTML = '';
+                    filtered.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'autocomplete-item';
+                        div.textContent = item;
+                        div.onclick = () => {
+                            input.value = item;
+                            dropdown.style.display = 'none';
+                        };
+                        dropdown.appendChild(div);
+                    });
+                    dropdown.style.display = 'block';
+                } else {
+                    dropdown.style.display = 'none';
+                }
+            });
+            document.addEventListener('click', function(e) {
+                if (e.target !== input && !dropdown.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+        }
+
+        function roundToNearest(value) {
+            return Math.round(value);
+        }
+
+        function calculateKm() {
+            const openingKm = parseFloat(document.getElementById('openingKm').value);
+            const closingKm = parseFloat(document.getElementById('closingKm').value);
+            const kmField = document.getElementById('km');
+            if (!isNaN(openingKm) && !isNaN(closingKm) && openingKm !== '' && closingKm !== '') {
+                const km = closingKm - openingKm;
+                if (km >= 0) {
+                    kmField.value = roundToNearest(km);
+                } else {
+                    kmField.value = '';
+                }
+            } else {
+                kmField.value = '';
+            }
+            calculateAmount();
+        }
+
+        function calculateAmount() {
+            const km = parseFloat(document.getElementById('km').value);
+            const fuelRate = parseFloat(document.getElementById('fuelRate').value);
+            const mileageValue = mileageInput.value;
+            const amountFieldEl = document.getElementById('amount');
+            if (isMileageFixMode) {
+                if (!amountFieldEl.hasAttribute('data-manual')) {
+                    amountFieldEl.value = '';
+                }
+                calculateTotalAmount();
+                return;
+            }
+            const mileageNum = parseFloat(mileageValue);
+            if (!isNaN(km) && !isNaN(mileageNum) && !isNaN(fuelRate) && km !== '' && mileageValue !== '' && fuelRate !== '') {
+                if (mileageNum > 0) {
+                    const calculatedAmount = (km / mileageNum) * fuelRate;
+                    if (!amountFieldEl.hasAttribute('data-manual')) {
+                        amountFieldEl.value = roundToNearest(calculatedAmount);
+                    }
+                }
+            } else if (!amountFieldEl.hasAttribute('data-manual')) {
+                amountFieldEl.value = '';
+            }
+            calculateTotalAmount();
+        }
+
+        function calculateTotalAmount() {
+            const amount = parseFloat(document.getElementById('amount').value) || 0;
+            const lAndUl = parseFloat(document.getElementById('lAndUl').value) || 0;
+			const TripAdv = parseFloat(document.getElementById('TripAdv').value) || 0;
+            const driverBata = parseFloat(document.getElementById('driverBata').value) || 0;
+            const otherExp = parseFloat(document.getElementById('otherExp').value) || 0;
+            const total = amount + lAndUl + TripAdv + driverBata + otherExp;
+            document.getElementById('totalAmount').value = roundToNearest(total);
+            calculateDriverDifference();
+        }
+
+        function calculateDriverDifference() {
+            const actualIndent = parseFloat(document.getElementById('actualIndent').value) || 0;
+            const totalAmount = parseFloat(document.getElementById('totalAmount').value) || 0;
+            const difference = actualIndent - totalAmount;
+            document.getElementById('driverDifference').value = roundToNearest(difference);
+        }
+
+        const amountFieldEl = document.getElementById('amount');
+        amountFieldEl.addEventListener('input', function() {
+            if (this.value !== '') {
+                this.setAttribute('data-manual', 'true');
+                const rounded = roundToNearest(parseFloat(this.value));
+                if (!isNaN(rounded)) this.value = rounded;
+            } else {
+                this.removeAttribute('data-manual');
+            }
+            calculateTotalAmount();
+        });
+
+        const fixBtn = document.getElementById('mileageFixBtn');
+        const manualBtn = document.getElementById('mileageManualBtn');
+        const mileageInput = document.getElementById('mileage');
+
+        function setMileageMode(mode) {
+            isMileageFixMode = (mode === 'fix');
+            if (isMileageFixMode) {
+                fixBtn.classList.add('active');
+                manualBtn.classList.remove('active');
+                mileageInput.value = 'FIX';
+                mileageInput.readOnly = true;
+                mileageInput.style.backgroundColor = '#f8fafc';
+            } else {
+                fixBtn.classList.remove('active');
+                manualBtn.classList.add('active');
+                mileageInput.value = '';
+                mileageInput.readOnly = false;
+                mileageInput.style.backgroundColor = '#ffffff';
+                mileageInput.placeholder = 'Enter mileage value (km/unit)';
+                mileageInput.type = 'text';
+            }
+            calculateAmount();
+        }
+
+        fixBtn.addEventListener('click', () => setMileageMode('fix'));
+        manualBtn.addEventListener('click', () => setMileageMode('manual'));
+        setMileageMode('fix');
+
+        document.getElementById('openingKm').addEventListener('input', calculateKm);
+        document.getElementById('closingKm').addEventListener('input', calculateKm);
+        document.getElementById('fuelRate').addEventListener('input', calculateAmount);
+        mileageInput.addEventListener('input', () => {
+            if (!isMileageFixMode && !amountFieldEl.hasAttribute('data-manual')) {
+                calculateAmount();
+            }
+        });
+        document.getElementById('lAndUl').addEventListener('input', calculateTotalAmount);
+		document.getElementById('TripAdv').addEventListener('input', calculateTotalAmount);
+        document.getElementById('driverBata').addEventListener('input', calculateTotalAmount);
+        document.getElementById('otherExp').addEventListener('input', calculateTotalAmount);
+        document.getElementById('actualIndent').addEventListener('input', calculateDriverDifference);
+
+        async function getNextSl() {
+            try {
+                const response = await fetch(`${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`);
+                const data = await response.json();
+                if (data.status === 'success' && data.data) {
+                    return data.data.length + 1;
+                }
+                return 1;
+            } catch (error) {
+                console.error('Error fetching SL:', error);
+                return 1;
+            }
+        }
+
+        async function updateSl() {
+            const sl = await getNextSl();
+            document.getElementById('sl').value = sl;
+        }
+        updateSl();
+
+        document.getElementById('tripFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const statusDiv = document.getElementById('fileStatus');
+            if (file) {
+                statusDiv.textContent = `✓ ${file.name} selected (${(file.size / 1024).toFixed(2)} KB)`;
+                statusDiv.classList.add('show');
+            } else {
+                statusDiv.classList.remove('show');
+            }
+        });
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function validateForm() {
+            let isValid = true;
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            const tripDate = document.getElementById('tripDate').value;
+            if (tripDate && new Date(tripDate) > new Date()) {
+                document.getElementById('dateError').classList.add('show');
+                isValid = false;
+            }
+            return isValid;
+        }
+
+        document.getElementById('tripForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!validateForm()) return;
+
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+
+            try {
+                const formData = new FormData();
+                formData.append('spreadsheetId', SPREADSHEET_ID);
+                formData.append('sheetName', SHEET_NAME);
+                formData.append('driveFolderId', DRIVE_FOLDER_ID);
+                formData.append('action', 'insert');
+                
+                let mileageValue = document.getElementById('mileage').value;
+                const fields = {
+                    'SL': document.getElementById('sl').value,
+                    'DATE': document.getElementById('tripDate').value,
+                    'LR NO': document.getElementById('lrNo').value,
+                    'VEHICLE NO': document.getElementById('vehicleNo').value,
+                    'DRIVER NAME': document.getElementById('driverName').value,
+                    'MILEAGE': mileageValue,
+                    'DESTINATION': document.getElementById('destination').value,
+                    'OPENING KM': document.getElementById('openingKm').value,
+                    'CLOSING KM': document.getElementById('closingKm').value,
+                    'KM': document.getElementById('km').value,
+                    'CNG OR DIESEL RATE': document.getElementById('fuelRate').value,
+                    'AMOUNT': document.getElementById('amount').value,
+                    'L and UL': document.getElementById('lAndUl').value,
+					'TRIP ADVANCE': document.getElementById('TripAdv').value,
+                    'DRIVER BATA': document.getElementById('driverBata').value,
+                    'OTHER EXP': document.getElementById('otherExp').value,
+                    'TOTAL AMOUNT': document.getElementById('totalAmount').value,
+                    'ACTUAL INDENT': document.getElementById('actualIndent').value,
+                    'OTHER EXP REMARKS': document.getElementById('otherExpRemarks').value,
+                    'POD STATUS': document.getElementById('podStatus').value,
+                    'NOTE': document.getElementById('note').value,
+                    'DRIVER DIFFERENCE AMOUNT': document.getElementById('driverDifference').value
+                };
+
+                for (const [key, value] of Object.entries(fields)) {
+                    formData.append(key, value || '');
+                }
+
+                let fileCount = 0;
+                const fileInput = document.getElementById('tripFile');
+                if (fileInput.files && fileInput.files[0]) {
+                    const file = fileInput.files[0];
+                    const fileData = await fileToBase64(file);
+                    fileCount = 1;
+                    formData.append('fileData1', fileData);
+                    formData.append('fileName1', file.name);
+                    formData.append('fileType1', file.type);
+                    formData.append('fileColumn1', 'FILE');
+                }
+                formData.append('fileCount', fileCount);
+
+                const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    let details = `<strong>📋 SL:</strong> ${document.getElementById('sl').value}<br>`;
+                    details += `<strong>📅 Date:</strong> ${document.getElementById('tripDate').value}<br>`;
+                    details += `<strong>🚛 LR No:</strong> ${document.getElementById('lrNo').value || 'N/A'}<br>`;
+                    details += `<strong>💰 Total Amount:</strong> ₹${document.getElementById('totalAmount').value || '0'}`;
+                    if (fileCount > 0) details += `<br><strong>📄 Document uploaded successfully</strong>`;
+                    showCustomAlert('success', 'Trip Saved!', 'Successfully recorded', 'Trip details have been saved to the Google Sheet.', details, () => {
+                        resetTripForm();
+                        fetchExistingData();
+                    });
+                } else {
+                    throw new Error(result.message || 'Unknown error');
+                }
+            } catch (error) {
+                showCustomAlert('error', 'Error', 'Failed to save', error.message, null, null);
+            } finally {
+                loading.classList.remove('active');
+            }
+        });
+
+        async function init() {
+            await fetchExistingData();
+            setupAutocomplete('vehicleNo', 'vehicleDropdown', uniqueVehicleNos);
+            setupAutocomplete('driverName', 'driverDropdown', uniqueDriverNames);
+        }
+        init();
+
+        const numberFields = ['openingKm', 'closingKm', 'lAndUl', 'driverBata', 'otherExp', 'actualIndent', 'TripAdv'];
+        numberFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.addEventListener('input', function() {
+                    if (this.value < 0) this.value = 0;
+                });
+            }
+        });
+    </script>
+</body>
+</html>

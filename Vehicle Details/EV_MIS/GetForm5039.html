@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Transport Management System - Trip Manager 1039</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 12px;
+            overflow: auto;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            padding: 20px 24px;
+            text-align: center;
+        }
+
+        .header h1 { font-size: 1.4rem; margin-bottom: 4px; }
+        .header p { opacity: 0.9; font-size: 0.85rem; }
+
+        /* Enhanced Action Bar */
+        .action-bar {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #fafbfc;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(16,185,129,0.3); }
+
+        .btn-filter, .btn-sort {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+            padding: 10px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-filter:hover, .btn-sort:hover, .btn-refresh:hover {
+            background: #e5e7eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-refresh {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-holiday {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-holiday:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(245,158,11,0.3);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px 10px 38px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 40px;
+            font-size: 13px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26,115,232,0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #9ca3af;
+        }
+
+        /* Filter & Sort Dropdowns */
+        .filter-panel, .sort-panel {
+            position: relative;
+            display: inline-block;
+        }
+
+        .filter-dropdown, .sort-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            min-width: 200px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border-radius: 16px;
+            padding: 14px;
+            z-index: 100;
+            margin-top: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .filter-dropdown.show, .sort-dropdown.show {
+            display: block;
+        }
+
+        .filter-dropdown label, .sort-dropdown label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .filter-dropdown input, .sort-dropdown select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            margin-top: 6px;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .filter-dropdown button, .sort-dropdown button {
+            margin-top: 6px;
+            width: 100%;
+            padding: 8px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* Table Styles - Mobile Optimized */
+        .table-container {
+            padding: 0 16px 20px 16px;
+            overflow-x: auto;
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            min-width: 500px;
+            border-collapse: collapse;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        th {
+            background: #f8fafc;
+            text-align: left;
+            font-weight: 600;
+            color: #1e3c72;
+            border-bottom: 2px solid #e5e7eb;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 10px 8px;
+        }
+
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #374151;
+            font-size: 0.8rem;
+        }
+
+        tr:hover { background: #fafbff; }
+
+        .btn-view {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 11px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-view:hover { background: #0d47a1; }
+
+        .no-data { text-align: center; padding: 40px; color: #9ca3af; }
+
+        /* Page 2 - Collapsible Trip Groups */
+        .detail-page {
+            display: none;
+            padding: 16px 20px;
+        }
+
+        .detail-page.active { display: block; }
+
+        .back-btn {
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover { background: #e5e7eb; }
+
+        /* Collapsible Group Styles */
+        .trip-group {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 16px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+        .group-header {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            padding: 14px 18px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .group-header:hover { opacity: 0.95; }
+
+        .group-header h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .group-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 3px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+        }
+
+        .toggle-icon { font-size: 1.1rem; transition: transform 0.2s; }
+        .group-header.collapsed .toggle-icon { transform: rotate(-90deg); }
+
+        .group-content {
+            display: block;
+            padding: 0;
+        }
+
+        .group-header.collapsed + .group-content { display: none; }
+
+        .detail-card {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-card:last-child { border-bottom: none; }
+
+        /* Grid Layout for Desktop */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1px;
+            background: #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 10px 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .detail-label {
+            font-weight: 700;
+            color: #1e3c72;
+            min-width: 140px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .detail-value {
+            color: #374151;
+            flex: 1;
+            word-break: break-word;
+            font-size: 0.8rem;
+        }
+
+        .detail-value a { color: #1a73e8; text-decoration: none; }
+        .detail-value a:hover { text-decoration: underline; }
+
+        .card-actions {
+            margin-top: 14px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-update-card {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .btn-delete-card {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* Holiday Modal Styles */
+        .holiday-modal .modal-content {
+            max-width: 800px;
+            width: 90%;
+        }
+
+        .holiday-table-container {
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        .holiday-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .holiday-table th {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .holiday-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .holiday-table tr:hover {
+            background: #fffbeb;
+        }
+
+        .holiday-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
+            position: relative;
+            z-index: 10001;
+        }
+
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10002;
+        }
+
+        .modal-header.warning { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .modal-header.success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .modal-header.info { background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%); }
+        .modal-header.holiday { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+
+        .modal-body { padding: 20px; }
+        .modal-footer {
+            padding: 14px 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .modal-btn {
+            padding: 8px 20px;
+            border-radius: 40px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .modal-btn-confirm { background: #ef4444; color: white; }
+        .modal-btn-cancel { background: #f3f4f6; color: #374151; }
+        .modal-btn-save { background: #10b981; color: white; }
+
+        /* Update Form Grid */
+        .update-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 14px;
+        }
+
+        .update-form-group {
+            margin-bottom: 0;
+        }
+
+        .update-form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #1e3c72;
+            font-size: 0.75rem;
+        }
+
+        .update-form-group input, .update-form-group select, .update-form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .update-form-group input:focus {
+            outline: none;
+            border-color: #1a73e8;
+        }
+
+        /* Spinner */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading.active { display: flex; }
+        
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Add Trip Iframe Modal */
+        .iframe-modal .modal-content {
+            max-width: 95%;
+            width: 95%;
+            height: 90vh;
+            max-height: 90vh;
+        }
+
+        .iframe-modal .modal-body {
+            padding: 0;
+            height: calc(90vh - 65px);
+        }
+
+        .iframe-modal iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Mobile Specific Styles */
+        @media (max-width: 768px) {
+            body { padding: 8px; }
+            .header { padding: 14px 16px; }
+            .header h1 { font-size: 1.2rem; }
+            .header p { font-size: 0.75rem; }
+            
+            .action-bar { 
+                padding: 12px 14px;
+                gap: 10px;
+            }
+            
+            .btn-group { 
+                display: grid;
+                grid-template-columns: 1fr 1fr auto;
+                gap: 8px;
+                width: 100%;
+            }
+            
+            .btn-add, .btn-filter, .btn-sort, .btn-refresh, .btn-holiday {
+                padding: 8px 12px;
+                font-size: 12px;
+                justify-content: center;
+            }
+            
+            .search-box { 
+                width: 100%;
+                min-width: unset;
+            }
+            
+            .search-box input {
+                padding: 8px 12px 8px 34px;
+                font-size: 12px;
+            }
+            
+            .search-icon {
+                left: 12px;
+                font-size: 14px;
+            }
+            
+            .table-container {
+                padding: 0 12px 16px 12px;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+                font-size: 0.7rem;
+            }
+            
+            .btn-view {
+                padding: 4px 10px;
+                font-size: 10px;
+            }
+            
+            .detail-page {
+                padding: 12px 14px;
+            }
+            
+            .group-header {
+                padding: 10px 14px;
+            }
+            
+            .group-header h3 {
+                font-size: 0.85rem;
+            }
+            
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail-label {
+                min-width: 100px;
+                font-size: 0.65rem;
+            }
+            
+            .detail-value {
+                font-size: 0.75rem;
+            }
+            
+            .card-actions {
+                gap: 8px;
+            }
+            
+            .btn-update-card, .btn-delete-card {
+                padding: 5px 12px;
+                font-size: 11px;
+            }
+            
+            .update-form-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .modal-header {
+                padding: 14px 16px;
+                font-size: 1rem;
+            }
+            
+            .modal-body {
+                padding: 16px;
+            }
+            
+            .modal-footer {
+                padding: 12px 16px;
+            }
+
+            .holiday-table th,
+            .holiday-table td {
+                padding: 8px;
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+            
+            th:nth-child(3), td:nth-child(3) {
+                display: none;
+            }
+            
+            table {
+                min-width: 400px;
+            }
+            
+            .detail-label {
+                min-width: 85px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading"><div class="spinner"></div></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🚛 Transport Management System</h1>
+            <p>Trip Manager - View & Manage All Trips</p>
+        </div>
+
+        <!-- Page 1: Tabular List -->
+        <div id="page1" class="detail-page active">
+            <div class="action-bar">
+                <div class="btn-group">
+                    <button class="btn-add" id="addNewTripBtn">➕ Add New Trip</button>
+                    <button class="btn-holiday" id="showHolidayBtn">🎉 Show Holiday</button>
+                    <div class="filter-panel">
+                        <button class="btn-filter" id="filterBtn">📅 Filter</button>
+                        <div class="filter-dropdown" id="filterDropdown">
+                            <label>From Date:</label>
+                            <input type="date" id="fromDate">
+                            <label>To Date:</label>
+                            <input type="date" id="toDate">
+                            <button id="applyFilterBtn">Apply Filter</button>
+                        </div>
+                    </div>
+                    <div class="sort-panel">
+                        <button class="btn-sort" id="sortBtn">⬇️ Sort</button>
+                        <div class="sort-dropdown" id="sortDropdown">
+                            <label>Sort By:</label>
+                            <select id="sortBy">
+                                <option value="tripNo">Trip No</option>
+                                <option value="date">Date</option>
+                            </select>
+                            <label>Order:</label>
+                            <select id="sortOrder">
+                                <option value="asc">Ascending</option>
+                                <option value="desc">Descending</option>
+                            </select>
+                            <button id="applySortBtn">Apply Sort</button>
+                        </div>
+                    </div>
+                    <button class="btn-refresh" id="refreshBtn">🔄 Refresh</button>
+                </div>
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search trips...">
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="tripsTable">
+                    <thead>
+                        <tr>
+                            <th>TRIP NO</th>
+                            <th>DATE</th>
+                            <th>LR/CONSIGNMENT NO</th>
+                            <th>DRIVER NAME</th>
+                            <th>ACTION</th>
+                        </thead>
+                    <tbody id="tripsTableBody"><tr><td colspan="5" class="no-data">Loading trips...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Page 2: Collapsible Group Details (Holiday columns removed) -->
+        <div id="page2" class="detail-page">
+            <button class="back-btn" id="backToListBtn">← Back to List</button>
+            <div id="detailContainer"></div>
+        </div>
+    </div>
+
+    <!-- Alert Modal -->
+    <div id="alertModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header" id="alertHeader">Success</div>
+            <div class="modal-body" id="alertMessage">Operation completed.</div>
+            <div class="modal-footer"><button class="modal-btn modal-btn-cancel" onclick="closeAlertModal()">OK</button></div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header warning">⚠️ Confirm Delete</div>
+            <div class="modal-body">Delete this trip record? This action cannot be undone.</div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" onclick="closeConfirmModal()">Cancel</button>
+                <button class="modal-btn modal-btn-confirm" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Form Modal -->
+    <div id="updateModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header info">✏️ Update Trip Details</div>
+            <div class="modal-body" id="updateModalBody"></div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" onclick="closeUpdateModal()">Cancel</button>
+                <button class="modal-btn modal-btn-save" id="saveUpdateBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Trip Iframe Modal -->
+    <div id="addTripModal" class="modal-overlay iframe-modal">
+        <div class="modal-content">
+            <div class="modal-header info">➕ Add New Trip</div>
+            <div class="modal-body"><iframe id="addTripIframe" src="form1039.html" title="Trip Entry Form"></iframe></div>
+            <div class="modal-footer"><button class="modal-btn modal-btn-cancel" onclick="closeAddTripModal()">Close</button></div>
+        </div>
+    </div>
+
+    <!-- Holiday Modal -->
+    <div id="holidayModal" class="modal-overlay holiday-modal">
+        <div class="modal-content">
+            <div class="modal-header holiday">
+                <span class="holiday-icon">🎉</span> Holiday List
+            </div>
+            <div class="modal-body">
+                <div class="holiday-table-container">
+                    <table class="holiday-table" id="holidayTable">
+                        <thead>
+                            <tr>
+                                <th>Sr. No</th>
+                                <th>Date</th>
+                                <th>Holiday</th>
+                            </tr>
+                        </thead>
+                        <tbody id="holidayTableBody">
+                            <tr><td colspan="3" class="no-data">Loading holidays...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" onclick="closeHolidayModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+	// ======================== CONFIGURATION ========================
+const SPREADSHEET_ID = '1E2QTcv7iN_yN4CSxAhKsA2_lr0rbi43cxKqf6FsVXEs';
+const SHEET_NAME = '5039';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5NBh26tyNs3Ae7UiyBThu8tTV3xFV21pJR16WnPBXnNvzKRyyLYKsmShdln9yRRexUA/exec';
+const DRIVE_FOLDER_ID = '1KCS4l-0n8D-kjaZYmAHJsPKGT_7aj4b4';
+
+// Global variables
+let allTrips = [];
+let groupedTrips = [];
+let currentDeleteTarget = null;
+let currentUpdateTarget = { rowIndex: null, rowData: null, allColumns: [] };
+let currentFilter = { fromDate: '', toDate: '' };
+let currentSort = { by: 'tripNo', order: 'asc' };
+
+// Autocomplete data arrays
+let consigneeNames = [];
+let vehicleNos = [];
+let truckTypes = [];
+let driverNames = [];
+let fromLocations = [];
+let destinations = [];
+
+// Holiday data array - ONLY for rows that are specifically holidays
+// A row is considered a holiday ONLY if:
+// 1. TRIP NO is empty/null/undefined
+// 2. DATE is NOT empty
+// 3. DRIVER NAME contains holiday-related text (Sunday, Holiday, etc.)
+let holidayData = [];
+
+// ======================== HELPER FUNCTIONS ========================
+
+/**
+ * Escape HTML (safe rendering)
+ */
+function escapeHtml(str) { 
+    if (!str) return ''; 
+    return String(str).replace(/[&<>]/g, m => 
+        m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'
+    ); 
+}
+
+/**
+ * Check if a value is empty (null, undefined, empty string, or only whitespace)
+ */
+function isEmpty(value) {
+    return value === undefined || value === null || String(value).trim() === '';
+}
+
+/**
+ * Check if a row is a holiday row (not a trip row)
+ * A row is a holiday row if:
+ * - TRIP NO is empty AND
+ * - DATE is NOT empty AND
+ * - DRIVER NAME contains holiday-related text (case insensitive)
+ */
+function isHolidayRow(row) {
+    // Check if TRIP NO is empty
+    const tripNo = row['TRIP NO.'] || row['TRIP NO'] || row['TRIPNO'];
+    const isTripNoEmpty = isEmpty(tripNo);
+    
+    // Check if DATE is NOT empty
+    const dateValue = row['DATE'];
+    const hasDate = !isEmpty(dateValue);
+    
+    // Check if DRIVER NAME contains holiday-related text
+    const driverName = row['DRIVER NAME'] || '';
+    const holidayKeywords = ['sunday', 'holiday', 'leave', 'off', 'festival', 'celebration', 'closed', 'break'];
+    const isHolidayText = holidayKeywords.some(keyword => 
+        driverName.toString().toLowerCase().includes(keyword)
+    );
+    
+    // Also check if the driver name itself is a holiday name (Sunday, Monday, etc.)
+    const weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const isWeekday = weekdays.some(day => 
+        driverName.toString().toLowerCase().trim() === day
+    );
+    
+    // Row is a holiday if: Trip No is empty AND has date AND (has holiday text OR is a weekday)
+    return isTripNoEmpty && hasDate && (isHolidayText || isWeekday);
+}
+
+/**
+ * Extract holiday data from trips
+ * Only includes rows that meet ALL criteria:
+ * 1. TRIP NO is empty
+ * 2. DATE is NOT empty
+ * 3. DRIVER NAME contains holiday text or is a weekday name
+ */
+function extractHolidayData(trips) {
+    let holidays = [];
+    let autoSrNo = 1;
+    
+    trips.forEach((trip, index) => {
+        // First, check if this is a holiday row
+        if (isHolidayRow(trip)) {
+            // Get SL value if exists, otherwise use auto-generated number
+            let slValue = null;
+            for (let [key, value] of Object.entries(trip)) {
+                let upperKey = key.toUpperCase().trim();
+                if (upperKey === 'SL' || upperKey === 'S.L' || upperKey === 'S.L.' || 
+                    upperKey === 'SL NO' || upperKey === 'SL.NO' || upperKey === 'SERIAL NO') {
+                    slValue = value;
+                    break;
+                }
+            }
+            
+            // Get DATE value (already confirmed not empty)
+            let dateValue = trip['DATE'];
+            
+            // Get DRIVER NAME for holiday description
+            let holidayName = trip['DRIVER NAME'] || 'Holiday';
+            
+            // Use existing SL if available and not empty, otherwise use auto-generated
+            let srNo = (!isEmpty(slValue)) ? slValue : autoSrNo;
+            
+            holidays.push({
+                srNo: srNo,
+                date: formatDateDMY(dateValue),
+                holiday: holidayName,
+                originalRowIndex: index
+            });
+            
+            autoSrNo++;
+        }
+    });
+    
+    console.log('Holiday Data Extracted:', holidays);
+    return holidays;
+}
+
+/**
+ * Check if a column should be excluded from Page 2 display
+ * Excludes: SL, DATE, DRIVER NAME (these go to holiday popup)
+ */
+function shouldExcludeColumn(columnName, rowData) {
+    const upperName = columnName.toUpperCase().trim();
+    
+    // Always exclude SL and its variations
+    if (upperName === 'SL' || upperName === 'S.L' || upperName === 'S.L.' || 
+        upperName === 'SL NO' || upperName === 'SL.NO' || upperName === 'SERIAL NO') {
+        return true;
+    }
+    
+    // Always exclude DATE
+    if (upperName === 'DATE') {
+        return true;
+    }
+    
+    // Exclude DRIVER NAME only if this is a holiday row
+    if (upperName === 'DRIVER NAME') {
+        // Check if this row is a holiday row
+        if (isHolidayRow(rowData)) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+/**
+ * Convert any time format → Proper IST display (hh:mm AM/PM)
+ */
+function extractTimeOnly(timeValue) {
+    if (!timeValue) return '';
+
+    let timeString = String(timeValue).trim();
+
+    // ISO format (from Google Sheets / Apps Script)
+    if (timeString.includes('T')) {
+        try {
+            let date = new Date(timeString);
+            if (!isNaN(date.getTime())) {
+                let hours = date.getHours();
+                let minutes = date.getMinutes();
+                let period = hours >= 12 ? 'PM' : 'AM';
+                let hour12 = hours % 12 || 12;
+                return `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
+            }
+        } catch (e) {
+            console.log('ISO parse error:', e);
+        }
+    }
+
+    // Already formatted (9:00 AM / 7:03 PM)
+    let ampmMatch = timeString.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
+    if (ampmMatch) {
+        let hour = parseInt(ampmMatch[1]);
+        let minute = ampmMatch[2];
+        let period = ampmMatch[3].toUpperCase();
+        return `${hour}:${minute} ${period}`;
+    }
+
+    // 24-hour format (14:30)
+    let hr24Match = timeString.match(/^(\d{1,2}):(\d{2})$/);
+    if (hr24Match) {
+        let hour = parseInt(hr24Match[1]);
+        let minute = hr24Match[2];
+        let period = hour >= 12 ? 'PM' : 'AM';
+        let hour12 = hour % 12 || 12;
+        return `${hour12}:${minute} ${period}`;
+    }
+
+    // Excel / Google Sheets serial time (0.375 etc)
+    if (!isNaN(timeString) && timeString.includes('.')) {
+        let totalHours = parseFloat(timeString) * 24;
+        let hour = Math.floor(totalHours);
+        let minute = Math.round((totalHours - hour) * 60);
+        if (minute === 60) {
+            minute = 0;
+            hour++;
+        }
+        let period = hour >= 12 ? 'PM' : 'AM';
+        let hour12 = hour % 12 || 12;
+        return `${hour12}:${minute.toString().padStart(2, '0')} ${period}`;
+    }
+
+    return timeString;
+}
+
+function formatDateDMY(dateStr) {
+    if (!dateStr) return '';
+    try {
+        if (dateStr.match(/^\d{4}-\d{2}-\d{2}/)) {
+            let parts = dateStr.split('T')[0].split('-');
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        if (dateStr.match(/^\d{2}\/\d{2}\/\d{4}/)) return dateStr;
+        let d = new Date(dateStr);
+        if (!isNaN(d)) return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
+        return dateStr;
+    } catch(e) { return dateStr; }
+}
+
+function formatDateYMD(dateStr) {
+    if (!dateStr) return '';
+    try {
+        if (dateStr.match(/^\d{2}\/\d{2}\/\d{4}/)) {
+            let parts = dateStr.split('/');
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+        if (dateStr.match(/^\d{4}-\d{2}-\d{2}/)) return dateStr.split('T')[0];
+        let d = new Date(dateStr);
+        if (!isNaN(d)) return d.toISOString().split('T')[0];
+        return '';
+    } catch(e) { return ''; }
+}
+
+// Extract unique values for autocomplete
+function extractAutocompleteData(trips) {
+    consigneeNames = [...new Set(trips.map(r => r['CONSIGNEE NAME']).filter(v => v && v.toString().trim()))].sort();
+    vehicleNos = [...new Set(trips.map(r => r['VEHICLE NO']).filter(v => v && v.toString().trim()))].sort();
+    truckTypes = [...new Set(trips.map(r => r['TRUCK TYPE']).filter(v => v && v.toString().trim()))].sort();
+    driverNames = [...new Set(trips.map(r => r['DRIVER NAME']).filter(v => v && v.toString().trim()))].sort();
+    fromLocations = [...new Set(trips.map(r => r['FROM']).filter(v => v && v.toString().trim()))].sort();
+    destinations = [...new Set(trips.map(r => r['DESTINATION']).filter(v => v && v.toString().trim()))].sort();
+}
+
+function showLoading() { 
+    const loadingEl = document.getElementById('loading');
+    if (loadingEl) loadingEl.classList.add('active');
+}
+
+function hideLoading() { 
+    const loadingEl = document.getElementById('loading');
+    if (loadingEl) loadingEl.classList.remove('active');
+}
+
+function showAlert(msg, type='success') {
+    const modal = document.getElementById('alertModal');
+    const header = document.getElementById('alertHeader');
+    if (!modal || !header) return;
+    
+    header.textContent = type === 'success' ? '✅ Success' : (type === 'error' ? '❌ Error' : 'ℹ️ Info');
+    header.className = 'modal-header ' + (type === 'success' ? 'success' : (type === 'error' ? 'warning' : 'info'));
+    const alertMessage = document.getElementById('alertMessage');
+    if (alertMessage) alertMessage.innerHTML = msg;
+    modal.classList.add('active');
+}
+
+function closeAlertModal() { 
+    const modal = document.getElementById('alertModal');
+    if (modal) modal.classList.remove('active');
+}
+
+function closeConfirmModal() { 
+    const modal = document.getElementById('confirmModal');
+    if (modal) modal.classList.remove('active');
+    currentDeleteTarget = null;
+}
+
+function closeUpdateModal() { 
+    const modal = document.getElementById('updateModal');
+    if (modal) modal.classList.remove('active');
+    currentUpdateTarget = null;
+}
+
+function closeAddTripModal() { 
+    const modal = document.getElementById('addTripModal');
+    if (modal) modal.classList.remove('active');
+    loadAndDisplayTrips();
+}
+
+function closeHolidayModal() { 
+    const modal = document.getElementById('holidayModal');
+    if (modal) modal.classList.remove('active');
+}
+
+// Display holiday popup - ONLY shows rows that are holidays
+function showHolidayPopup() {
+    const holidayTableBody = document.getElementById('holidayTableBody');
+    if (!holidayTableBody) return;
+    
+    if (!holidayData || holidayData.length === 0) {
+        holidayTableBody.innerHTML = '<tr><td colspan="3" class="no-data">No holidays found. Holidays are identified when:<br>• TRIP NO is empty<br>• DATE is filled<br>• DRIVER NAME contains holiday text (Sunday, Holiday, etc.)</td></tr>';
+    } else {
+        let html = '';
+        holidayData.forEach(holiday => {
+            html += `
+                <tr>
+                    <td><strong>${escapeHtml(String(holiday.srNo))}</strong></td>
+                    <td><span style="font-weight: 600;">${escapeHtml(holiday.date)}</span></td>
+                    <td>${escapeHtml(holiday.holiday)}</td>
+                </tr>
+            `;
+        });
+        holidayTableBody.innerHTML = html;
+    }
+    
+    const holidayModal = document.getElementById('holidayModal');
+    if (holidayModal) holidayModal.classList.add('active');
+}
+
+// ======================== DATA FETCHING ========================
+
+async function fetchAllTrips() {
+    showLoading();
+    try {
+        let res = await fetch(`${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`);
+        let result = await res.json();
+        if (result.status === 'success' && result.data) {
+            allTrips = result.data;
+            // Extract autocomplete data
+            extractAutocompleteData(allTrips);
+            // Extract holiday data (ONLY rows that are holidays)
+            holidayData = extractHolidayData(allTrips);
+            console.log('Total Trips:', allTrips.length);
+            console.log('Holiday Rows Found:', holidayData.length);
+            return allTrips;
+        } else throw new Error(result.message);
+    } catch(err) { 
+        showAlert('Error: '+err.message, 'error'); 
+        return []; 
+    } finally { 
+        hideLoading(); 
+    }
+}
+
+function groupTripsByTripNo(trips) {
+    let groups = [];
+    let currentGroup = null;
+    
+    // Filter out holiday rows from grouping (they shouldn't appear in trips)
+    const nonHolidayTrips = trips.filter(trip => !isHolidayRow(trip));
+    
+    for (let i = 0; i < nonHolidayTrips.length; i++) {
+        let trip = nonHolidayTrips[i];
+        let tripNo = trip['TRIP NO.'] ? String(trip['TRIP NO.']).trim() : '';
+        let dateVal = trip['DATE'] || '';
+        
+        if (tripNo !== '') {
+            if (currentGroup) groups.push(currentGroup);
+            currentGroup = {
+                tripNo: tripNo,
+                mainDate: dateVal,
+                rows: [trip],
+                rowIndices: [i]
+            };
+        } else if (currentGroup) {
+            currentGroup.rows.push(trip);
+            currentGroup.rowIndices.push(i);
+            if (!currentGroup.mainDate && dateVal) currentGroup.mainDate = dateVal;
+        } else {
+            if (!currentGroup) {
+                currentGroup = {
+                    tripNo: '',
+                    mainDate: dateVal,
+                    rows: [trip],
+                    rowIndices: [i]
+                };
+            } else {
+                currentGroup.rows.push(trip);
+                currentGroup.rowIndices.push(i);
+            }
+        }
+    }
+    if (currentGroup) groups.push(currentGroup);
+    return groups;
+}
+
+function filterAndSortGroups(groups) {
+    let filtered = groups.filter(group => {
+        if (currentFilter.fromDate && group.mainDate) {
+            let groupDate = formatDateYMD(group.mainDate);
+            if (groupDate < currentFilter.fromDate) return false;
+        }
+        if (currentFilter.toDate && group.mainDate) {
+            let groupDate = formatDateYMD(group.mainDate);
+            if (groupDate > currentFilter.toDate) return false;
+        }
+        
+        let searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+        if (!searchTerm) return true;
+        
+        let matchTrip = group.tripNo.toLowerCase().includes(searchTerm);
+        let matchMainDate = group.mainDate.toLowerCase().includes(searchTerm);
+        let matchRows = group.rows.some(r => 
+            String(r['LR /CONSIGNMENT NO'] || '').toLowerCase().includes(searchTerm)
+        );
+        return matchTrip || matchMainDate || matchRows;
+    });
+    
+    filtered.sort((a, b) => {
+        let valA, valB;
+        if (currentSort.by === 'tripNo') {
+            valA = a.tripNo || '';
+            valB = b.tripNo || '';
+        } else {
+            valA = a.mainDate || '';
+            valB = b.mainDate || '';
+        }
+        
+        if (currentSort.order === 'asc') {
+            return valA > valB ? 1 : -1;
+        } else {
+            return valA < valB ? 1 : -1;
+        }
+    });
+    
+    return filtered;
+}
+
+// Page 1: Show all columns - Driver Name only, no time
+function displayPage1Table() {
+    let tbody = document.getElementById('tripsTableBody');
+    if (!tbody) return;
+    
+    let filteredGroups = filterAndSortGroups(groupedTrips);
+    
+    if (filteredGroups.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="no-data">No trips found</td></tr>';
+        return;
+    }
+    
+    let html = '';
+    filteredGroups.forEach(group => {
+        let displayTripNo = group.tripNo || '—';
+        let displayDate = formatDateDMY(group.mainDate) || '—';
+        let firstRow = group.rows[0];
+        let lrNo = firstRow['LR /CONSIGNMENT NO'] || '—';
+        // Only show driver name for non-holiday rows
+        let driverName = (!isHolidayRow(firstRow) && firstRow['DRIVER NAME']) ? firstRow['DRIVER NAME'] : '—';
+        
+        html += `<tr>
+                    <td><strong>${escapeHtml(displayTripNo)}</strong></td>
+                    <td>${escapeHtml(displayDate)}</td>
+                    <td>${escapeHtml(lrNo)}</td>
+                    <td>${escapeHtml(driverName)}</td>
+                    <td><button class="btn-view" data-group-idx="${groupedTrips.indexOf(group)}">View</button></td>
+                </tr>`;
+    });
+    tbody.innerHTML = html;
+    
+    document.querySelectorAll('.btn-view').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            let idx = parseInt(btn.getAttribute('data-group-idx'));
+            showGroupDetails(idx);
+        });
+    });
+}
+
+// Page 2: Show only columns that have data (EXCLUDING SL, DATE, DRIVER NAME for holiday rows)
+function showGroupDetails(groupIndex) {
+    let group = groupedTrips[groupIndex];
+    if (!group) return;
+    
+    let container = document.getElementById('detailContainer');
+    if (!container) return;
+    
+    let html = '';
+    
+    for (let i = 0; i < group.rows.length; i++) {
+        let row = group.rows[i];
+        let rowIndex = group.rowIndices[i];
+        let hasTripNo = row['TRIP NO.'] && String(row['TRIP NO.']).trim() !== '';
+        let groupTitle = hasTripNo ? `Trip #${row['TRIP NO.']}` : `Details ${i+1}`;
+        let dateDisplay = row['DATE'] ? formatDateDMY(row['DATE']) : '';
+        
+        // First group is expanded, others collapsed
+        let isFirst = (i === 0);
+        let collapsedClass = isFirst ? '' : 'collapsed';
+        
+        // Get only columns that have non-empty values and are not excluded
+        let nonEmptyColumns = {};
+        for (let [key, val] of Object.entries(row)) {
+            // Skip excluded columns
+            if (shouldExcludeColumn(key, row)) {
+                continue;
+            }
+            
+            if (val !== undefined && val !== null && val !== '' && val !== '-') {
+                // Format time values properly
+                if (key === 'START TIME' || key === 'END TIME') {
+                    nonEmptyColumns[key] = extractTimeOnly(String(val));
+                } else {
+                    nonEmptyColumns[key] = val;
+                }
+            }
+        }
+        
+        html += `<div class="trip-group" data-row-idx="${rowIndex}" data-row-data='${escapeHtml(JSON.stringify(row))}'>
+                    <div class="group-header ${collapsedClass}" onclick="toggleGroup(this)">
+                        <h3>📋 ${escapeHtml(groupTitle)} ${dateDisplay ? `<span class="group-badge">📅 ${escapeHtml(dateDisplay)}</span>` : ''}</h3>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="group-content">
+                        <div class="detail-card">
+                            <div class="detail-grid">`;
+        
+        for (let [key, val] of Object.entries(nonEmptyColumns)) {
+            let displayVal = '-';
+            if (val !== undefined && val !== null && val !== '') {
+                if (String(val).includes('drive.google.com')) displayVal = `<a href="${escapeHtml(val)}" target="_blank">📄 View File</a>`;
+                else displayVal = escapeHtml(String(val));
+            }
+            html += `<div class="detail-item">
+                        <div class="detail-label">${escapeHtml(key)}</div>
+                        <div class="detail-value">${displayVal}</div>
+                    </div>`;
+        }
+        
+        html += `</div><div class="card-actions">
+                    <button class="btn-update-card" onclick="openUpdateForRow(${rowIndex})">✏️ Update</button>
+                    <button class="btn-delete-card" onclick="openDeleteForRow(${rowIndex})">🗑 Delete</button>
+                </div>
+                        </div>
+                    </div>
+                </div>`;
+    }
+    container.innerHTML = html;
+    
+    const page1 = document.getElementById('page1');
+    const page2 = document.getElementById('page2');
+    if (page1) page1.classList.remove('active');
+    if (page2) page2.classList.add('active');
+}
+
+window.toggleGroup = function(header) {
+    header.classList.toggle('collapsed');
+};
+
+// Open update form
+window.openUpdateForRow = function(rowIndex) {
+    let tripRow = allTrips[rowIndex];
+    if (!tripRow) { showAlert('Row data not found', 'error'); return; }
+    
+    let columnsToShow = [];
+    for (let [key, val] of Object.entries(tripRow)) {
+        if (val !== undefined && val !== null && val !== '') {
+            columnsToShow.push(key);
+        }
+    }
+    
+    currentUpdateTarget = {
+        rowIndex: rowIndex + 2,
+        rowData: tripRow,
+        columns: columnsToShow
+    };
+    
+    let modalBody = document.getElementById('updateModalBody');
+    if (!modalBody) return;
+    
+    let formHtml = '<form id="updateForm"><div class="update-form-grid">';
+    for (let col of columnsToShow) {
+        let currentVal = tripRow[col] || '';
+        let inputType = 'text';
+        if (col === 'DATE') inputType = 'date';
+        else if (col === 'BOXES' || col === 'START KM' || col === 'END KM' || col === 'KM RUN' || col === 'NO OF LABOUR' || col === 'TOLL CHARGES' || col === 'MATHADI CHARGES' || col === 'MATHADI RECIEVED NO') inputType = 'number';
+        else if (col === 'START TIME' || col === 'END TIME') inputType = 'time';
+        
+        let formattedVal = currentVal;
+        if (col === 'DATE') formattedVal = formatDateYMD(currentVal);
+        else if (col === 'START TIME' || col === 'END TIME') {
+            let extractedTime = extractTimeOnly(currentVal);
+            let timeMatch = extractedTime.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
+            if (timeMatch) {
+                let hour = parseInt(timeMatch[1]);
+                let minute = timeMatch[2];
+                let period = timeMatch[3].toUpperCase();
+                if (period === 'PM' && hour !== 12) hour += 12;
+                if (period === 'AM' && hour === 12) hour = 0;
+                formattedVal = `${hour.toString().padStart(2,'0')}:${minute}`;
+            } else {
+                formattedVal = '';
+            }
+        }
+        
+        formHtml += `<div class="update-form-group">
+                        <label>${escapeHtml(col)}</label>
+                        <input type="${inputType}" name="${escapeHtml(col)}" value="${escapeHtml(formattedVal)}" class="update-field" list="${escapeHtml(col)}-datalist">
+                        <datalist id="${escapeHtml(col)}-datalist">
+                            ${col === 'CONSIGNEE NAME' ? consigneeNames.map(n => `<option value="${escapeHtml(n)}">`).join('') : ''}
+                            ${col === 'VEHICLE NO' ? vehicleNos.map(n => `<option value="${escapeHtml(n)}">`).join('') : ''}
+                            ${col === 'TRUCK TYPE' ? truckTypes.map(n => `<option value="${escapeHtml(n)}">`).join('') : ''}
+                            ${col === 'DRIVER NAME' ? driverNames.map(n => `<option value="${escapeHtml(n)}">`).join('') : ''}
+                            ${col === 'FROM' ? fromLocations.map(n => `<option value="${escapeHtml(n)}">`).join('') : ''}
+                            ${col === 'DESTINATION' ? destinations.map(n => `<option value="${escapeHtml(n)}">`).join('') : ''}
+                        </datalist>
+                    </div>`;
+    }
+    formHtml += '</div></form>';
+    modalBody.innerHTML = formHtml;
+    
+    const updateModal = document.getElementById('updateModal');
+    if (updateModal) updateModal.classList.add('active');
+};
+
+document.getElementById('saveUpdateBtn')?.addEventListener('click', async function() {
+    if (!currentUpdateTarget) return;
+    showLoading();
+    try {
+        let formData = new FormData();
+        formData.append('spreadsheetId', SPREADSHEET_ID);
+        formData.append('sheetName', SHEET_NAME);
+        formData.append('action', 'update');
+        formData.append('rowIndex', currentUpdateTarget.rowIndex);
+        formData.append('driveFolderId', DRIVE_FOLDER_ID);
+        formData.append('fileCount', '0');
+        
+        let fields = document.querySelectorAll('#updateForm .update-field');
+        for (let field of fields) {
+            let name = field.getAttribute('name');
+            let value = field.value;
+            if (name === 'DATE' && value) {
+                let d = new Date(value);
+                if (!isNaN(d)) value = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
+            } else if ((name === 'START TIME' || name === 'END TIME') && value) {
+                let [hour, minute] = value.split(':');
+                let hour24 = parseInt(hour);
+                let period = hour24 >= 12 ? 'PM' : 'AM';
+                let hour12 = hour24 % 12 || 12;
+                value = `${hour12}:${minute} ${period}`;
+            }
+            formData.append(name, value || '');
+        }
+        
+        let res = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+        let result = await res.json();
+        if (result.status === 'success') {
+            showAlert('✅ Trip updated successfully!', 'success');
+            closeUpdateModal();
+            await loadAndDisplayTrips();
+            const page1 = document.getElementById('page1');
+            const page2 = document.getElementById('page2');
+            if (page2 && page2.classList.contains('active')) {
+                page2.classList.remove('active');
+                if (page1) page1.classList.add('active');
+            }
+        } else throw new Error(result.message);
+    } catch(err) { showAlert('Update failed: '+err.message, 'error'); }
+    finally { hideLoading(); }
+});
+
+window.openDeleteForRow = function(rowIndex) {
+    currentDeleteTarget = rowIndex + 2;
+    const confirmModal = document.getElementById('confirmModal');
+    if (confirmModal) confirmModal.classList.add('active');
+};
+
+async function executeDelete() {
+    if (!currentDeleteTarget) return;
+    showLoading();
+    try {
+        let fd = new FormData();
+        fd.append('spreadsheetId', SPREADSHEET_ID);
+        fd.append('sheetName', SHEET_NAME);
+        fd.append('action', 'delete');
+        fd.append('rowIndex', currentDeleteTarget);
+        
+        let res = await fetch(SCRIPT_URL, { method: 'POST', body: fd });
+        let result = await res.json();
+        if (result.status === 'success') {
+            showAlert('✅ Deleted successfully!', 'success');
+            closeConfirmModal();
+            await loadAndDisplayTrips();
+            const page1 = document.getElementById('page1');
+            const page2 = document.getElementById('page2');
+            if (page2 && page2.classList.contains('active')) {
+                page2.classList.remove('active');
+                if (page1) page1.classList.add('active');
+            }
+        } else throw new Error(result.message);
+    } catch(err) { showAlert('Delete failed: '+err.message, 'error'); }
+    finally { hideLoading(); }
+}
+
+document.getElementById('confirmDeleteBtn')?.addEventListener('click', executeDelete);
+
+async function loadAndDisplayTrips() {
+    await fetchAllTrips();
+    groupedTrips = groupTripsByTripNo(allTrips);
+    displayPage1Table();
+}
+
+function goBackToList() {
+    const page1 = document.getElementById('page1');
+    const page2 = document.getElementById('page2');
+    if (page2) page2.classList.remove('active');
+    if (page1) page1.classList.add('active');
+    loadAndDisplayTrips();
+}
+
+function openAddTripModal() {
+    const modal = document.getElementById('addTripModal');
+    const iframe = document.getElementById('addTripIframe');
+    if (iframe) iframe.src = iframe.src;
+    if (modal) modal.classList.add('active');
+}
+
+// Filter and Sort Event Listeners
+function setupFilterAndSort() {
+    const filterBtn = document.getElementById('filterBtn');
+    const sortBtn = document.getElementById('sortBtn');
+    const filterDropdown = document.getElementById('filterDropdown');
+    const sortDropdown = document.getElementById('sortDropdown');
+    
+    if (filterBtn) {
+        filterBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (filterDropdown) filterDropdown.classList.toggle('show');
+            if (sortDropdown) sortDropdown.classList.remove('show');
+        };
+    }
+    
+    if (sortBtn) {
+        sortBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (sortDropdown) sortDropdown.classList.toggle('show');
+            if (filterDropdown) filterDropdown.classList.remove('show');
+        };
+    }
+    
+    const applyFilterBtn = document.getElementById('applyFilterBtn');
+    if (applyFilterBtn) {
+        applyFilterBtn.onclick = () => {
+            const fromDate = document.getElementById('fromDate');
+            const toDate = document.getElementById('toDate');
+            currentFilter.fromDate = fromDate ? fromDate.value : '';
+            currentFilter.toDate = toDate ? toDate.value : '';
+            if (filterDropdown) filterDropdown.classList.remove('show');
+            displayPage1Table();
+        };
+    }
+    
+    const applySortBtn = document.getElementById('applySortBtn');
+    if (applySortBtn) {
+        applySortBtn.onclick = () => {
+            const sortBy = document.getElementById('sortBy');
+            const sortOrder = document.getElementById('sortOrder');
+            currentSort.by = sortBy ? sortBy.value : 'tripNo';
+            currentSort.order = sortOrder ? sortOrder.value : 'asc';
+            if (sortDropdown) sortDropdown.classList.remove('show');
+            displayPage1Table();
+        };
+    }
+    
+    document.addEventListener('click', (e) => {
+        if (filterBtn && filterDropdown && !filterBtn.contains(e.target) && !filterDropdown.contains(e.target)) {
+            filterDropdown.classList.remove('show');
+        }
+        if (sortBtn && sortDropdown && !sortBtn.contains(e.target) && !sortDropdown.contains(e.target)) {
+            sortDropdown.classList.remove('show');
+        }
+    });
+}
+
+function setupEventListeners() {
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) refreshBtn.onclick = () => loadAndDisplayTrips();
+    
+    const addNewTripBtn = document.getElementById('addNewTripBtn');
+    if (addNewTripBtn) addNewTripBtn.onclick = openAddTripModal;
+    
+    const showHolidayBtn = document.getElementById('showHolidayBtn');
+    if (showHolidayBtn) showHolidayBtn.onclick = () => showHolidayPopup();
+    
+    const backToListBtn = document.getElementById('backToListBtn');
+    if (backToListBtn) backToListBtn.onclick = goBackToList;
+    
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.addEventListener('input', () => displayPage1Table());
+    
+    setupFilterAndSort();
+}
+
+async function init() {
+    setupEventListeners();
+    await loadAndDisplayTrips();
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
+    </script>
+</body>
+</html>

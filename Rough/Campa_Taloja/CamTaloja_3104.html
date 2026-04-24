@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Trip Management - LR Details Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            padding: 28px 32px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .form-container {
+            padding: 32px;
+        }
+
+        /* Grid Layout */
+        .form-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        @media (min-width: 1024px) {
+            .form-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .full-width {
+                grid-column: span 3;
+            }
+            .double-width {
+                grid-column: span 2;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .full-width {
+                grid-column: span 2;
+            }
+            .double-width {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .full-width, .double-width {
+                grid-column: span 1;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1f2937;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label .optional {
+            color: #6b7280;
+            font-size: 11px;
+            font-weight: normal;
+            text-transform: none;
+        }
+
+        .form-group label .calculated {
+            color: #1a73e8;
+            font-size: 10px;
+            font-weight: normal;
+            margin-left: 6px;
+            text-transform: none;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            background: #ffffff;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+
+        .form-group input.calculated-field {
+            background-color: #f8fafc;
+            font-weight: 500;
+            color: #1a73e8;
+            border-color: #e2e8f0;
+        }
+
+        .form-group input:read-only {
+            background-color: #f8fafc;
+            cursor: default;
+        }
+
+        /* Autocomplete Dropdown Styles */
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 4px;
+        }
+
+        .autocomplete-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .autocomplete-item:hover {
+            background: #f0f7ff;
+            color: #1a73e8;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 11px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .file-group {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 16px;
+            border: 1.5px dashed #d1d5db;
+            transition: all 0.2s;
+        }
+
+        .file-group:hover {
+            border-color: #1a73e8;
+            background: #f5f9ff;
+        }
+
+        .file-group label {
+            color: #1a73e8;
+        }
+
+        .file-info {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 6px;
+        }
+
+        .file-status {
+            font-size: 12px;
+            margin-top: 8px;
+            color: #10b981;
+            display: none;
+        }
+
+        .file-status.show {
+            display: block;
+        }
+
+        .button-group {
+            margin-top: 32px;
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            box-shadow: 0 2px 6px rgba(26, 115, 232, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(26, 115, 232, 0.35);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            background: white;
+            border-radius: 50%;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            background: #10b981;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: none;
+            animation: slideDown 0.3s ease;
+            font-size: 14px;
+        }
+
+        .error-message-box {
+            background: #ef4444;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: none;
+            animation: slideDown 0.3s ease;
+            font-size: 14px;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-12px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .info-hint {
+            font-size: 10px;
+            color: #6b7280;
+            margin-top: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 20px;
+            }
+            .btn {
+                width: 100%;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+            .header h1 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🚛 Trip Management - LR Details</h1>
+            <p>Record trip details with smart calculations and autocomplete</p>
+        </div>
+
+        <div class="form-container">
+            <div id="successMessage" class="success-message"></div>
+            <div id="errorMessage" class="error-message-box"></div>
+
+            <form id="tripForm" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Sr. No</label>
+                        <input type="text" id="srNo" readonly style="background: #f8fafc;">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="tripDate" max="">
+                        <div class="error-message" id="dateError">Future dates not allowed</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>LR No</label>
+                        <input type="text" id="lrNo" placeholder="Enter LR Number">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Start KM</label>
+                        <input type="number" id="startKm" step="1" placeholder="Starting kilometer reading">
+                    </div>
+
+                    <div class="form-group">
+                        <label>End KM</label>
+                        <input type="number" id="endKm" step="1" placeholder="Ending kilometer reading">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Distance <span class="calculated">(Auto)</span></label>
+                        <input type="number" id="distance" readonly class="calculated-field" placeholder="Auto calculated">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Food Amt (₹)</label>
+                        <input type="number" id="foodAmt" step="0.01" placeholder="Food expenses amount">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Advance (₹)</label>
+                        <input type="number" id="advance" step="0.01" placeholder="Advance amount">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Diesel Liter</label>
+                        <input type="number" id="dieselLiter" step="0.01" placeholder="Diesel in liters">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Diesel Rate (₹/L) <span class="calculated">(Default: 90.26)</span></label>
+                        <input type="number" id="dieselRate" step="0.01" placeholder="Rate per liter" value="90.26">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Diesel Cost (₹) <span class="calculated">(Auto Rounded/Manual)</span></label>
+                        <input type="number" id="dieselCost" step="1" placeholder="Auto rounded or type manually">
+                        <div class="info-hint">Auto-calculates from liters × rate and rounds to nearest whole number</div>
+                    </div>
+
+                    <!-- Destination with Autocomplete -->
+                    <div class="form-group" id="destinationGroup">
+                        <label>Destination</label>
+                        <input type="text" id="destination" placeholder="Start typing destination..." autocomplete="off">
+                        <div id="destinationDropdown" class="autocomplete-list" style="display: none;"></div>
+                    </div>
+
+                    <!-- Distributor with Autocomplete -->
+                    <div class="form-group" id="distributorGroup">
+                        <label>Distributor</label>
+                        <input type="text" id="distributor" placeholder="Start typing distributor..." autocomplete="off">
+                        <div id="distributorDropdown" class="autocomplete-list" style="display: none;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Unloading Charge (₹)</label>
+                        <input type="number" id="unloadingCharge" step="0.01" placeholder="Unloading charges">
+                    </div>
+
+                    <div class="form-group file-group full-width">
+                        <label>Upload Document</label>
+                        <input type="file" id="tripFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                        <div class="file-info">Supported: PDF, JPG, PNG, DOC (Max 5MB)</div>
+                        <div class="file-status" id="fileStatus"></div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Note</label>
+                        <textarea id="note" rows="3" placeholder="Any additional notes or remarks about this trip"></textarea>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary" onclick="resetTripForm()">Reset Form</button>
+                    <button type="submit" class="btn btn-primary">Save Trip Details</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ======================== CONFIGURATION ========================
+        const SPREADSHEET_ID = '1ACLheHmzkn1Ut92oSeSTn5GekSm20luwSrxmcLoijQ4';
+        const SHEET_NAME = 'CamTaloja_3104';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5NBh26tyNs3Ae7UiyBThu8tTV3xFV21pJR16WnPBXnNvzKRyyLYKsmShdln9yRRexUA/exec';
+        const DRIVE_FOLDER_ID = '1KCS4l-0n8D-kjaZYmAHJsPKGT_7aj4b4';
+
+        // Data storage for autocomplete
+        let uniqueDestinations = [];
+        let uniqueDistributors = [];
+
+        // Set max date to today
+        const today = new Date().toISOString().split('T')[0];
+        const dateInput = document.getElementById('tripDate');
+        dateInput.setAttribute('max', today);
+        dateInput.value = today;
+
+        // ======================== FETCH EXISTING DATA FOR AUTOCOMPLETE ========================
+        async function fetchExistingData() {
+            try {
+                const response = await fetch(`${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`);
+                const data = await response.json();
+                if (data.status === 'success' && data.data && data.data.length > 0) {
+                    // Extract unique destinations
+                    const destinations = data.data.map(row => row['Destination']).filter(d => d && d.toString().trim() !== '');
+                    uniqueDestinations = [...new Set(destinations)].sort();
+                    
+                    // Extract unique distributors
+                    const distributors = data.data.map(row => row['Distributor']).filter(d => d && d.toString().trim() !== '');
+                    uniqueDistributors = [...new Set(distributors)].sort();
+                }
+            } catch (error) {
+                console.error('Error fetching autocomplete data:', error);
+            }
+        }
+
+        // ======================== AUTOCOMPLETE FUNCTION ========================
+        function setupAutocomplete(inputId, dropdownId, dataList) {
+            const input = document.getElementById(inputId);
+            const dropdown = document.getElementById(dropdownId);
+            
+            input.addEventListener('input', function() {
+                const value = this.value.toLowerCase().trim();
+                if (value === '') {
+                    dropdown.style.display = 'none';
+                    return;
+                }
+                
+                const filtered = dataList.filter(item => item.toLowerCase().includes(value));
+                if (filtered.length > 0) {
+                    dropdown.innerHTML = '';
+                    filtered.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'autocomplete-item';
+                        div.textContent = item;
+                        div.onclick = () => {
+                            input.value = item;
+                            dropdown.style.display = 'none';
+                        };
+                        dropdown.appendChild(div);
+                    });
+                    dropdown.style.display = 'block';
+                } else {
+                    dropdown.style.display = 'none';
+                }
+            });
+            
+            // Hide dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (e.target !== input && !dropdown.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+            
+            // Show dropdown on focus if there's content
+            input.addEventListener('focus', function() {
+                if (this.value.trim() !== '' && dataList.length > 0) {
+                    const value = this.value.toLowerCase();
+                    const filtered = dataList.filter(item => item.toLowerCase().includes(value));
+                    if (filtered.length > 0) {
+                        dropdown.innerHTML = '';
+                        filtered.forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = 'autocomplete-item';
+                            div.textContent = item;
+                            div.onclick = () => {
+                                input.value = item;
+                                dropdown.style.display = 'none';
+                            };
+                            dropdown.appendChild(div);
+                        });
+                        dropdown.style.display = 'block';
+                    }
+                }
+            });
+        }
+
+        // ======================== CALCULATION FUNCTIONS ========================
+        function calculateDistance() {
+            const startKm = parseFloat(document.getElementById('startKm').value);
+            const endKm = parseFloat(document.getElementById('endKm').value);
+            const distanceField = document.getElementById('distance');
+            
+            if (!isNaN(startKm) && !isNaN(endKm) && startKm !== '' && endKm !== '') {
+                const distance = endKm - startKm;
+                if (distance >= 0) {
+                    distanceField.value = distance.toFixed(2);
+                } else {
+                    distanceField.value = '';
+                }
+            } else {
+                distanceField.value = '';
+            }
+        }
+
+        // Round to nearest whole number
+        function roundToNearest(value) {
+            return Math.round(value);
+        }
+
+        function calculateDieselCost() {
+            const dieselLiter = parseFloat(document.getElementById('dieselLiter').value);
+            const dieselRate = parseFloat(document.getElementById('dieselRate').value);
+            const dieselCostField = document.getElementById('dieselCost');
+            
+            if (!isNaN(dieselLiter) && !isNaN(dieselRate) && dieselLiter !== '' && dieselRate !== '') {
+                const calculatedCost = dieselLiter * dieselRate;
+                const roundedCost = roundToNearest(calculatedCost);
+                if (!dieselCostField.hasAttribute('data-manual')) {
+                    dieselCostField.value = roundedCost;
+                }
+            } else if ((dieselLiter === '' || dieselRate === '') && !dieselCostField.hasAttribute('data-manual')) {
+                dieselCostField.value = '';
+            }
+        }
+
+        const dieselCostField = document.getElementById('dieselCost');
+        dieselCostField.addEventListener('input', function() {
+            if (this.value !== '') {
+                this.setAttribute('data-manual', 'true');
+                // Round manual entry as well for consistency
+                const manualValue = parseFloat(this.value);
+                if (!isNaN(manualValue)) {
+                    this.value = roundToNearest(manualValue);
+                }
+            } else {
+                this.removeAttribute('data-manual');
+            }
+        });
+
+        document.getElementById('startKm').addEventListener('input', calculateDistance);
+        document.getElementById('endKm').addEventListener('input', calculateDistance);
+        document.getElementById('dieselLiter').addEventListener('input', () => {
+            if (!dieselCostField.hasAttribute('data-manual')) calculateDieselCost();
+        });
+        document.getElementById('dieselRate').addEventListener('input', () => {
+            if (!dieselCostField.hasAttribute('data-manual')) calculateDieselCost();
+        });
+
+        // ======================== GET NEXT SR NUMBER ========================
+        async function getNextSrNo() {
+            try {
+                const response = await fetch(`${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`);
+                const data = await response.json();
+                if (data.status === 'success' && data.data) {
+                    return data.data.length + 1;
+                }
+                return 1;
+            } catch (error) {
+                console.error('Error fetching SR No:', error);
+                return 1;
+            }
+        }
+
+        async function updateSrNo() {
+            const srNo = await getNextSrNo();
+            document.getElementById('srNo').value = srNo;
+        }
+        updateSrNo();
+
+        // ======================== FILE HANDLING ========================
+        document.getElementById('tripFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const statusDiv = document.getElementById('fileStatus');
+            if (file) {
+                const fileSizeKB = (file.size / 1024).toFixed(2);
+                statusDiv.textContent = `✓ ${file.name} selected (${fileSizeKB} KB)`;
+                statusDiv.classList.add('show');
+            } else {
+                statusDiv.classList.remove('show');
+            }
+        });
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ======================== VALIDATION ========================
+        function validateTripForm() {
+            let isValid = true;
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            
+            const tripDate = document.getElementById('tripDate').value;
+            if (tripDate && new Date(tripDate) > new Date()) {
+                document.getElementById('dateError').classList.add('show');
+                isValid = false;
+            }
+            return isValid;
+        }
+
+        // ======================== RESET FORM ========================
+        function resetTripForm() {
+            document.getElementById('tripForm').reset();
+            document.getElementById('tripDate').value = today;
+            document.getElementById('distance').value = '';
+            document.getElementById('dieselRate').value = '90.26';
+            document.getElementById('fileStatus').classList.remove('show');
+            dieselCostField.removeAttribute('data-manual');
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            updateSrNo();
+        }
+
+        // ======================== SUBMIT FORM ========================
+        document.getElementById('tripForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!validateTripForm()) return;
+
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+
+            try {
+                const formData = new FormData();
+                formData.append('spreadsheetId', SPREADSHEET_ID);
+                formData.append('sheetName', SHEET_NAME);
+                formData.append('driveFolderId', DRIVE_FOLDER_ID);
+                formData.append('action', 'insert');
+                
+                // Get diesel cost and ensure it's rounded
+                let dieselCostValue = document.getElementById('dieselCost').value;
+                if (dieselCostValue && !isNaN(parseFloat(dieselCostValue))) {
+                    dieselCostValue = roundToNearest(parseFloat(dieselCostValue));
+                }
+                
+                const fields = {
+                    'Sr. No': document.getElementById('srNo').value,
+                    'Date': document.getElementById('tripDate').value,
+                    'LR No': document.getElementById('lrNo').value,
+                    'Start KM': document.getElementById('startKm').value,
+                    'End KM': document.getElementById('endKm').value,
+                    'Distance': document.getElementById('distance').value,
+                    'Food Amt': document.getElementById('foodAmt').value,
+                    'Advance': document.getElementById('advance').value,
+                    'Diesel liter': document.getElementById('dieselLiter').value,
+                    'Diesel Rate': document.getElementById('dieselRate').value,
+                    'Diesel Cost': dieselCostValue,
+                    'Destination': document.getElementById('destination').value,
+                    'Distributor': document.getElementById('distributor').value,
+                    'Unloading Charge': document.getElementById('unloadingCharge').value,
+                    'Note': document.getElementById('note').value
+                };
+
+                for (const [key, value] of Object.entries(fields)) {
+                    formData.append(key, value || '');
+                }
+
+                let fileCount = 0;
+                const fileInput = document.getElementById('tripFile');
+                if (fileInput.files && fileInput.files[0]) {
+                    const file = fileInput.files[0];
+                    const fileData = await fileToBase64(file);
+                    fileCount = 1;
+                    formData.append('fileData1', fileData);
+                    formData.append('fileName1', file.name);
+                    formData.append('fileType1', file.type);
+                    formData.append('fileColumn1', 'File');
+                }
+                formData.append('fileCount', fileCount);
+
+                const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    let successMsg = `✅ Trip details saved successfully!\n`;
+                    if (fileCount > 0) successMsg += `📄 Document uploaded to Google Drive.\n`;
+                    if (dieselCostValue) successMsg += `💰 Diesel Cost: ₹${dieselCostValue} (rounded)`;
+                    document.getElementById('successMessage').textContent = successMsg;
+                    document.getElementById('successMessage').style.display = 'block';
+                    setTimeout(() => {
+                        resetTripForm();
+                        document.getElementById('successMessage').style.display = 'none';
+                        fetchExistingData(); // Refresh autocomplete data
+                    }, 4000);
+                } else {
+                    throw new Error(result.message || 'Unknown error');
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = '❌ Error: ' + error.message;
+                document.getElementById('errorMessage').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('errorMessage').style.display = 'none';
+                }, 5000);
+            } finally {
+                loading.classList.remove('active');
+            }
+        });
+
+        // Initialize autocomplete after fetching data
+        async function init() {
+            await fetchExistingData();
+            setupAutocomplete('destination', 'destinationDropdown', uniqueDestinations);
+            setupAutocomplete('distributor', 'distributorDropdown', uniqueDistributors);
+        }
+        init();
+
+        // Number field validations
+        const numberFields = ['startKm', 'endKm', 'foodAmt', 'advance', 'dieselLiter', 'unloadingCharge'];
+        numberFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.addEventListener('input', function() {
+                    if (this.value < 0) this.value = 0;
+                });
+            }
+        });
+
+        document.getElementById('endKm').addEventListener('input', function() {
+            const startKm = parseFloat(document.getElementById('startKm').value);
+            const endKm = parseFloat(this.value);
+            if (!isNaN(startKm) && !isNaN(endKm) && endKm < startKm) {
+                this.setCustomValidity('End KM should be >= Start KM');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Contact Manager - Contact Details Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            padding: 28px 32px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .form-container {
+            padding: 32px;
+        }
+
+        /* Grid Layout - same as original */
+        .form-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .full-width {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .full-width {
+                grid-column: span 1;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1f2937;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label .optional {
+            color: #6b7280;
+            font-size: 11px;
+            font-weight: normal;
+            text-transform: none;
+        }
+
+        .form-group label .calculated {
+            color: #1a73e8;
+            font-size: 10px;
+            font-weight: normal;
+            margin-left: 6px;
+            text-transform: none;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            background: #ffffff;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+
+        .form-group input.calculated-field {
+            background-color: #f8fafc;
+            font-weight: 500;
+            color: #1a73e8;
+            border-color: #e2e8f0;
+        }
+
+        .form-group input:read-only {
+            background-color: #f8fafc;
+            cursor: default;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 11px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .button-group {
+            margin-top: 32px;
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            box-shadow: 0 2px 6px rgba(26, 115, 232, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(26, 115, 232, 0.35);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            background: white;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            background: #10b981;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: none;
+            animation: slideDown 0.3s ease;
+            font-size: 14px;
+        }
+
+        .error-message-box {
+            background: #ef4444;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: none;
+            animation: slideDown 0.3s ease;
+            font-size: 14px;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-12px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .info-hint {
+            font-size: 10px;
+            color: #6b7280;
+            margin-top: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 20px;
+            }
+            .btn {
+                width: 100%;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+            .header h1 {
+                font-size: 1.4rem;
+            }
+        }
+
+        /* Email validation styling */
+        .form-group input.valid-email {
+            border-color: #10b981;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2310b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 36px;
+        }
+        
+        .form-group input.invalid-email {
+            border-color: #dc2626;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 36px;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>📇 Contact Manager - Details Form</h1>
+            <p>Manage contact information with smart validation and Google Sheets integration</p>
+        </div>
+
+        <div class="form-container">
+            <div id="successMessage" class="success-message"></div>
+            <div id="errorMessage" class="error-message-box"></div>
+
+            <form id="contactForm">
+                <div class="form-grid">
+                    <!-- Sr. No - Auto generated readonly field -->
+                    <div class="form-group">
+                        <label>Sr. No <span class="calculated">(Auto)</span></label>
+                        <input type="text" id="srNo" readonly class="calculated-field" style="background: #f8fafc;">
+                        <div class="info-hint">Automatically generated from Google Sheet</div>
+                    </div>
+
+                    <!-- Name - Text box -->
+                    <div class="form-group">
+                        <label>Name <span class="optional">(Optional)</span></label>
+                        <input type="text" id="name" placeholder="Enter full name" autocomplete="name">
+                        <div class="error-message" id="nameError">Please enter a valid name</div>
+                    </div>
+
+                    <!-- Email Id - With email validation function -->
+                    <div class="form-group">
+                        <label>Email Id <span class="optional">(Optional)</span></label>
+                        <input type="email" id="email" placeholder="example@domain.com" autocomplete="email">
+                        <div class="error-message" id="emailError">Please enter a valid email address</div>
+                        <div class="info-hint">Valid email format required (e.g., name@company.com)</div>
+                    </div>
+
+                    <!-- Mobile No - Max limit 10 digit, starts with 6,7,8,9 -->
+                    <div class="form-group">
+                        <label>Mobile No <span class="optional">(Optional)</span></label>
+                        <input type="tel" id="mobile" placeholder="10-digit mobile number" maxlength="10" autocomplete="tel">
+                        <div class="error-message" id="mobileError">Mobile number must be 10 digits and start with 6,7,8, or 9</div>
+                        <div class="info-hint">10 digits only • Must start with 6,7,8, or 9</div>
+                    </div>
+
+                    <!-- Note - Long Text Box (full width) -->
+                    <div class="form-group full-width">
+                        <label>Note <span class="optional">(Optional)</span></label>
+                        <textarea id="note" rows="4" placeholder="Any additional notes or remarks about this contact..." style="resize: vertical;"></textarea>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary" onclick="resetContactForm()">Reset Form</button>
+                    <button type="submit" class="btn btn-primary">Save Contact Details</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ======================== CONFIGURATION ========================
+        const SPREADSHEET_ID = '1bopVE4D9z0fMwBWq0NGSIGuGYjqG0iIWQNxeFtguUvc';
+        const SHEET_NAME = 'Emails';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5NBh26tyNs3Ae7UiyBThu8tTV3xFV21pJR16WnPBXnNvzKRyyLYKsmShdln9yRRexUA/exec';
+        const DRIVE_FOLDER_ID = '1I-FRUe_xUhx7CD1h6--vZmBGtCm13bah';
+
+        // DOM Elements
+        const srNoInput = document.getElementById('srNo');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const mobileInput = document.getElementById('mobile');
+        const noteInput = document.getElementById('note');
+
+        // ======================== VALIDATION FUNCTIONS ========================
+        
+        // Email validation function
+        function isValidEmail(email) {
+            if (!email || email.trim() === '') return true; // Optional field
+            const emailRegex = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Mobile number validation: 10 digits, starts with 6,7,8,9
+        function isValidMobile(mobile) {
+            if (!mobile || mobile.trim() === '') return true; // Optional field
+            const mobileRegex = /^[6-9][0-9]{9}$/;
+            return mobileRegex.test(mobile);
+        }
+
+        // Name validation (basic - not empty if provided, but optional)
+        function isValidName(name) {
+            if (!name || name.trim() === '') return true; // Optional field
+            return name.trim().length >= 2 && /^[a-zA-Z\s\-'.]+$/.test(name);
+        }
+
+        // Real-time email validation styling
+        emailInput.addEventListener('input', function() {
+            const email = this.value;
+            const emailError = document.getElementById('emailError');
+            
+            if (email && email.trim() !== '') {
+                if (isValidEmail(email)) {
+                    this.classList.add('valid-email');
+                    this.classList.remove('invalid-email');
+                    emailError.classList.remove('show');
+                } else {
+                    this.classList.add('invalid-email');
+                    this.classList.remove('valid-email');
+                    emailError.classList.add('show');
+                }
+            } else {
+                this.classList.remove('valid-email', 'invalid-email');
+                emailError.classList.remove('show');
+            }
+        });
+
+        // Real-time mobile validation styling
+        mobileInput.addEventListener('input', function() {
+            let value = this.value;
+            const mobileError = document.getElementById('mobileError');
+            
+            // Remove non-digits
+            value = value.replace(/\D/g, '');
+            if (value.length > 10) value = value.slice(0, 10);
+            this.value = value;
+            
+            if (value && value.length > 0) {
+                if (isValidMobile(value)) {
+                    this.classList.add('valid-email');
+                    this.classList.remove('invalid-email');
+                    mobileError.classList.remove('show');
+                } else {
+                    this.classList.add('invalid-email');
+                    this.classList.remove('valid-email');
+                    mobileError.classList.add('show');
+                }
+            } else {
+                this.classList.remove('valid-email', 'invalid-email');
+                mobileError.classList.remove('show');
+            }
+        });
+
+        // Name real-time validation styling
+        nameInput.addEventListener('input', function() {
+            const nameError = document.getElementById('nameError');
+            if (this.value && this.value.trim() !== '') {
+                if (isValidName(this.value)) {
+                    this.classList.add('valid-email');
+                    this.classList.remove('invalid-email');
+                    nameError.classList.remove('show');
+                } else {
+                    this.classList.add('invalid-email');
+                    this.classList.remove('valid-email');
+                    nameError.classList.add('show');
+                }
+            } else {
+                this.classList.remove('valid-email', 'invalid-email');
+                nameError.classList.remove('show');
+            }
+        });
+
+        // ======================== FETCH EXISTING DATA FOR SR NO ========================
+        async function fetchExistingContacts() {
+            try {
+                const response = await fetch(`${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}&action=get`);
+                const data = await response.json();
+                if (data.status === 'success' && data.data && data.data.length > 0) {
+                    return data.data;
+                }
+                return [];
+            } catch (error) {
+                console.error('Error fetching contacts:', error);
+                return [];
+            }
+        }
+
+        // Get next Sr. No based on existing rows in Google Sheet
+        async function getNextSrNo() {
+            try {
+                const contacts = await fetchExistingContacts();
+                // contacts array length gives the number of existing records
+                // Sr. No will be length + 1
+                return contacts.length + 1;
+            } catch (error) {
+                console.error('Error getting next Sr No:', error);
+                return 1;
+            }
+        }
+
+        async function updateSrNo() {
+            const srNo = await getNextSrNo();
+            srNoInput.value = srNo;
+        }
+        
+        // Initial Sr. No update
+        updateSrNo();
+
+        // ======================== FORM VALIDATION ========================
+        function validateContactForm() {
+            let isValid = true;
+            
+            // Clear all error messages
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            
+            // Validate Name (if provided)
+            const name = nameInput.value;
+            if (name && name.trim() !== '' && !isValidName(name)) {
+                document.getElementById('nameError').classList.add('show');
+                isValid = false;
+            }
+            
+            // Validate Email (if provided)
+            const email = emailInput.value;
+            if (email && email.trim() !== '' && !isValidEmail(email)) {
+                document.getElementById('emailError').classList.add('show');
+                isValid = false;
+            }
+            
+            // Validate Mobile (if provided)
+            const mobile = mobileInput.value;
+            if (mobile && mobile.trim() !== '' && !isValidMobile(mobile)) {
+                document.getElementById('mobileError').classList.add('show');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+
+        // ======================== RESET FORM ========================
+        function resetContactForm() {
+            document.getElementById('contactForm').reset();
+            // Remove all validation styling
+            [nameInput, emailInput, mobileInput].forEach(input => {
+                input.classList.remove('valid-email', 'invalid-email');
+            });
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            // Update Sr. No after reset (in case new records were added)
+            updateSrNo();
+            // Clear any hidden status messages
+            const successMsg = document.getElementById('successMessage');
+            const errorMsg = document.getElementById('errorMessage');
+            successMsg.style.display = 'none';
+            errorMsg.style.display = 'none';
+        }
+
+        // ======================== SUBMIT FORM TO GOOGLE SHEETS ========================
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Validate form before submission
+            if (!validateContactForm()) {
+                // Show validation error message
+                const errorMsg = document.getElementById('errorMessage');
+                errorMsg.textContent = '❌ Please correct the validation errors before saving.';
+                errorMsg.style.display = 'block';
+                setTimeout(() => {
+                    errorMsg.style.display = 'none';
+                }, 4000);
+                return;
+            }
+            
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+            
+            try {
+                // Prepare form data for submission
+                const formData = new FormData();
+                formData.append('spreadsheetId', SPREADSHEET_ID);
+                formData.append('sheetName', SHEET_NAME);
+                formData.append('action', 'insert');
+                
+                // Get field values (trim whitespace)
+                const srNo = srNoInput.value;
+                const name = nameInput.value?.trim() || '';
+                const email = emailInput.value?.trim() || '';
+                const mobile = mobileInput.value?.trim() || '';
+                const note = noteInput.value?.trim() || '';
+                
+                // Append fields matching the header columns
+                formData.append('Sr. No', srNo);
+                formData.append('Name', name);
+                formData.append('Email Id', email);
+                formData.append('Mobile No', mobile);
+                formData.append('Note', note);
+                
+                // No file upload for this form, but maintaining compatibility
+                formData.append('fileCount', 0);
+                
+                // Send data to Google Apps Script
+                const response = await fetch(SCRIPT_URL, { 
+                    method: 'POST', 
+                    body: formData,
+                    mode: 'cors'
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    let successMsgText = `✅ Contact details saved successfully!\n`;
+                    successMsgText += `📝 Sr. No: ${srNo}\n`;
+                    if (name) successMsgText += `👤 Name: ${name}\n`;
+                    if (email) successMsgText += `📧 Email: ${email}\n`;
+                    if (mobile) successMsgText += `📱 Mobile: ${mobile}\n`;
+                    
+                    const successMsg = document.getElementById('successMessage');
+                    successMsg.textContent = successMsgText;
+                    successMsg.style.display = 'block';
+                    
+                    // Reset form after successful save
+                    setTimeout(() => {
+                        resetContactForm();
+                        successMsg.style.display = 'none';
+                        // Refresh Sr. No after reset (to get latest count)
+                        updateSrNo();
+                    }, 3000);
+                } else {
+                    throw new Error(result.message || 'Failed to save data');
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                const errorMsg = document.getElementById('errorMessage');
+                errorMsg.textContent = '❌ Error: ' + (error.message || 'Failed to save contact details. Please check your connection and try again.');
+                errorMsg.style.display = 'block';
+                setTimeout(() => {
+                    errorMsg.style.display = 'none';
+                }, 5000);
+            } finally {
+                loading.classList.remove('active');
+            }
+        });
+
+        // ======================== AUTO-REFRESH SR NO WHEN NEEDED ========================
+        // Refresh Sr. No when focusing on the form (in case new records added elsewhere)
+        let lastSrNoCheck = 0;
+        async function refreshSrNoIfNeeded() {
+            const now = Date.now();
+            if (now - lastSrNoCheck > 30000) { // Check every 30 seconds max
+                lastSrNoCheck = now;
+                await updateSrNo();
+            }
+        }
+        
+        // Refresh Sr. No when form is interacted with
+        document.getElementById('contactForm').addEventListener('focusin', refreshSrNoIfNeeded);
+        
+        // ======================== MOBILE NUMBER INPUT RESTRICTIONS ========================
+        mobileInput.addEventListener('keypress', function(e) {
+            // Allow only digits
+            const charCode = e.which ? e.which : e.keyCode;
+            if (charCode < 48 || charCode > 57) {
+                e.preventDefault();
+            }
+        });
+        
+        mobileInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const digitsOnly = pastedText.replace(/\D/g, '');
+            if (digitsOnly.length > 0) {
+                const finalValue = digitsOnly.slice(0, 10);
+                this.value = finalValue;
+                // Trigger input event for validation
+                const inputEvent = new Event('input', { bubbles: true });
+                this.dispatchEvent(inputEvent);
+            }
+        });
+        
+        // ======================== EMAIL INPUT SANITIZATION ========================
+        emailInput.addEventListener('blur', function() {
+            // Trim whitespace from email
+            this.value = this.value.trim();
+            // Trigger validation again
+            const inputEvent = new Event('input', { bubbles: true });
+            this.dispatchEvent(inputEvent);
+        });
+        
+        // ======================== NAME INPUT SANITIZATION ========================
+        nameInput.addEventListener('blur', function() {
+            // Trim whitespace and capitalize first letter of each word (basic formatting)
+            let value = this.value.trim();
+            if (value) {
+                // Capitalize first letter of each word (optional formatting)
+                value = value.replace(/\b\w/g, char => char.toUpperCase());
+                this.value = value;
+            }
+            // Trigger validation
+            const inputEvent = new Event('input', { bubbles: true });
+            this.dispatchEvent(inputEvent);
+        });
+        
+        // ======================== INITIALIZATION ========================
+        async function init() {
+            await updateSrNo();
+            // Set max date for any date fields (not needed but maintaining pattern)
+            console.log('Contact Manager Form initialized');
+            console.log(`Connected to Sheet: ${SHEET_NAME} (ID: ${SPREADSHEET_ID})`);
+        }
+        
+        init();
+        
+        // Optional: Add keyboard shortcut for reset (Ctrl+R or Cmd+R)
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+                e.preventDefault();
+                if (confirm('Reset all form fields?')) {
+                    resetContactForm();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
