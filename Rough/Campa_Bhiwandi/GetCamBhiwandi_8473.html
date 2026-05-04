@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>CNG Trip Management System - Form 8472</title>
+    <title>CNG Trip Management System - Form 8473</title>
     <style>
         * {
             margin: 0;
@@ -735,7 +735,7 @@
 
     <div class="container">
         <div class="header">
-            <h2>⛽ CNG Trip Management System - Form 8472</h2>
+            <h2>⛽ CNG Trip Management System - Form 8473</h2>
             <p>Manage CNG Trip Records with Automatic & Manual Cost Calculations</p>
         </div>
 
@@ -793,7 +793,7 @@
 
     <script>
         const SPREADSHEET_ID = '1ACLheHmzkn1Ut92oSeSTn5GekSm20luwSrxmcLoijQ4';
-        const SPREADSHEET_NAME = 'CamBhiwandi_8472';
+        const SPREADSHEET_NAME = 'CamBhiwandi_8473';
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5NBh26tyNs3Ae7UiyBThu8tTV3xFV21pJR16WnPBXnNvzKRyyLYKsmShdln9yRRexUA/exec';
         const DRIVE_FOLDER_ID = '1KCS4l-0n8D-kjaZYmAHJsPKGT_7aj4b4';
 
@@ -889,7 +889,7 @@
             currentTrip = tripsData[index];
             currentRowIndex = index + 2;
             const modalBody = document.getElementById('modalBody');
-            const fields = ['Sr. No','Date','LR No','Start KM','End KM','Distance','Food Amt','Advance','CNG Tank','CNG Rate','CNG Cost','Destination','Distributor','Unloading Charge','Note'];
+            const fields = ['Sr. No','Trip No','Date','LR No','Start KM','End KM','Distance','Food Amt','Advance','CNG Tank','CNG Rate','CNG Cost','Destination','Distributor','EWay Bill No','Unloading Charge','Note'];
             let html = '<table class="details-table">';
             fields.forEach(f => {
                 let val = safeString(currentTrip[f]);
@@ -970,6 +970,7 @@
             
             const fields = [
                 { label:'Date', name:'Date', type:'date' },
+                { label:'Trip No', name:'Trip No', type:'number', step:'1' },
                 { label:'LR No', name:'LR No', type:'text' },
                 { label:'Start KM', name:'Start KM', type:'number', step:'1' },
                 { label:'End KM', name:'End KM', type:'number', step:'1' },
@@ -982,6 +983,7 @@
                 { label:'Destination', name:'Destination', type:'text' },
                 { label:'Distributor', name:'Distributor', type:'text' },
                 { label:'Unloading Charge', name:'Unloading Charge', type:'number', step:'0.01' },
+                { label:'EWay Bill No', name:'EWay Bill No', type:'number', step:'0.01' },
                 { label:'Note', name:'Note', type:'textarea', rows:2 }
             ];
             
@@ -1035,7 +1037,7 @@
                 fd.append('rowIndex', currentRowIndex);
                 fd.append('driveFolderId', DRIVE_FOLDER_ID);
                 
-                const fieldNames = ['Date','LR No','Start KM','End KM','Distance','Food Amt','Advance','CNG Tank','CNG Rate','CNG Cost','Destination','Distributor','Unloading Charge','Note'];
+                const fieldNames = ['Date','Trip No','LR No','Start KM','End KM','Distance','Food Amt','Advance','CNG Tank','CNG Rate','CNG Cost','Destination','Distributor','EWay Bill No','Unloading Charge','Note'];
                 for(let f of fieldNames) {
                     const el = document.getElementById(`update_${f.replace(/\s/g,'_')}`);
                     if(el) fd.append(f, el.value);
