@@ -891,7 +891,7 @@
             currentTrip = tripsData[index];
             currentRowIndex = index + 2;
             const modalBody = document.getElementById('modalBody');
-            const fields = ['Sr. No','Date','LR No','Start KM','End KM','Distance','Food Amt','Advance','Diesel liter','Diesel Rate','Diesel Cost','Destination','Distributor','Unloading Charge','Note'];
+            const fields = ['Sr. No','Date','LR No','Trip No','Start KM','End KM','Distance','Food Amt','Advance','Diesel liter','Diesel Rate','Diesel Cost','Destination','Distributor','EWay Bill No','Unloading Charge','Note'];
             let html = '<table class="details-table">';
             fields.forEach(f => {
                 let val = safeString(currentTrip[f]);
@@ -954,6 +954,7 @@
             const fields = [
                 { label:'Date', name:'Date', type:'date' },
                 { label:'LR No', name:'LR No', type:'text' },
+                { label:'Trip No', name:'Trip No', type:'number', step:'1' },
                 { label:'Start KM', name:'Start KM', type:'number', step:'1' },
                 { label:'End KM', name:'End KM', type:'number', step:'1' },
                 { label:'Distance (Auto)', name:'Distance', type:'number', readonly:true },
@@ -964,6 +965,7 @@
                 { label:'Diesel Cost (Auto)', name:'Diesel Cost', type:'number', step:'0.01', readonly:true },
                 { label:'Destination', name:'Destination', type:'text' },
                 { label:'Distributor', name:'Distributor', type:'text' },
+                { label:'EWay Bill No', name:'EWay Bill No', type:'number', step:'0.01' },
                 { label:'Unloading Charge', name:'Unloading Charge', type:'number', step:'0.01' },
                 { label:'Note', name:'Note', type:'textarea', rows:2 }
             ];
@@ -1010,7 +1012,7 @@
                 fd.append('rowIndex', currentRowIndex);
                 fd.append('driveFolderId', DRIVE_FOLDER_ID);
                 
-                const fieldNames = ['Date','LR No','Start KM','End KM','Distance','Food Amt','Advance','Diesel liter','Diesel Rate','Diesel Cost','Destination','Distributor','Unloading Charge','Note'];
+                const fieldNames = ['Date','LR No','Trip No','Start KM','End KM','Distance','Food Amt','Advance','Diesel liter','Diesel Rate','Diesel Cost','Destination','Distributor','EWay Bill No','Unloading Charge','Note'];
                 for(let f of fieldNames) {
                     const el = document.getElementById(`update_${f.replace(/\s/g,'_')}`);
                     if(el) fd.append(f, el.value);
