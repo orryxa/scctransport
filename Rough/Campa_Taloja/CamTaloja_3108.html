@@ -385,6 +385,11 @@
                     </div>
 
                     <div class="form-group">
+                        <label>Trip No</label>
+                        <input type="number" id="tripno" step="1" placeholder="Enter Trip Number">
+                    </div>
+
+                    <div class="form-group">
                         <label>LR No</label>
                         <input type="text" id="lrNo" placeholder="Enter LR Number">
                     </div>
@@ -442,6 +447,11 @@
                         <label>Distributor</label>
                         <input type="text" id="distributor" placeholder="Start typing distributor..." autocomplete="off">
                         <div id="distributorDropdown" class="autocomplete-list" style="display: none;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>E-Way Bill Number</label>
+                        <input type="number" id="ewayno" step="1" placeholder="Enter E-Way No">
                     </div>
 
                     <div class="form-group">
@@ -721,6 +731,7 @@
                 const fields = {
                     'Sr. No': document.getElementById('srNo').value,
                     'Date': document.getElementById('tripDate').value,
+                    'Trip No': document.getElementById('tripno').value,
                     'LR No': document.getElementById('lrNo').value,
                     'Start KM': document.getElementById('startKm').value,
                     'End KM': document.getElementById('endKm').value,
@@ -732,6 +743,7 @@
                     'Diesel Cost': dieselCostValue,
                     'Destination': document.getElementById('destination').value,
                     'Distributor': document.getElementById('distributor').value,
+                    'EWay Bill No': document.getElementById('ewayno').value,
                     'Unloading Charge': document.getElementById('unloadingCharge').value,
                     'Note': document.getElementById('note').value
                 };
