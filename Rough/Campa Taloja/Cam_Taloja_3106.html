@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>3106 Fleet Manager | Simple & Light</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Inter', Roboto, Helvetica, sans-serif;
+        }
+
+        :root {
+            --blue-light: #eef2ff;
+            --blue-soft: #dbeafe;
+            --blue-primary: #3b82f6;
+            --blue-deep: #2563eb;
+            --yellow-light: #fef9e3;
+            --yellow-soft: #fef3c7;
+            --yellow-primary: #fbbf24;
+            --amber: #f59e0b;
+            --gray-bg: #f5f7fb;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        body {
+            background: linear-gradient(135deg, #eef2ff 0%, #fef9e3 100%);
+            min-height: 100vh;
+            padding: 20px 16px;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Page animations */
+        .page {
+            display: none;
+            animation: fadeSlide 0.3s ease-out;
+        }
+        .page.active-page {
+            display: block;
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards - no borders, just soft shadow */
+        .soft-card {
+            background: rgba(255,255,255,0.96);
+            border-radius: 2rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            overflow: hidden;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Headers */
+        .card-header {
+            padding: 1.2rem 1.5rem;
+            background: linear-gradient(120deg, #ffffff 0%, #fefce8 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        .card-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e40af, #d97706);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Buttons */
+        .btn {
+            border: none;
+            padding: 10px 22px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1f5f9;
+            color: var(--text-dark);
+        }
+        .btn-primary {
+            background: linear-gradient(95deg, #3b82f6, #2563eb);
+            color: white;
+        }
+        .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.02); }
+        .btn-outline {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .btn-outline:hover { background: #fde68a; }
+        .btn-danger {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .btn-danger:hover { background: #fecaca; }
+        .btn-sm {
+            padding: 6px 16px;
+            font-size: 0.75rem;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Search Box */
+.search-wrapper {
+    width: 100%;
+}
+
+.search-wrapper input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+
+    padding: 12px 18px;
+    border: 2px solid #000;
+    border-radius: 30px;
+
+    background: #fff;
+    color: #333;
+    font-size: 0.95rem;
+    font-family: inherit;
+
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.search-wrapper input::placeholder {
+    color: #888;
+}
+
+.search-wrapper input:focus {
+    outline: none;
+    border-color: #000;
+    box-shadow: 0 0 0 4px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+        /* Scrollable table wrapper - no visible scrollbar but functional */
+        .table-wrapper {
+            overflow-x: auto;
+            overflow-y: visible;
+            scrollbar-width: thin;
+            padding: 0 0.5rem 1rem 0.5rem;
+        }
+        .table-wrapper::-webkit-scrollbar {
+            height: 4px;
+            background: transparent;
+        }
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: #fbbf24;
+            border-radius: 10px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .data-table th {
+            text-align: left;
+            padding: 14px 12px;
+            background: #fffbeb;
+            color: #92400e;
+            font-weight: 700;
+        }
+        .data-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #fef3c7;
+            color: var(--text-dark);
+        }
+        .data-table tr:hover td {
+            background: #fefce8;
+        }
+
+        /* Total badge */
+        .total-badge {
+            background: #dbeafe;
+            color: #1e40af;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 40px;
+            display: inline-block;
+            font-size: 0.8rem;
+        }
+
+        /* Details grid - responsive: 2fr on mobile, auto */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+        @media (max-width: 600px) {
+            .details-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+                padding: 1rem;
+            }
+        }
+        .detail-card {
+            background: #fefce8;
+            border-radius: 1.2rem;
+            padding: 0.9rem 1rem;
+            transition: 0.1s;
+        }
+        .detail-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #b45309;
+            font-weight: 600;
+        }
+        .detail-value {
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            color: #1e3a8a;
+            word-break: break-word;
+        }
+
+        /* Action row */
+        .action-row {
+            padding: 0.8rem 1.5rem 1.5rem;
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        /* Modal - comfortable on mobile with keyboard open */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 58, 138, 0.2);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-box {
+            background: white;
+            width: 92%;
+            max-width: 860px;
+            max-height: 85vh;
+            border-radius: 1.8rem;
+            overflow-y: auto;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.15);
+            animation: modalPop 0.25s ease;
+        }
+        @media (max-width: 640px) {
+            .modal-box {
+                max-height: auto;
+                width: 95%;
+                margin: 10px auto;
+            }
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.96); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-header {
+            background: #fefce8;
+            padding: 1rem 1.3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .modal-body {
+            padding: 1.3rem;
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #b45309;
+        }
+
+        /* Form - comfortable spacing */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 1rem;
+        }
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .field label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #d97706;
+        }
+        .field input, .field select, .field textarea {
+            padding: 10px 14px;
+            border-radius: 28px;
+            border: 1px solid #fde68a;
+            background: #ffffff;
+            font-size: 0.85rem;
+            transition: 0.15s;
+        }
+        .field input:focus, .field select:focus, .field textarea:focus {
+            outline: none;
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 2px rgba(251,191,36,0.2);
+        }
+        .cng-panel {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .fix-toggle {
+            background: #fef3c7;
+            padding: 5px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .fullwidth {
+            grid-column: 1 / -1;
+        }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e2e8f0;
+            border-top: 2px solid #fbbf24;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Autocomplete styles */
+        .autocomplete-wrap {
+            position: relative;
+        }
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            margin-top: 4px;
+        }
+        .autocomplete-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.05s linear;
+        }
+        .autocomplete-item:hover, .autocomplete-item.active {
+            background: #fef3c7;
+        }
+		
+		/* Hide scrollbars but keep scrolling */
+    .table-wrapper::-webkit-scrollbar,
+    .modal-box::-webkit-scrollbar,
+    .autocomplete-list::-webkit-scrollbar,
+    .details-grid::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+        background: transparent;
+        display: none;
+    }
+    
+    .table-wrapper,
+    .modal-box,
+    .autocomplete-list,
+    .details-grid,
+    body {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .table-wrapper {
+        overflow-x: auto;
+        overflow-y: visible;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .modal-box {
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .autocomplete-list {
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .details-grid {
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .modal-body {
+        overflow-y: auto;
+        max-height: calc(85vh - 70px);
+        scrollbar-width: none;
+    }
+    
+    .modal-body::-webkit-scrollbar {
+        display: none;
+    }
+    
+    @media (max-width: 768px) {
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <!-- PAGE 1 - LIST -->
+    <div id="page1" class="page active-page">
+        <div class="soft-card">
+            <div class="card-header">
+                <h2>🚛 3106 · Trip Manager</h2>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button id="refreshBtnP1" class="btn btn-outline">⟳ Refresh</button>
+                    <button id="addNewBtn" class="btn btn-primary">+ Add New Trip</button>
+                </div>
+            </div>
+            <div style="padding: 0.8rem 1.5rem;">
+                <div class="search-wrapper">
+                    <input type="text" id="searchInput" placeholder="🔍 Search by LR No, Distributor, Sr No...">
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead><tr><th>Sr. No</th><th>LR No</th><th>Distributor</th><th>Total Amount</th><th>Action</th></tr></thead>
+                    <tbody id="tableBody"><tr><td colspan="5" style="text-align:center;">Loading trips <span class="spinner"></span></td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 2 - DETAIL -->
+    <div id="page2" class="page">
+        <div class="soft-card">
+            <div class="card-header">
+                <h2>📋 Trip Details</h2>
+                <button id="backToPage1Btn" class="btn btn-outline">← Back</button>
+            </div>
+            <div id="detailsContainer" class="details-grid">Loading...</div>
+            <div class="action-row">
+                <button id="editFromDetailBtn" class="btn btn-primary">✏️ Edit</button>
+                <button id="deleteFromDetailBtn" class="btn btn-danger">🗑 Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Global Modal Alert -->
+<div id="globalModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 400px;">
+        <div class="modal-header"><h3 id="modalTitle">Notice</h3><button class="close-modal" id="closeGlobalModal">×</button></div>
+        <div class="modal-body"><p id="modalMsg"></p><div style="display:flex; justify-content:flex-end; margin-top:1rem;"><button id="confirmModalBtn" class="btn btn-primary">OK</button></div></div>
+    </div>
+</div>
+
+<!-- Form Modal -->
+<div id="formModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 id="formModalTitle">Add New Trip</h3>
+            <button class="close-modal" id="closeFormModalBtn">×</button>
+        </div>
+        <div class="modal-body" id="formModalBody"></div>
+    </div>
+</div>
+
+<script>
+// =====================================================
+// 3106 FLEET MANAGER - COMPLETE OPTIMIZED SCRIPT
+// Full functionality: CRUD operations, Distributor sheet sync, Fast loading
+// =====================================================
+
+// ======================== CONFIGURATION ========================
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoDds81u8M5N8micA_hoIBgCS7aCFm0NUmwW6XLH4m_fRJ8R9pGqjgFGMeBxBd2dSL/exec";
+const SPREADSHEET_ID = "1GaphoayNzhbQ8RV9z1D45Djr5hsRjUPgyKrtmkjjhGI";
+const SHEET_NAME = "Cam_Taloja_3106";
+const DIST_SHEET = "Distributor";
+
+// Cache configuration
+const CACHE_KEY = "fleet_trips_cache";
+const DIST_CACHE_KEY = "fleet_dist_cache";
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
+// Global variables
+let allTrips = [];
+let currentViewTrip = null;
+let destinationOptions = [];
+let distributorOptions = [];
+let preloadInProgress = false;
+
+// ======================== DOM Elements Cache ========================
+const dom = {};
+
+function cacheDomElements() {
+    dom.page1 = document.getElementById('page1');
+    dom.page2 = document.getElementById('page2');
+    dom.tableBody = document.getElementById('tableBody');
+    dom.searchInput = document.getElementById('searchInput');
+    dom.refreshBtn = document.getElementById('refreshBtnP1');
+    dom.addNewBtn = document.getElementById('addNewBtn');
+    dom.backBtn = document.getElementById('backToPage1Btn');
+    dom.editBtn = document.getElementById('editFromDetailBtn');
+    dom.deleteBtn = document.getElementById('deleteFromDetailBtn');
+    dom.detailsContainer = document.getElementById('detailsContainer');
+    dom.globalModal = document.getElementById('globalModal');
+    dom.formModal = document.getElementById('formModal');
+    dom.modalTitle = document.getElementById('modalTitle');
+    dom.modalMsg = document.getElementById('modalMsg');
+    dom.formModalTitle = document.getElementById('formModalTitle');
+    dom.formModalBody = document.getElementById('formModalBody');
+}
+
+// ======================== Helper Functions ========================
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+}
+
+function computeTotal(trip) {
+    const food = parseFloat(trip["Food Amt"]) || 0;
+    const adv = parseFloat(trip["Advance"]) || 0;
+    const sal = parseFloat(trip["Salary"]) || 0;
+    const cng = parseFloat(trip["CNG Cost"]) || 0;
+    const unload = parseFloat(trip["Unloading Charge"]) || 0;
+    return (food + adv + sal + cng + unload).toFixed(2);
+}
+
+function showModal(msg, title = "Message", isConfirm = false, onConfirm = null, autoClose = 0) {
+    if (!dom.globalModal) return;
+    dom.modalTitle.innerText = title;
+    dom.modalMsg.innerHTML = msg;
+    const confirmBtn = document.getElementById('confirmModalBtn');
+    if (confirmBtn) {
+        confirmBtn.onclick = () => {
+            dom.globalModal.classList.remove('active');
+            if (isConfirm && onConfirm) onConfirm();
+        };
+    }
+    dom.globalModal.classList.add('active');
+    if (autoClose > 0) setTimeout(() => dom.globalModal.classList.remove('active'), autoClose);
+}
+
+function showSpinner(element, show, customHtml = null) {
+    if (!element) return;
+    if (show) {
+        element.disabled = true;
+        const originalText = element.innerHTML;
+        element.setAttribute('data-original-text', originalText);
+        element.innerHTML = customHtml || '<span class="spinner"></span> Loading...';
+    } else {
+        element.disabled = false;
+        const original = element.getAttribute('data-original-text');
+        if (original) element.innerHTML = original;
+    }
+}
+
+// ======================== FAST CACHED FETCH WITH BACKGROUND LOADING ========================
+async function fetchWithBackgroundCache(url, cacheKey, ttl) {
+    const cached = localStorage.getItem(cacheKey);
+    let cachedData = null;
+    
+    if (cached) {
+        try {
+            const { data, timestamp } = JSON.parse(cached);
+            if (Date.now() - timestamp < ttl) {
+                cachedData = data;
+            }
+        } catch (e) { }
+    }
+    
+    if (cachedData && !preloadInProgress) {
+        fetchFreshDataInBackground(url, cacheKey);
+        return cachedData;
+    }
+    
+    try {
+        const response = await fetch(url);
+        const result = await response.json();
+        if (result.status === "success" && Array.isArray(result.data)) {
+            localStorage.setItem(cacheKey, JSON.stringify({
+                data: result.data,
+                timestamp: Date.now()
+            }));
+            return result.data;
+        }
+        return [];
+    } catch (err) {
+        console.error("Fetch error:", err);
+        return cachedData || [];
+    }
+}
+
+async function fetchFreshDataInBackground(url, cacheKey) {
+    preloadInProgress = true;
+    try {
+        const response = await fetch(url);
+        const result = await response.json();
+        if (result.status === "success" && Array.isArray(result.data)) {
+            localStorage.setItem(cacheKey, JSON.stringify({
+                data: result.data,
+                timestamp: Date.now()
+            }));
+            
+            if (cacheKey === CACHE_KEY && result.data.length !== allTrips.length) {
+                allTrips = result.data;
+                renderTablePage1(dom.searchInput?.value || "");
+            }
+            if (cacheKey === DIST_CACHE_KEY) {
+                updateDistributorOptionsFromData(result.data);
+            }
+        }
+    } catch (err) {
+        console.warn("Background fetch failed:", err);
+    } finally {
+        preloadInProgress = false;
+    }
+}
+
+async function loadTripsFast() {
+    const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}&_=${Date.now()}`;
+    const data = await fetchWithBackgroundCache(url, CACHE_KEY, CACHE_TTL);
+    allTrips = data;
+    return allTrips;
+}
+
+async function loadDistributorFast() {
+    const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${DIST_SHEET}&_=${Date.now()}`;
+    const data = await fetchWithBackgroundCache(url, DIST_CACHE_KEY, CACHE_TTL);
+    updateDistributorOptionsFromData(data);
+    return { destinationOptions, distributorOptions };
+}
+
+function updateDistributorOptionsFromData(data) {
+    const destinations = new Set();
+    const distributors = new Set();
+    data.forEach(row => {
+        if (row.Destination && row.Destination.trim()) destinations.add(row.Destination.trim());
+        if (row.Distributor && row.Distributor.trim()) distributors.add(row.Distributor.trim());
+    });
+    destinationOptions = Array.from(destinations);
+    distributorOptions = Array.from(distributors);
+    console.log("Updated options - Destinations:", destinationOptions.length, "Distributors:", distributorOptions.length);
+}
+
+// ======================== DISTRIBUTOR SHEET SAVE FUNCTIONALITY ========================
+async function fetchExistingDistributorData(forceRefresh = false) {
+    if (forceRefresh) localStorage.removeItem(DIST_CACHE_KEY);
+    
+    const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${DIST_SHEET}&_=${Date.now()}`;
+    const response = await fetch(url);
+    const result = await response.json();
+    
+    if (result.status === "success" && Array.isArray(result.data)) {
+        localStorage.setItem(DIST_CACHE_KEY, JSON.stringify({
+            data: result.data,
+            timestamp: Date.now()
+        }));
+        return result.data;
+    }
+    return [];
+}
+
+async function addRowToDistributorSheet(srNo, distributor, destination) {
+    try {
+        console.log(`Adding row to Distributor sheet: Sr.No=${srNo}, Dist=${distributor}, Dest=${destination}`);
+        
+        const params = new URLSearchParams();
+        params.append("action", "insert");
+        params.append("spreadsheetId", SPREADSHEET_ID);
+        params.append("sheetName", DIST_SHEET);
+        params.append("Sr. No", srNo.toString());
+        params.append("Distributor", distributor || "");
+        params.append("Destination", destination || "");
+
+        const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: params.toString()
+        });
+        
+        const result = await response.json();
+        console.log("Add row result:", result);
+        return result.status === "success";
+    } catch (err) {
+        console.error("Add row error:", err);
+        return false;
+    }
+}
+
+async function updateDistributorRow(srNo, distributor, destination) {
+    try {
+        const rowIndex = parseInt(srNo) + 1;
+        console.log(`Updating Distributor sheet: rowIndex=${rowIndex}, Sr.No=${srNo}, Dist=${distributor}, Dest=${destination}`);
+        
+        const params = new URLSearchParams();
+        params.append("action", "update");
+        params.append("spreadsheetId", SPREADSHEET_ID);
+        params.append("sheetName", DIST_SHEET);
+        params.append("rowIndex", rowIndex.toString());
+        params.append("Sr. No", srNo.toString());
+        params.append("Distributor", distributor || "");
+        params.append("Destination", destination || "");
+
+        const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: params.toString()
+        });
+        
+        const result = await response.json();
+        console.log("Update row result:", result);
+        return result.status === "success";
+    } catch (err) {
+        console.error("Update row error:", err);
+        return false;
+    }
+}
+
+async function smartSaveToDistributorSheet(distributorVal, destinationVal, existingData) {
+    const addedItems = [];
+    let dataModified = false;
+    
+    if ((!distributorVal || distributorVal.trim() === "") && (!destinationVal || destinationVal.trim() === "")) {
+        return { addedItems, dataModified: false };
+    }
+    
+    let currentData = JSON.parse(JSON.stringify(existingData));
+    const normalizedDist = distributorVal ? distributorVal.trim() : "";
+    const normalizedDest = destinationVal ? destinationVal.trim() : "";
+    
+    const distExists = normalizedDist && currentData.some(row => row.Distributor === normalizedDist);
+    const destExists = normalizedDest && currentData.some(row => row.Destination === normalizedDest);
+    
+    console.log("Smart save check:", { normalizedDist, normalizedDest, distExists, destExists });
+    
+    // Case 1: Both Distributor and Destination are new
+    if (normalizedDist && normalizedDest && !distExists && !destExists) {
+        const completelyEmptyRowIndex = currentData.findIndex(row => (!row.Distributor || row.Distributor === "") && (!row.Destination || row.Destination === ""));
+        
+        if (completelyEmptyRowIndex !== -1) {
+            const srNo = currentData[completelyEmptyRowIndex]['Sr. No'];
+            const success = await updateDistributorRow(srNo, normalizedDist, normalizedDest);
+            if (success) {
+                addedItems.push(`Added "${normalizedDist}" + "${normalizedDest}" to existing row`);
+                currentData[completelyEmptyRowIndex].Distributor = normalizedDist;
+                currentData[completelyEmptyRowIndex].Destination = normalizedDest;
+                dataModified = true;
+            }
+        } else {
+            const maxSrNo = currentData.reduce((max, row) => Math.max(max, parseInt(row['Sr. No']) || 0), 0);
+            const newSrNo = maxSrNo + 1;
+            const success = await addRowToDistributorSheet(newSrNo, normalizedDist, normalizedDest);
+            if (success) {
+                addedItems.push(`Created new entry: "${normalizedDist}" + "${normalizedDest}"`);
+                currentData.push({ 'Sr. No': newSrNo.toString(), Distributor: normalizedDist, Destination: normalizedDest });
+                dataModified = true;
+            }
+        }
+    }
+    // Case 2: Only Distributor is new
+    else if (normalizedDist && !distExists) {
+        let targetRowIndex = -1;
+        
+        if (normalizedDest) {
+            targetRowIndex = currentData.findIndex(row => (!row.Distributor || row.Distributor === "") && row.Destination === normalizedDest);
+        }
+        if (targetRowIndex === -1) {
+            targetRowIndex = currentData.findIndex(row => (!row.Distributor || row.Distributor === ""));
+        }
+        
+        if (targetRowIndex !== -1) {
+            const srNo = currentData[targetRowIndex]['Sr. No'];
+            const existingDest = currentData[targetRowIndex].Destination || "";
+            const success = await updateDistributorRow(srNo, normalizedDist, existingDest);
+            if (success) {
+                addedItems.push(`Added Distributor "${normalizedDist}" to existing row`);
+                currentData[targetRowIndex].Distributor = normalizedDist;
+                dataModified = true;
+            }
+        } else {
+            const maxSrNo = currentData.reduce((max, row) => Math.max(max, parseInt(row['Sr. No']) || 0), 0);
+            const newSrNo = maxSrNo + 1;
+            const success = await addRowToDistributorSheet(newSrNo, normalizedDist, "");
+            if (success) {
+                addedItems.push(`Created new Distributor entry: "${normalizedDist}"`);
+                currentData.push({ 'Sr. No': newSrNo.toString(), Distributor: normalizedDist, Destination: "" });
+                dataModified = true;
+            }
+        }
+    }
+    // Case 3: Only Destination is new
+    else if (normalizedDest && !destExists) {
+        let targetRowIndex = -1;
+        
+        if (normalizedDist) {
+            targetRowIndex = currentData.findIndex(row => (!row.Destination || row.Destination === "") && row.Distributor === normalizedDist);
+        }
+        if (targetRowIndex === -1) {
+            targetRowIndex = currentData.findIndex(row => (!row.Destination || row.Destination === ""));
+        }
+        
+        if (targetRowIndex !== -1) {
+            const srNo = currentData[targetRowIndex]['Sr. No'];
+            const existingDist = currentData[targetRowIndex].Distributor || "";
+            const success = await updateDistributorRow(srNo, existingDist, normalizedDest);
+            if (success) {
+                addedItems.push(`Added Destination "${normalizedDest}" to existing row`);
+                currentData[targetRowIndex].Destination = normalizedDest;
+                dataModified = true;
+            }
+        } else {
+            const maxSrNo = currentData.reduce((max, row) => Math.max(max, parseInt(row['Sr. No']) || 0), 0);
+            const newSrNo = maxSrNo + 1;
+            const success = await addRowToDistributorSheet(newSrNo, "", normalizedDest);
+            if (success) {
+                addedItems.push(`Created new Destination entry: "${normalizedDest}"`);
+                currentData.push({ 'Sr. No': newSrNo.toString(), Distributor: "", Destination: normalizedDest });
+                dataModified = true;
+            }
+        }
+    }
+    
+    if (dataModified) {
+        localStorage.setItem(DIST_CACHE_KEY, JSON.stringify({
+            data: currentData,
+            timestamp: Date.now()
+        }));
+        updateDistributorOptionsFromData(currentData);
+    }
+    
+    return { addedItems, dataModified };
+}
+
+// ======================== UI RENDERING FUNCTIONS ========================
+function renderTablePage1(filter = "") {
+    if (!dom.tableBody) return;
+    
+    const searchLower = filter.toLowerCase();
+    let filtered = allTrips.filter(t => {
+        const lr = (t["LR No"] || "").toString().toLowerCase();
+        const dist = (t["Distributor"] || "").toString().toLowerCase();
+        const sr = (t["Sr. No"] || "").toString().toLowerCase();
+        return lr.includes(searchLower) || dist.includes(searchLower) || sr.includes(searchLower);
+    });
+    
+    if (!filtered.length) {
+        dom.tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">✨ No trips found</td></tr>';
+        return;
+    }
+    
+    const fragment = document.createDocumentFragment();
+    
+    filtered.forEach(t => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><strong>${escapeHtml(t["Sr. No"] || "")}</strong></td>
+            <td>${escapeHtml(t["LR No"] || "")}</td>
+            <td>${escapeHtml(t["Distributor"] || "")}</td>
+            <td><span class="total-badge">₹ ${parseFloat(computeTotal(t)).toLocaleString()}</span></td>
+            <td><button class="btn btn-sm btn-outline viewBtn" data-sr="${escapeHtml(t["Sr. No"] || "")}">👁️ View</button></td>
+        `;
+        fragment.appendChild(row);
+    });
+    
+    dom.tableBody.innerHTML = '';
+    dom.tableBody.appendChild(fragment);
+    
+    dom.tableBody.querySelectorAll('.viewBtn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const srVal = btn.getAttribute('data-sr');
+            const found = allTrips.find(tr => String(tr["Sr. No"]) === String(srVal));
+            if (found) {
+                currentViewTrip = found;
+                showPage2Fast(found);
+            }
+        });
+    });
+}
+
+function showPage2Fast(trip) {
+    if (!dom.detailsContainer) return;
+    
+    const fields = ["Sr. No", "Trip No", "Date", "SO No", "LR No", "Start KM", "End KM", "Distance",
+        "Food Amt", "Advance", "Salary", "CNG Tank", "CNG Rate", "CNG Cost",
+        "Destination", "Distributor", "Unloading Charge", "EWay Bill No", "NEFT Date", "NEFT Amt", "Note"];
+    
+    const fragment = document.createDocumentFragment();
+    
+    fields.forEach(f => {
+        let val = trip[f] !== undefined ? trip[f] : '';
+        if (val instanceof Date) val = val.toLocaleDateString();
+        const card = document.createElement('div');
+        card.className = 'detail-card';
+        card.innerHTML = `
+            <div class="detail-label">${f}</div>
+            <div class="detail-value">${escapeHtml(String(val)) || '—'}</div>
+        `;
+        fragment.appendChild(card);
+    });
+    
+    dom.detailsContainer.innerHTML = '';
+    dom.detailsContainer.appendChild(fragment);
+    
+    dom.page1?.classList.remove('active-page');
+    dom.page2?.classList.add('active-page');
+}
+
+function goToPage1() {
+    dom.page2?.classList.remove('active-page');
+    dom.page1?.classList.add('active-page');
+    refreshInBackground();
+}
+
+// ======================== REFRESH FUNCTIONS ========================
+async function refreshInBackground() {
+    const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}&_=${Date.now()}`;
+    const response = await fetch(url);
+    const result = await response.json();
+    if (result.status === "success" && Array.isArray(result.data)) {
+        allTrips = result.data;
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ data: result.data, timestamp: Date.now() }));
+        renderTablePage1(dom.searchInput?.value || "");
+    }
+}
+
+async function refreshAllData() {
+    if (dom.refreshBtn) {
+        showSpinner(dom.refreshBtn, true, '⟳ <span class="spinner"></span>');
+    }
+    try {
+        localStorage.removeItem(CACHE_KEY);
+        localStorage.removeItem(DIST_CACHE_KEY);
+        await loadTripsFast();
+        await loadDistributorFast();
+        renderTablePage1(dom.searchInput?.value || "");
+    } catch (err) {
+        console.error("Refresh error:", err);
+    } finally {
+        if (dom.refreshBtn) showSpinner(dom.refreshBtn, false);
+    }
+}
+
+// ======================== DELETE FUNCTION ========================
+function findRowIndexBySrNo(sr) {
+    const idx = allTrips.findIndex(t => String(t["Sr. No"]) === String(sr));
+    return idx !== -1 ? idx + 2 : null;
+}
+
+async function deleteCurrentTrip() {
+    if (!currentViewTrip) return;
+    const sr = currentViewTrip["Sr. No"];
+    const rowIdx = findRowIndexBySrNo(sr);
+    if (!rowIdx) {
+        showModal("Row error", "Error");
+        return;
+    }
+    
+    showModal(`⚠️ Do you want to Delete Trip No ${sr}?.`, "Confirm Delete", true, async () => {
+        if (dom.deleteBtn) showSpinner(dom.deleteBtn, true, 'Deleting... <span class="spinner"></span>');
+        try {
+            const params = new URLSearchParams();
+            params.append("action", "delete");
+            params.append("spreadsheetId", SPREADSHEET_ID);
+            params.append("sheetName", SHEET_NAME);
+            params.append("rowIndex", rowIdx);
+            const response = await fetch(SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: params
+            });
+            const result = await response.json();
+            if (result.status === "success") {
+                showModal("✅ Deleted successfully!", "Success", false, null, 1200);
+                await refreshAllData();
+                goToPage1();
+            } else {
+                showModal("Delete failed", "Error");
+            }
+        } catch (err) {
+            showModal("Error: " + err.message, "Error");
+        } finally {
+            if (dom.deleteBtn) showSpinner(dom.deleteBtn, false);
+        }
+    });
+}
+
+// ======================== FORM FUNCTIONS ========================
+function convertToYYYYMMDD(d) {
+    if (!d) return "";
+    let dt;
+    if (typeof d === 'string' && d.includes('/')) {
+        let p = d.split('/');
+        dt = new Date(`${p[2]}-${p[1]}-${p[0]}`);
+    } else {
+        dt = new Date(d);
+    }
+    if (isNaN(dt)) return "";
+    return dt.toISOString().split('T')[0];
+}
+
+function formatDMY(dateStr) {
+    if (!dateStr) return "";
+    let d = new Date(dateStr);
+    if (isNaN(d)) return "";
+    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+}
+
+function buildFormHtml(trip = null, isEdit = false) {
+    const def = {
+        "Trip No": "", "Date": "", "SO No": "", "LR No": "", "Start KM": "0", "End KM": "0", "Distance": "0",
+        "Food Amt": "0", "Advance": "0", "Salary": "0", "CNG Tank": "FIX", "CNG Rate": "0", "CNG Cost": "",
+        "Destination": "", "Distributor": "", "Unloading Charge": "0", "EWay Bill No": "", "NEFT Date": "", "NEFT Amt": "0", "Note": ""
+    };
+    if (trip) {
+        Object.keys(def).forEach(k => { if (trip[k] !== undefined) def[k] = trip[k]; });
+    }
+    const isFix = (def["CNG Tank"] === "FIX");
+    
+    return `
+        <form id="dynamicTripForm">
+            <div class="form-grid">
+                <div class="field"><label>Trip No</label><input type="number" id="editTripNo" value="${escapeHtml(def["Trip No"])}"></div>
+                <div class="field"><label>Date *</label><input type="date" id="editDate" value="${convertToYYYYMMDD(def["Date"])}"></div>
+                <div class="field"><label>SO No</label><input type="number" id="editSoNo" value="${escapeHtml(def["SO No"])}"></div>
+                <div class="field"><label>LR No</label><input type="number" id="editLrNo" value="${escapeHtml(def["LR No"])}"></div>
+                <div class="field"><label>Start KM</label><input type="number" id="editStartKm" value="${escapeHtml(def["Start KM"])}"></div>
+                <div class="field"><label>End KM</label><input type="number" id="editEndKm" value="${escapeHtml(def["End KM"])}"></div>
+                <div class="field"><label>Distance</label><input type="text" id="editDistance" disabled value="${escapeHtml(def["Distance"])}"></div>
+                <div class="field"><label>Food Amt</label><input type="number" id="editFoodAmt" value="${escapeHtml(def["Food Amt"])}"></div>
+                <div class="field"><label>Advance</label><input type="number" id="editAdvance" value="${escapeHtml(def["Advance"])}"></div>
+                <div class="field"><label>Salary</label><input type="number" id="editSalary" value="${escapeHtml(def["Salary"])}"></div>
+                <div class="field"><label>CNG Tank</label>
+                    <div class="cng-panel">
+                        <label class="fix-toggle"><input type="checkbox" id="editCngFixToggle" ${isFix ? "checked" : ""}> FIX Mode</label>
+                        <input type="number" id="editCngManualLiters" placeholder="Manual liters" ${isFix ? "disabled" : ""} value="${!isFix ? escapeHtml(def["CNG Tank"]) : ""}">
+                    </div>
+                </div>
+                <div class="field"><label>CNG Rate</label><input type="number" step="0.01" id="editCngRate" value="${escapeHtml(def["CNG Rate"])}"></div>
+                <div class="field"><label>CNG Cost</label><input type="number" id="editCngCost" value="${escapeHtml(def["CNG Cost"])}"></div>
+                <div class="field autocomplete-wrap"><label>Destination</label><input type="text" id="editDestination" value="${escapeHtml(def["Destination"])}" autocomplete="off"><div id="destAutoList" class="autocomplete-list"></div></div>
+                <div class="field autocomplete-wrap"><label>Distributor</label><input type="text" id="editDistributor" value="${escapeHtml(def["Distributor"])}" autocomplete="off"><div id="distAutoList" class="autocomplete-list"></div></div>
+                <div class="field"><label>Unloading Charge</label><input type="number" id="editUnloadingCharge" value="${escapeHtml(def["Unloading Charge"])}"></div>
+                <div class="field"><label>EWay Bill No</label><input type="text" id="editEwayBill" value="${escapeHtml(def["EWay Bill No"])}"></div>
+                <div class="field"><label>NEFT Date</label><input type="date" id="editNeftDate" value="${convertToYYYYMMDD(def["NEFT Date"])}"></div>
+                <div class="field"><label>NEFT Amt</label><input type="number" id="editNeftAmt" value="${escapeHtml(def["NEFT Amt"])}"></div>
+                <div class="field fullwidth"><label>Note</label><textarea id="editNote" rows="2">${escapeHtml(def["Note"])}</textarea></div>
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="button" id="cancelFormBtn" class="btn btn-outline">Cancel</button>
+                <button type="submit" id="saveUpdateBtn" class="btn btn-primary">${isEdit ? "💾 Update Trip" : "💾 Save Trip"}</button>
+            </div>
+        </form>
+    `;
+}
+
+function setupAutocomplete(inputId, listId, optionsArray) {
+    const input = document.getElementById(inputId);
+    const listEl = document.getElementById(listId);
+    if (!input || !listEl) return;
+    
+    function showOptions(filterVal = '') {
+        const term = filterVal.toLowerCase();
+        const filtered = optionsArray.filter(opt => opt.toLowerCase().includes(term));
+        if (filtered.length > 0) {
+            listEl.innerHTML = filtered.map(opt => `<div class="autocomplete-item" data-value="${escapeHtml(opt)}">${escapeHtml(opt)}</div>`).join('');
+            listEl.style.display = 'block';
+            listEl.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    input.value = item.getAttribute('data-value');
+                    listEl.style.display = 'none';
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+            });
+        } else {
+            listEl.style.display = 'none';
+        }
+    }
+    
+    input.addEventListener('input', (e) => showOptions(e.target.value));
+    input.addEventListener('focus', () => showOptions(input.value));
+    input.addEventListener('blur', () => setTimeout(() => listEl.style.display = 'none', 200));
+    
+    input.addEventListener('keydown', (e) => {
+        const items = listEl.querySelectorAll('.autocomplete-item');
+        const active = listEl.querySelector('.autocomplete-item.active');
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (items.length) {
+                let next = 0;
+                if (active) {
+                    const idx = Array.from(items).indexOf(active);
+                    next = Math.min(idx + 1, items.length - 1);
+                    active.classList.remove('active');
+                }
+                items[next].classList.add('active');
+                items[next].scrollIntoView({ block: 'nearest' });
+            }
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (items.length) {
+                let prev = items.length - 1;
+                if (active) {
+                    const idx = Array.from(items).indexOf(active);
+                    prev = Math.max(idx - 1, 0);
+                    active.classList.remove('active');
+                }
+                items[prev].classList.add('active');
+                items[prev].scrollIntoView({ block: 'nearest' });
+            }
+        } else if (e.key === 'Enter') {
+            const activeItem = listEl.querySelector('.autocomplete-item.active');
+            if (activeItem) {
+                e.preventDefault();
+                input.value = activeItem.getAttribute('data-value');
+                listEl.style.display = 'none';
+            }
+        } else if (e.key === 'Escape') {
+            listEl.style.display = 'none';
+        }
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!listEl.contains(e.target) && e.target !== input) {
+            listEl.style.display = 'none';
+        }
+    });
+}
+
+function attachFormEvents(isEdit, rowIdx) {
+    const form = document.getElementById('dynamicTripForm');
+    if (form) {
+        form.addEventListener('submit', (e) => handleFormSubmit(e, isEdit, rowIdx));
+    }
+    document.getElementById('cancelFormBtn')?.addEventListener('click', () => {
+        dom.formModal?.classList.remove('active');
+    });
+    
+    const start = document.getElementById('editStartKm');
+    const end = document.getElementById('editEndKm');
+    const distField = document.getElementById('editDistance');
+    const updateDist = () => {
+        if (distField && start && end) {
+            distField.value = Math.max(0, (parseFloat(end.value) || 0) - (parseFloat(start.value) || 0));
+        }
+    };
+    start?.addEventListener('input', updateDist);
+    end?.addEventListener('input', updateDist);
+    
+    const fixToggle = document.getElementById('editCngFixToggle');
+    const manualLit = document.getElementById('editCngManualLiters');
+    const rateF = document.getElementById('editCngRate');
+    const costF = document.getElementById('editCngCost');
+    const updateManualCost = () => {
+        if (!fixToggle?.checked && manualLit && rateF && costF) {
+            costF.value = Math.round((parseFloat(manualLit.value) || 0) * (parseFloat(rateF.value) || 0));
+        }
+    };
+    fixToggle?.addEventListener('change', () => {
+        if (fixToggle.checked) {
+            manualLit.disabled = true;
+            manualLit.value = "";
+            costF.disabled = false;
+        } else {
+            manualLit.disabled = false;
+            updateManualCost();
+            costF.disabled = true;
+        }
+    });
+    manualLit?.addEventListener('input', updateManualCost);
+    rateF?.addEventListener('input', updateManualCost);
+    updateDist();
+}
+
+async function handleFormSubmit(e, isEdit, rowIdx) {
+    e.preventDefault();
+    const saveBtn = document.getElementById('saveUpdateBtn');
+    showSpinner(saveBtn, true, 'Saving... <span class="spinner"></span>');
+    
+    const getVal = (id) => document.getElementById(id)?.value || "";
+    const isFix = document.getElementById('editCngFixToggle')?.checked;
+    let cngTank = isFix ? "FIX" : getVal('editCngManualLiters');
+    let cngCost = parseFloat(getVal('editCngCost'));
+    if (!isFix) {
+        cngCost = Math.round((parseFloat(getVal('editCngManualLiters')) || 0) * (parseFloat(getVal('editCngRate')) || 0));
+    }
+    const dist = Math.max(0, (parseFloat(getVal('editEndKm')) || 0) - (parseFloat(getVal('editStartKm')) || 0));
+    
+    const distributorValue = getVal('editDistributor').trim();
+    const destinationValue = getVal('editDestination').trim();
+    
+    const params = new URLSearchParams();
+    params.append("action", isEdit ? "update" : "insert");
+    params.append("spreadsheetId", SPREADSHEET_ID);
+    params.append("sheetName", SHEET_NAME);
+    if (isEdit && rowIdx) params.append("rowIndex", rowIdx);
+    params.append("Trip No", getVal('editTripNo'));
+    params.append("Date", formatDMY(getVal('editDate')));
+    params.append("SO No", getVal('editSoNo'));
+    params.append("LR No", getVal('editLrNo'));
+    params.append("Start KM", getVal('editStartKm'));
+    params.append("End KM", getVal('editEndKm'));
+    params.append("Distance", dist);
+    params.append("Food Amt", getVal('editFoodAmt'));
+    params.append("Advance", getVal('editAdvance'));
+    params.append("Salary", getVal('editSalary'));
+    params.append("CNG Tank", cngTank);
+    params.append("CNG Rate", getVal('editCngRate'));
+    params.append("CNG Cost", cngCost);
+    params.append("Destination", destinationValue);
+    params.append("Distributor", distributorValue);
+    params.append("Unloading Charge", getVal('editUnloadingCharge'));
+    params.append("EWay Bill No", getVal('editEwayBill'));
+    params.append("NEFT Date", formatDMY(getVal('editNeftDate')));
+    params.append("NEFT Amt", getVal('editNeftAmt'));
+    params.append("Note", getVal('editNote'));
+    
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: params
+        });
+        const result = await response.json();
+        
+        if (result.status === "success") {
+            let distributorMsg = "";
+            if (distributorValue || destinationValue) {
+                try {
+                    const existingData = await fetchExistingDistributorData(true);
+                    const distResult = await smartSaveToDistributorSheet(distributorValue, destinationValue, existingData);
+                    if (distResult.addedItems.length > 0) {
+                        distributorMsg = `<br><br>📌 ${distResult.addedItems.join('<br>')}`;
+                        console.log("Added to Distributor sheet:", distResult.addedItems);
+                    }
+                    await loadDistributorFast();
+                } catch (err) {
+                    console.error("Distributor save error:", err);
+                    distributorMsg = `<br><br>⚠️ Note: Trip saved, but Distributor sheet update failed.`;
+                }
+            }
+            
+            const successMsg = isEdit ?
+                `✅ Trip updated successfully!${distributorMsg}` :
+                `✅ Trip saved successfully!${distributorMsg}`;
+            
+            showModal(successMsg, "Success", false, null, 2000);
+            dom.formModal?.classList.remove('active');
+            await refreshAllData();
+            goToPage1();
+        } else {
+            showModal("Error: " + (result.message || "Unknown error"), "Error");
+        }
+    } catch (err) {
+        showModal("Error: " + err.message, "Error");
+    } finally {
+        showSpinner(saveBtn, false);
+    }
+}
+
+// ======================== MODAL OPENING FUNCTIONS ========================
+async function openAddModal() {
+    if (!dom.formModalBody) return;
+    
+    dom.formModalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="spinner" style="width: 32px; height: 32px;"></div><p style="margin-top: 12px;">Loading form...</p></div>';
+    dom.formModal.classList.add('active');
+    dom.formModalTitle.innerHTML = "➕ Add New Trip";
+    
+    dom.formModalBody.innerHTML = buildFormHtml(null, false);
+    
+    setTimeout(() => {
+        setupAutocomplete('editDestination', 'destAutoList', destinationOptions);
+        setupAutocomplete('editDistributor', 'distAutoList', distributorOptions);
+        attachFormEvents(false, null);
+    }, 20);
+}
+
+async function openEditModal() {
+    if (!currentViewTrip || !dom.formModalBody) return;
+    
+    const rowIdx = findRowIndexBySrNo(currentViewTrip["Sr. No"]);
+    if (!rowIdx) {
+        showModal("Row error", "Error");
+        return;
+    }
+    
+    dom.formModalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="spinner" style="width: 32px; height: 32px;"></div><p style="margin-top: 12px;">Loading edit form...</p></div>';
+    dom.formModal.classList.add('active');
+    dom.formModalTitle.innerHTML = "✏️ Edit Trip";
+    
+    dom.formModalBody.innerHTML = buildFormHtml(currentViewTrip, true);
+    
+    setTimeout(() => {
+        setupAutocomplete('editDestination', 'destAutoList', destinationOptions);
+        setupAutocomplete('editDistributor', 'distAutoList', distributorOptions);
+        attachFormEvents(true, rowIdx);
+    }, 20);
+}
+
+// ======================== INITIALIZATION ========================
+async function fastInit() {
+    cacheDomElements();
+    
+    if (dom.tableBody) {
+        dom.tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;"><div class="spinner"></div> Loading trips...<\/td><\/tr>';
+    }
+    
+    const [tripsData, distData] = await Promise.all([
+        loadTripsFast(),
+        loadDistributorFast()
+    ]);
+    
+    renderTablePage1("");
+    
+    setTimeout(() => {
+        refreshInBackground();
+        loadDistributorFast();
+    }, 3000);
+    
+    dom.refreshBtn?.addEventListener('click', refreshAllData);
+    dom.addNewBtn?.addEventListener('click', openAddModal);
+    dom.backBtn?.addEventListener('click', goToPage1);
+    dom.editBtn?.addEventListener('click', openEditModal);
+    dom.deleteBtn?.addEventListener('click', deleteCurrentTrip);
+    dom.searchInput?.addEventListener('input', (e) => renderTablePage1(e.target.value.toLowerCase()));
+    
+    document.getElementById('closeGlobalModal')?.addEventListener('click', () => dom.globalModal?.classList.remove('active'));
+    document.getElementById('closeFormModalBtn')?.addEventListener('click', () => dom.formModal?.classList.remove('active'));
+    
+    window.onclick = (e) => {
+        if (e.target.classList?.contains('modal-overlay')) {
+            e.target.classList.remove('active');
+        }
+    };
+}
+
+// Start the application
+fastInit();
+    </script>
+</body>
+</html>
