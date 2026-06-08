@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Driver Salary - Fleet Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Inter', Roboto, Helvetica, sans-serif;
+        }
+
+        :root {
+            --blue-light: #eef2ff;
+            --blue-soft: #dbeafe;
+            --blue-primary: #3b82f6;
+            --blue-deep: #2563eb;
+            --yellow-light: #fef9e3;
+            --yellow-soft: #fef3c7;
+            --yellow-primary: #fbbf24;
+            --amber: #f59e0b;
+            --gray-bg: #f5f7fb;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --success-green: #10b981;
+            --danger-red: #ef4444;
+        }
+
+        body {
+            background: linear-gradient(135deg, #eef2ff 0%, #fef9e3 100%);
+            min-height: 100vh;
+            padding: 20px 16px;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page {
+            display: none;
+            animation: fadeSlide 0.3s ease-out;
+        }
+        .page.active-page {
+            display: block;
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .soft-card {
+            background: rgba(255,255,255,0.96);
+            border-radius: 2rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            overflow: hidden;
+            backdrop-filter: blur(2px);
+        }
+
+        .card-header {
+            padding: 1.2rem 1.5rem;
+            background: linear-gradient(120deg, #ffffff 0%, #fefce8 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        .card-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e40af, #d97706);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 22px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1f5f9;
+            color: var(--text-dark);
+        }
+        .btn-primary {
+            background: linear-gradient(95deg, #3b82f6, #2563eb);
+            color: white;
+        }
+        .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.02); }
+        .btn-outline {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .btn-outline:hover { background: #fde68a; }
+        .btn-danger {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .btn-danger:hover { background: #fecaca; }
+        .btn-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .btn-success:hover { background: #a7f3d0; }
+        .btn-sm {
+            padding: 6px 16px;
+            font-size: 0.75rem;
+        }
+
+        /* Toolbar - Mobile first */
+        .toolbar {
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-bottom: 1px solid #fef3c7;
+        }
+        .search-wrapper {
+            width: 100%;
+        }
+        .search-wrapper input {
+            width: 100%;
+            padding: 12px 18px;
+            border: 2px solid #000;
+            border-radius: 30px;
+            background: #fff;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        .search-wrapper input:focus {
+            outline: none;
+            border-color: #000;
+            box-shadow: 0 0 0 4px rgba(0,0,0,0.1);
+        }
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .action-buttons .btn {
+            flex: 1;
+            justify-content: center;
+        }
+        /* Desktop version */
+        @media (min-width: 768px) {
+            .toolbar {
+                flex-direction: row;
+                align-items: center;
+            }
+            .search-wrapper {
+                flex: 1;
+            }
+            .action-buttons {
+                flex: 0 0 auto;
+            }
+            .action-buttons .btn {
+                flex: 0 0 auto;
+            }
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            padding: 0 0.5rem 1rem 0.5rem;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .data-table th {
+            text-align: left;
+            padding: 14px 12px;
+            background: #fffbeb;
+            color: #92400e;
+            font-weight: 700;
+        }
+        .data-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #fef3c7;
+            color: var(--text-dark);
+        }
+        .data-table tr:hover td {
+            background: #fefce8;
+        }
+        
+        /* Blue tick indicator */
+        .sync-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            font-size: 14px;
+            margin-left: 8px;
+            cursor: help;
+        }
+        .sync-badge::after {
+            content: "✓";
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+        @media (max-width: 600px) {
+            .details-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+                padding: 1rem;
+            }
+        }
+        .detail-card {
+            background: #fefce8;
+            border-radius: 1.2rem;
+            padding: 0.9rem 1rem;
+            transition: all 0.2s;
+        }
+        .detail-card.negative {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+        }
+        .detail-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #b45309;
+            font-weight: 600;
+        }
+        .detail-value {
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            color: #1e3a8a;
+            word-break: break-word;
+        }
+        .detail-value.negative {
+            color: #dc2626;
+        }
+
+        .action-row {
+            padding: 0.8rem 1.5rem 1.5rem;
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 58, 138, 0.2);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-box {
+            background: white;
+            width: 92%;
+            max-width: 900px;
+            max-height: 85vh;
+            border-radius: 1.8rem;
+            overflow-y: auto;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.15);
+        }
+        .modal-header {
+            background: #fefce8;
+            padding: 1rem 1.3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .modal-body {
+            padding: 1.3rem;
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #b45309;
+        }
+
+        /* Summary Table Styles */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .summary-table th,
+        .summary-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #fef3c7;
+        }
+        .summary-table th {
+            background: #fffbeb;
+            color: #92400e;
+            font-weight: 700;
+        }
+        .summary-table tr:hover td {
+            background: #fefce8;
+        }
+        .total-row {
+            background: #fef3c7;
+            font-weight: 700;
+        }
+        .total-row td {
+            border-top: 2px solid #fbbf24;
+            font-size: 1rem;
+        }
+        .amount-positive {
+            color: #065f46;
+            font-weight: 600;
+        }
+        .amount-negative {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 1rem;
+        }
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .field label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #d97706;
+        }
+        .field input, .field select {
+            padding: 10px 14px;
+            border-radius: 28px;
+            border: 1px solid #fde68a;
+            background: #ffffff;
+            font-size: 0.85rem;
+        }
+        .field input:focus, .field select:focus {
+            outline: none;
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 2px rgba(251,191,36,0.2);
+        }
+        .calculated-field {
+            background: #fefce8;
+            font-weight: 600;
+        }
+        .info-badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1e40af;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+        }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e2e8f0;
+            border-top: 2px solid #fbbf24;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .autocomplete-wrap {
+            position: relative;
+        }
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .autocomplete-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .autocomplete-item:hover {
+            background: #fef3c7;
+        }
+		
+		/* Remove scrollbar from Manage Salary modal but keep scrollable */
+#salaryModal .modal-box {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+    overflow-y: auto;
+}
+
+#salaryModal .modal-box::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+#salaryModal .modal-body {
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+#salaryModal .modal-body::-webkit-scrollbar {
+    display: none;
+}
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div id="page1" class="page active-page">
+        <div class="soft-card">
+            <div class="card-header">
+                <h2>🚛 3104 Driver Salary - Fleet Sheet</h2>
+            </div>
+            <div class="toolbar">
+                <div class="search-wrapper">
+                    <input type="text" id="searchInput" placeholder="🔍 Search by LR No, Sr No, Date...">
+                </div>
+                <div class="action-buttons">
+                    <button id="refreshBtnP1" class="btn refresh-btn">⟳ Refresh</button>
+                    <button id="calcTotalBtn" class="btn btn-success">💰 Calc Total</button>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead><tr><th>Sr. No</th><th>Date</th><th>LR No</th><th>Action</th></tr></thead>
+                    <tbody id="tableBody"><tr><td colspan="4" style="text-align:center;">Loading trips <span class="spinner"></span></td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="page2" class="page">
+        <div class="soft-card">
+            <div class="card-header">
+                <h2>📋 Trip Full Details</h2>
+                <button id="backToPage1Btn" class="btn btn-outline">← Back</button>
+            </div>
+            <div id="detailsContainer" class="details-grid">Loading...</div>
+            <div class="action-row">
+                <button id="manageSalaryBtn" class="btn btn-primary">💰 Manage Salary</button>
+                <button id="deleteRecordBtn" class="btn btn-danger">🗑 Delete Record</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Global Message Modal -->
+<div id="globalModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 400px;">
+        <div class="modal-header"><h3 id="modalTitle">Notice</h3><button class="close-modal" id="closeGlobalModal">×</button></div>
+        <div class="modal-body"><p id="modalMsg"></p><div style="display:flex; justify-content:flex-end; margin-top:1rem;"><button id="confirmModalBtn" class="btn btn-primary">OK</button></div></div>
+    </div>
+</div>
+
+<!-- Summary Modal -->
+<div id="summaryModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 800px;">
+        <div class="modal-header"><h3>📊 L and UL & Driver Bata Summary</h3><button class="close-modal" id="closeSummaryModalBtn">×</button></div>
+        <div class="modal-body" id="summaryModalBody"></div>
+    </div>
+</div>
+
+<!-- Salary Management Modal -->
+<div id="salaryModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header"><h3>💰 Manage Salary / Update Record</h3><button class="close-modal" id="closeSalaryModalBtn">×</button></div>
+        <div class="modal-body" id="salaryModalBody"></div>
+    </div>
+</div>
+
+<script>
+// ==================== CONFIGURATION ====================
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoDds81u8M5N8micA_hoIBgCS7aCFm0NUmwW6XLH4m_fRJ8R9pGqjgFGMeBxBd2dSL/exec";
+const PRIMARY_SPREADSHEET_ID = "1fTQ7K6qvx1IBpaXA_okS90IDbCBhFzpVLkXneLJtiTY";
+const PRIMARY_SHEET_NAME = "Cam_Taloja_3104";
+const LEGACY_SPREADSHEET_ID = "1GaphoayNzhbQ8RV9z1D45Djr5hsRjUPgyKrtmkjjhGI";
+const LEGACY_SHEET_NAME = "Cam_Taloja_3104";
+const DRIVER_DETAILS_SHEET = "Driver Details";
+
+let allTrips = [];
+let currentViewTrip = null;
+let currentRowIndex = null;
+let vehicleOptions = [];
+let driverOptions = [];
+let primaryDataLrSet = new Set(); // Track which LR Nos exist in primary sheet
+
+// ==================== HELPER FUNCTIONS ====================
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+}
+
+function formatDateDMY(dateStr) {
+    if (!dateStr) return "";
+    try {
+        let d = new Date(dateStr);
+        if (isNaN(d)) return dateStr;
+        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+    } catch(e) { return dateStr; }
+}
+
+function convertToYYYYMMDD(d) {
+    if (!d) return "";
+    let dt;
+    if (typeof d === 'string' && d.includes('/')) {
+        let parts = d.split('/');
+        dt = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+    } else {
+        dt = new Date(d);
+    }
+    if (isNaN(dt)) return "";
+    return dt.toISOString().split('T')[0];
+}
+
+async function showModal(msg, title = "Message", isConfirm = false, onConfirm = null, autoClose = 0) {
+    const modal = document.getElementById('globalModal');
+    document.getElementById('modalTitle').innerText = title;
+    document.getElementById('modalMsg').innerHTML = msg;
+    const confirmBtn = document.getElementById('confirmModalBtn');
+    confirmBtn.onclick = () => {
+        modal.classList.remove('active');
+        if (isConfirm && onConfirm) onConfirm();
+    };
+    modal.classList.add('active');
+    if (autoClose > 0) setTimeout(() => modal.classList.remove('active'), autoClose);
+}
+
+// Remove commas from LR number
+function cleanLrNumber(lr) {
+    if (!lr) return "";
+    return String(lr).replace(/,/g, '');
+}
+
+// ==================== MILEAGE & CALCULATIONS ====================
+function calculateMileage(kmValue) {
+    const km = parseFloat(kmValue) || 0;
+    if (km <= 150) return "Fix";
+    if (km > 150 && km <= 200) return "4";
+    if (km > 200) return "5";
+    return "Fix";
+}
+
+function calculateDieselAmt(mileageVal, kmValue, destinationVal, cngRate = 98) {
+    const km = parseFloat(kmValue) || 0;
+    const dest = (destinationVal || "").toLowerCase();
+    if (dest === "bhiwandi" || dest === "421302") return 2300;
+    if (mileageVal === "Fix" && km <= 150) return 3200;
+    const mileage = parseFloat(mileageVal);
+    if (!isNaN(mileage) && mileage > 0 && km > 0) {
+        return Math.round((km / mileage) * cngRate);
+    }
+    return 0;
+}
+
+function calculateAllFields(formData) {
+    const km = parseFloat(formData.Km) || 0;
+    const destination = formData.Destination || "";
+    const unloadingCharge = parseFloat(formData["L and UL"]) || 0;
+    const salaryAdvance = parseFloat(formData["Salary Advance"]) || 0;
+    const otherExp = parseFloat(formData["Other Exp"]) || 0;
+    const actualIntent = parseFloat(formData["Actual Intent"]) || 0;
+    const mileageValue = calculateMileage(km);
+    const cngRate = 98;
+    const dieselAmt = calculateDieselAmt(mileageValue, km, destination, cngRate);
+    const subtotalBeforeBata = unloadingCharge + dieselAmt + salaryAdvance + otherExp;
+    const driverBata = actualIntent - subtotalBeforeBata;
+    const driverTakenAmt = dieselAmt + driverBata;
+    const totalAmount = unloadingCharge + driverTakenAmt + salaryAdvance + otherExp;
+    return {
+        Mileage: mileageValue,
+        "CNG OR Diesel Rate": cngRate,
+        "Diesel Amt": dieselAmt,
+        "Driver Bata": driverBata,
+        "Driver Taken Amt": driverTakenAmt,
+        "Total Amount": totalAmount
+    };
+}
+
+function processTripWithCalculations(rawTrip, vehicleList, driverList, isInPrimary = false) {
+    const startKm = parseFloat(rawTrip["Start KM"] || rawTrip["Opening Km"]) || 0;
+    const endKm = parseFloat(rawTrip["End KM"] || rawTrip["Closing Km"]) || 0;
+    const km = parseFloat(rawTrip["Distance"] || rawTrip["Km"]) || Math.max(0, endKm - startKm);
+    const unloadingCharge = parseFloat(rawTrip["Unloading Charge"] || rawTrip["L and UL"]) || 0;
+    const salaryAdvance = parseFloat(rawTrip["Salary Advance"]) || 0;
+    const otherExp = parseFloat(rawTrip["Other Exp"]) || 0;
+    const actualIntent = parseFloat(rawTrip["Actual Intent"] || rawTrip["NEFT Amt"]) || 0;
+    const mileageRaw = calculateMileage(km);
+    const cngRate = 98;
+    const dieselAmt = calculateDieselAmt(mileageRaw, km, rawTrip["Destination"], cngRate);
+    const subtotalBeforeBata = unloadingCharge + dieselAmt + salaryAdvance + otherExp;
+    const driverBata = actualIntent - subtotalBeforeBata;
+    const driverTakenAmt = dieselAmt + driverBata;
+    const totalAmount = unloadingCharge + driverTakenAmt + salaryAdvance + otherExp;
+    let vehicleVal = rawTrip["Vehicles"] || "";
+    let driverNameVal = rawTrip["Driver Name"] || "";
+    if (!vehicleVal && vehicleList.length) vehicleVal = vehicleList[0];
+    if (!driverNameVal && driverList.length) driverNameVal = driverList[0];
+    return {
+        "Sr. No": rawTrip["Sr. No"] || "",
+        "Date": rawTrip["Date"] || "",
+        "LR No": cleanLrNumber(rawTrip["LR No"] || ""),
+        "Vehicles": vehicleVal,
+        "Driver Name": driverNameVal,
+        "Mileage": mileageRaw,
+        "Destination": rawTrip["Destination"] || "",
+        "Opening Km": startKm,
+        "Closing Km": endKm,
+        "Km": km,
+        "CNG OR Diesel Rate": cngRate,
+        "L and UL": unloadingCharge,
+        "Driver Taken Amt": driverTakenAmt,
+        "Diesel Amt": dieselAmt,
+        "Driver Bata": driverBata,
+        "Salary Advance": salaryAdvance,
+        "Other Exp": otherExp,
+        "Total Amount": totalAmount,
+        "Actual Intent": actualIntent,
+        "_inPrimary": isInPrimary
+    };
+}
+
+// ==================== FETCH DATA ====================
+async function fetchSheetData(spreadsheetId, sheetName) {
+    const url = `${SCRIPT_URL}?spreadsheetId=${spreadsheetId}&sheetName=${sheetName}&_=${Date.now()}`;
+    try {
+        const resp = await fetch(url);
+        const result = await resp.json();
+        if (result.status === "success" && Array.isArray(result.data)) return result.data;
+        return [];
+    } catch(err) { return []; }
+}
+
+async function fetchDriverDetailsOptions() {
+    const url = `${SCRIPT_URL}?spreadsheetId=${PRIMARY_SPREADSHEET_ID}&sheetName=${DRIVER_DETAILS_SHEET}&_=${Date.now()}`;
+    try {
+        const resp = await fetch(url);
+        const result = await resp.json();
+        if (result.status === "success" && Array.isArray(result.data)) {
+            const vehicles = new Set();
+            const drivers = new Set();
+            result.data.forEach(row => {
+                if (row["Vehicle No"]) vehicles.add(row["Vehicle No"].trim());
+                if (row["Driver Name"]) drivers.add(row["Driver Name"].trim());
+            });
+            vehicleOptions = Array.from(vehicles);
+            driverOptions = Array.from(drivers);
+        }
+    } catch(err) { console.error("Fetch driver options error:", err); }
+}
+
+async function loadAllTrips() {
+    let primaryData = await fetchSheetData(PRIMARY_SPREADSHEET_ID, PRIMARY_SHEET_NAME);
+    let fallbackData = await fetchSheetData(LEGACY_SPREADSHEET_ID, LEGACY_SHEET_NAME);
+    await fetchDriverDetailsOptions();
+    
+    // Build set of LR Nos that exist in primary sheet (for blue tick)
+    primaryDataLrSet.clear();
+    primaryData.forEach(row => {
+        const lr = row["LR No"] ? cleanLrNumber(row["LR No"]).trim() : "";
+        if (lr) primaryDataLrSet.add(lr);
+    });
+    
+    const fallbackMap = new Map();
+    fallbackData.forEach(row => {
+        const lr = row["LR No"] ? cleanLrNumber(row["LR No"]).trim() : "";
+        if (lr) fallbackMap.set(lr, row);
+    });
+    
+    let mergedRaw = [];
+    if (primaryData.length === 0 && fallbackData.length > 0) {
+        mergedRaw = fallbackData;
+    } else {
+        mergedRaw = primaryData.map(row => {
+            const lr = row["LR No"] ? cleanLrNumber(row["LR No"]).trim() : "";
+            const fb = fallbackMap.get(lr);
+            if (fb) return { ...fb, ...row };
+            return row;
+        });
+        const primaryLrSet = new Set(primaryData.map(r => r["LR No"] ? cleanLrNumber(r["LR No"]).trim() : ""));
+        fallbackData.forEach(fb => {
+            const lr = fb["LR No"] ? cleanLrNumber(fb["LR No"]).trim() : "";
+            if (lr && !primaryLrSet.has(lr)) mergedRaw.push(fb);
+        });
+    }
+    
+    const processed = mergedRaw.map(raw => {
+        const lr = raw["LR No"] ? cleanLrNumber(raw["LR No"]).trim() : "";
+        const isInPrimary = primaryDataLrSet.has(lr);
+        return processTripWithCalculations(raw, vehicleOptions, driverOptions, isInPrimary);
+    });
+    processed.sort((a,b) => (parseInt(a["Sr. No"]) || 0) - (parseInt(b["Sr. No"]) || 0));
+    return processed;
+}
+
+// ==================== RENDER PAGE 1 ====================
+function renderTablePage1(filter = "") {
+    const tbody = document.getElementById('tableBody');
+    if (!tbody) return;
+    const searchLower = filter.toLowerCase();
+    let filtered = allTrips.filter(t => {
+        const lr = (t["LR No"] || "").toString().toLowerCase();
+        const sr = (t["Sr. No"] || "").toString().toLowerCase();
+        const date = (t["Date"] || "").toString().toLowerCase();
+        return lr.includes(searchLower) || sr.includes(searchLower) || date.includes(searchLower);
+    });
+    if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">✨ No trips found</td></tr>';
+        return;
+    }
+    const fragment = document.createDocumentFragment();
+    filtered.forEach(t => {
+        const row = document.createElement('tr');
+        const syncBadge = t._inPrimary ? '<span class="sync-badge" title="Data synced to primary sheet"></span>' : '';
+        row.innerHTML = `
+            <td><strong>${escapeHtml(t["Sr. No"] || "")}${syncBadge}</strong></td>
+            <td>${escapeHtml(formatDateDMY(t["Date"]))}</td>
+            <td>${escapeHtml(t["LR No"] || "")}</td>
+            <td><button class="btn btn-sm btn-outline viewBtn" data-sr="${escapeHtml(t["Sr. No"] || "")}">👁️ View</button></td>
+        `;
+        fragment.appendChild(row);
+    });
+    tbody.innerHTML = '';
+    tbody.appendChild(fragment);
+    document.querySelectorAll('.viewBtn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const srVal = btn.getAttribute('data-sr');
+            const found = allTrips.find(t => String(t["Sr. No"]) === String(srVal));
+            if (found) {
+                currentViewTrip = found;
+                currentRowIndex = allTrips.findIndex(t => String(t["Sr. No"]) === String(srVal)) + 2;
+                showPage2Details(found);
+            }
+        });
+    });
+}
+
+function showPage2Details(trip) {
+    const container = document.getElementById('detailsContainer');
+    const displayHeaders = ["Sr. No", "Date", "LR No", "Vehicles", "Driver Name", "Mileage", "Destination", "Opening Km", "Closing Km", "Km", "CNG OR Diesel Rate", "L and UL", "Driver Taken Amt", "Diesel Amt", "Driver Bata", "Salary Advance", "Other Exp", "Total Amount", "Actual Intent"];
+    const fragment = document.createDocumentFragment();
+    displayHeaders.forEach(header => {
+        let val = trip[header] !== undefined ? trip[header] : "";
+        if (header === "Date") val = formatDateDMY(val);
+        const isNegative = (header === "Driver Bata" && typeof val === 'number' && val < 0);
+        const card = document.createElement('div');
+        card.className = 'detail-card' + (isNegative ? ' negative' : '');
+        const displayValue = typeof val === 'number' ? val.toLocaleString('en-IN') : String(val);
+        card.innerHTML = `<div class="detail-label">${escapeHtml(header)}</div><div class="detail-value ${isNegative ? 'negative' : ''}">${escapeHtml(displayValue) || '—'}</div>`;
+        fragment.appendChild(card);
+    });
+    container.innerHTML = '';
+    container.appendChild(fragment);
+    document.getElementById('page1').classList.remove('active-page');
+    document.getElementById('page2').classList.add('active-page');
+}
+
+// ==================== SUMMARY POPUP ====================
+function showSummaryPopup() {
+    const modal = document.getElementById('summaryModal');
+    const bodyDiv = document.getElementById('summaryModalBody');
+    
+    let totalLandUL = 0;
+    let totalDriverBata = 0;
+    
+    let tableHtml = `<table class="summary-table">
+        <thead><tr><th>Sr. No</th><th>Date</th><th>L and UL (₹)</th><th>Driver Bata (₹)</th></tr></thead>
+        <tbody>`;
+    
+    allTrips.forEach(trip => {
+        const lAndUl = parseFloat(trip["L and UL"]) || 0;
+        const driverBata = parseFloat(trip["Driver Bata"]) || 0;
+        totalLandUL += lAndUl;
+        totalDriverBata += driverBata;
+        const bataClass = driverBata < 0 ? 'amount-negative' : 'amount-positive';
+        tableHtml += `<tr>
+            <td>${escapeHtml(trip["Sr. No"] || "")}</td>
+            <td>${escapeHtml(formatDateDMY(trip["Date"]))}</td>
+            <td>₹ ${lAndUl.toLocaleString('en-IN')}</td>
+            <td class="${bataClass}">₹ ${driverBata.toLocaleString('en-IN')}</td>
+        </tr>`;
+    });
+    
+    tableHtml += `<tr class="total-row">
+        <td colspan="2"><strong>Total</strong></td>
+        <td><strong>₹ ${totalLandUL.toLocaleString('en-IN')}</strong></td>
+        <td class="${totalDriverBata < 0 ? 'amount-negative' : 'amount-positive'}"><strong>₹ ${totalDriverBata.toLocaleString('en-IN')}</strong></td>
+    </tr></tbody></table>`;
+    
+    bodyDiv.innerHTML = tableHtml;
+    modal.classList.add('active');
+}
+
+// ==================== DELETE RECORD ====================
+async function deleteCurrentRecord() {
+    if (!currentViewTrip) return;
+    const sr = currentViewTrip["Sr. No"];
+    showModal(`⚠️ Are you sure you want to delete Trip Sr. No ${sr}?`, "Confirm Delete", true, async () => {
+        const params = new URLSearchParams();
+        params.append("action", "delete");
+        params.append("spreadsheetId", PRIMARY_SPREADSHEET_ID);
+        params.append("sheetName", PRIMARY_SHEET_NAME);
+        params.append("rowIndex", currentRowIndex);
+        try {
+            const response = await fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params });
+            const result = await response.json();
+            if (result.status === "success") {
+                showModal("✅ Record deleted successfully!", "Success", false, null, 1500);
+                await refreshAllData();
+                goToPage1();
+            } else {
+                showModal("Delete failed: " + (result.message || "unknown"), "Error");
+            }
+        } catch(err) { showModal("Error: "+err.message, "Error"); }
+    });
+}
+
+// ==================== AUTOCOMPLETE ====================
+function setupAutocomplete(inputId, listId, optionsArray) {
+    const input = document.getElementById(inputId);
+    const listEl = document.getElementById(listId);
+    if (!input || !listEl) return;
+    const showOptions = (filterVal = '') => {
+        const term = filterVal.toLowerCase();
+        const filtered = optionsArray.filter(opt => opt.toLowerCase().includes(term));
+        if (filtered.length) {
+            listEl.innerHTML = filtered.map(opt => `<div class="autocomplete-item" data-value="${escapeHtml(opt)}">${escapeHtml(opt)}</div>`).join('');
+            listEl.style.display = 'block';
+            listEl.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    input.value = item.getAttribute('data-value');
+                    listEl.style.display = 'none';
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+            });
+        } else {
+            listEl.style.display = 'none';
+        }
+    };
+    input.addEventListener('input', (e) => showOptions(e.target.value));
+    input.addEventListener('focus', () => showOptions(input.value));
+    input.addEventListener('blur', () => setTimeout(() => listEl.style.display = 'none', 200));
+    document.addEventListener('click', (e) => {
+        if (!listEl.contains(e.target) && e.target !== input) listEl.style.display = 'none';
+    });
+}
+
+// ==================== OPEN SALARY MODAL ====================
+function openSalaryModal() {
+    if (!currentViewTrip) return;
+    const modal = document.getElementById('salaryModal');
+    const bodyDiv = document.getElementById('salaryModalBody');
+    const displayHeaders = ["Sr. No", "Date", "LR No", "Vehicles", "Driver Name", "Mileage", "Destination", "Opening Km", "Closing Km", "Km", "CNG OR Diesel Rate", "L and UL", "Driver Taken Amt", "Diesel Amt", "Driver Bata", "Salary Advance", "Other Exp", "Total Amount", "Actual Intent"];
+    let html = `<form id="salaryForm"><div class="form-grid">`;
+    displayHeaders.forEach(header => {
+        let val = currentViewTrip[header] !== undefined ? currentViewTrip[header] : "";
+        if (header === "Date") val = convertToYYYYMMDD(val);
+        const isCalculated = ["Mileage", "CNG OR Diesel Rate", "Driver Taken Amt", "Diesel Amt", "Driver Bata", "Total Amount"].includes(header);
+        const readonlyAttr = isCalculated ? 'readonly' : '';
+        const calcClass = isCalculated ? 'calculated-field' : '';
+        if (header === "Vehicles") {
+            html += `<div class="field autocomplete-wrap"><label>Vehicles <span class="info-badge">Type or Select</span></label><input type="text" id="field_Vehicles" value="${escapeHtml(val)}" autocomplete="off"><div id="vehicleAutoList" class="autocomplete-list"></div></div>`;
+        } else if (header === "Driver Name") {
+            html += `<div class="field autocomplete-wrap"><label>Driver Name <span class="info-badge">Type or Select</span></label><input type="text" id="field_DriverName" value="${escapeHtml(val)}" autocomplete="off"><div id="driverAutoList" class="autocomplete-list"></div></div>`;
+        } else {
+            html += `<div class="field"><label>${escapeHtml(header)}</label><input type="text" id="field_${header.replace(/\s/g, '')}" value="${escapeHtml(val)}" ${readonlyAttr} class="${calcClass}"></div>`;
+        }
+    });
+    html += `</div><div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 1.5rem;">
+            <button type="button" id="cancelSalaryBtn" class="btn btn-outline">Cancel</button>
+            <button type="submit" id="updateSalaryBtn" class="btn btn-primary">💾 Update Record</button>
+        </div></form>`;
+    bodyDiv.innerHTML = html;
+    modal.classList.add('active');
+    setupAutocomplete('field_Vehicles', 'vehicleAutoList', vehicleOptions);
+    setupAutocomplete('field_DriverName', 'driverAutoList', driverOptions);
+    const updateCalculations = () => {
+        const formData = {
+            Km: document.getElementById('field_Km')?.value || "0",
+            Destination: document.getElementById('field_Destination')?.value || "",
+            "L and UL": document.getElementById('field_LandUL')?.value || "0",
+            "Salary Advance": document.getElementById('field_SalaryAdvance')?.value || "0",
+            "Other Exp": document.getElementById('field_OtherExp')?.value || "0",
+            "Actual Intent": document.getElementById('field_ActualIntent')?.value || "0"
+        };
+        const calcResults = calculateAllFields(formData);
+        const fields = ['Mileage', 'CNGORDieselRate', 'DieselAmt', 'DriverBata', 'DriverTakenAmt', 'TotalAmount'];
+        const mappings = { Mileage: 'Mileage', CNGORDieselRate: 'CNG OR Diesel Rate', DieselAmt: 'Diesel Amt', DriverBata: 'Driver Bata', DriverTakenAmt: 'Driver Taken Amt', TotalAmount: 'Total Amount' };
+        for (let f of fields) {
+            const el = document.getElementById(`field_${f}`);
+            if (el) el.value = calcResults[mappings[f]];
+        }
+        const driverBataField = document.getElementById('field_DriverBata');
+        if (driverBataField && calcResults["Driver Bata"] < 0) {
+            driverBataField.style.color = '#dc2626';
+            driverBataField.style.fontWeight = 'bold';
+        } else if (driverBataField) {
+            driverBataField.style.color = '';
+        }
+    };
+    ['field_Km', 'field_Destination', 'field_LandUL', 'field_SalaryAdvance', 'field_OtherExp', 'field_ActualIntent'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', updateCalculations);
+    });
+    updateCalculations();
+    document.getElementById('cancelSalaryBtn')?.addEventListener('click', () => modal.classList.remove('active'));
+    const form = document.getElementById('salaryForm');
+    form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const saveBtn = document.getElementById('updateSalaryBtn');
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="spinner"></span> Updating...';
+        const updatedData = {};
+        for (let header of displayHeaders) {
+            let val = "";
+            if (header === "Vehicles") val = document.getElementById('field_Vehicles')?.value || "";
+            else if (header === "Driver Name") val = document.getElementById('field_DriverName')?.value || "";
+            else val = document.getElementById(`field_${header.replace(/\s/g, '')}`)?.value || "";
+            if (header === "Date") val = formatDateDMY(val);
+            updatedData[header] = val;
+        }
+        const params = new URLSearchParams();
+        params.append("action", "update");
+        params.append("spreadsheetId", PRIMARY_SPREADSHEET_ID);
+        params.append("sheetName", PRIMARY_SHEET_NAME);
+        params.append("rowIndex", currentRowIndex);
+        for (let [key, val] of Object.entries(updatedData)) params.append(key, val);
+        try {
+            const resp = await fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params });
+            const result = await resp.json();
+            if (result.status === "success") {
+                showModal("✅ Record updated successfully!", "Success", false, null, 1500);
+                modal.classList.remove('active');
+                await refreshAllData();
+                const refreshed = allTrips.find(t => String(t["Sr. No"]) === String(currentViewTrip["Sr. No"]));
+                if (refreshed) currentViewTrip = refreshed;
+                showPage2Details(currentViewTrip);
+            } else {
+                showModal("Update failed: " + (result.message || "unknown"), "Error");
+            }
+        } catch(err) { showModal("Error: "+err.message, "Error"); }
+        finally { saveBtn.disabled = false; saveBtn.innerHTML = '💾 Update Record'; }
+    });
+}
+
+// ==================== REFRESH & NAVIGATION ====================
+async function refreshAllData() {
+    const refreshBtn = document.getElementById('refreshBtnP1');
+    if (refreshBtn) { refreshBtn.disabled = true; refreshBtn.innerHTML = '<span class="spinner"></span> Refreshing...'; }
+    try {
+        allTrips = await loadAllTrips();
+        renderTablePage1(document.getElementById('searchInput')?.value || "");
+    } catch(err) { console.error(err); showModal("Refresh error", "Error"); }
+    finally { if (refreshBtn) { refreshBtn.disabled = false; refreshBtn.innerHTML = '⟳ Refresh'; } }
+}
+
+function goToPage1() {
+    document.getElementById('page2').classList.remove('active-page');
+    document.getElementById('page1').classList.add('active-page');
+    refreshAllData();
+}
+
+// ==================== INIT ====================
+async function init() {
+    document.getElementById('refreshBtnP1')?.addEventListener('click', refreshAllData);
+    document.getElementById('calcTotalBtn')?.addEventListener('click', showSummaryPopup);
+    document.getElementById('backToPage1Btn')?.addEventListener('click', goToPage1);
+    document.getElementById('manageSalaryBtn')?.addEventListener('click', openSalaryModal);
+    document.getElementById('deleteRecordBtn')?.addEventListener('click', deleteCurrentRecord);
+    document.getElementById('searchInput')?.addEventListener('input', (e) => renderTablePage1(e.target.value));
+    document.getElementById('closeGlobalModal')?.addEventListener('click', () => document.getElementById('globalModal')?.classList.remove('active'));
+    document.getElementById('closeSummaryModalBtn')?.addEventListener('click', () => document.getElementById('summaryModal')?.classList.remove('active'));
+    document.getElementById('closeSalaryModalBtn')?.addEventListener('click', () => document.getElementById('salaryModal')?.classList.remove('active'));
+    window.onclick = (e) => {
+        if (e.target.classList?.contains('modal-overlay')) e.target.classList.remove('active');
+    };
+    allTrips = await loadAllTrips();
+    renderTablePage1("");
+}
+init();
+</script>
+</body>
+</html>
