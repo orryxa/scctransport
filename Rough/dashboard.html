@@ -3,18 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>FleetView | Rough Work</title>
+    <title>FleetView | Driver Salary Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* Light Mode Fallbacks */
             --bg-deep: #f8fafc;
             --bg-card: #ffffff;
-            --accent: #2563eb;
+            --accent: #4f46e5;
             --border: #e2e8f0;
             --text-main: #0f172a;
             --text-dim: #64748b;
-            --shadow: rgba(0, 0, 0, 0.05);
+            --shadow: rgba(0, 0, 0, 0.04);
+            --category-text: #dc2626;
+            --category-bg: #ffffff;
+            --transition-speed: 0.3s;
+        }
+
+        [data-theme="dark"] {
+            /* Upgraded Matching Premium Dark Mode */
+            --bg-deep: #0f172a;
+            --bg-card: #1e293b;
+            --accent: #6366f1;
+            --border: #334155;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --shadow: rgba(0, 0, 0, 0.2);
+            --category-text: #fda4af; /* Soft rose/crimson tint for dark mode */
+            --category-bg: #1e293b;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -26,51 +43,29 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
         }
-
-        /* ========== HEADER ========== */
-        .app-header {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px var(--shadow);
-        }
-
-        .header-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo-area { display: flex; align-items: center; gap: 12px; }
-        .logo-icon { color: var(--accent); font-size: 1.5rem; }
-        .logo-text h1 { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px; }
-        .logo-text span { color: var(--accent); font-weight: 400; font-size: 0.9rem; }
 
         /* ========== MAIN CONTENT LAYOUT ========== */
         .main-content {
             flex: 1;
             max-width: 1400px;
-            width: 92%;
-            margin: 1rem auto 3rem auto;
+            width: 95%;
+            margin: 1.5rem auto 3rem auto;
         }
 
         .category-header {
-            background-color: white;
-            border-radius: 10px;
+            background-color: var(--category-bg);
+            border-radius: 12px;
             box-shadow: var(--shadow);
-            padding: 15px;
+            padding: 16px;
             text-align: center;
-            color: #dc2626; /* Red-600 */
-            margin: 2rem 0 1rem 0;
+            color: var(--category-text);
+            margin: 2rem 0 1.25rem 0;
             font-size: 1.1rem;
+            font-weight: 700;
             border: 1px solid var(--border);
+            transition: background-color var(--transition-speed), border-color var(--transition-speed);
         }
 
         .fleet-grid {
@@ -94,9 +89,9 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 1.5rem 1rem;
+            padding: 1.75rem 1rem;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
             box-shadow: 0 4px 6px -1px var(--shadow);
@@ -105,13 +100,14 @@
         .fleet-card:hover {
             border-color: var(--accent);
             transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 12px 20px -3px rgba(99, 102, 241, 0.15);
         }
 
         .card-icon {
             font-size: 1.8rem;
             color: var(--accent);
             margin-bottom: 1rem;
+            transition: color var(--transition-speed);
         }
 
         .card-title {
@@ -136,29 +132,16 @@
             letter-spacing: 1px;
             text-transform: uppercase;
             border-top: 1px solid var(--border);
-            background: #fff;
+            background: var(--bg-card);
+            transition: background-color var(--transition-speed), border-color var(--transition-speed);
         }
     </style>
 </head>
-<body>
-
-    <header class="app-header">
-        <div class="header-container">
-            <div class="logo-area">
-                <div class="logo-icon"><i class="fas fa-radar"></i></div>
-                <div class="logo-text">
-                    <h1>FLEET SHEET <span>Vehicles Details (Rough Work)</span></h1>
-                </div>
-            </div>
-            <div class="status-indicator" style="font-size: 0.7rem; color: #16a34a; font-weight: 600;">
-                <i class="fas fa-circle" style="font-size: 0.5rem;"></i> CONNECTED
-            </div>
-        </div>
-    </header>
+<body data-theme="dark"> <!-- Listens to Dashboard2 state automatically via Script below -->
 
     <main class="main-content">
         
-        <h3 class="category-header">Campa Taloja Vehicles</h3>
+        <h3 class="category-header"><i class="fa-solid fa-map-location-dot"></i> Campa Taloja Vehicles</h3>
         <div class="fleet-grid">
             <a href="Campa Taloja/Cam_Taloja_3104.html" class="card-link">
                 <div class="fleet-card">
@@ -193,7 +176,7 @@
             </a>
         </div>
 
-        <h3 class="category-header">Campa Bhiwandi Vehicles</h3>
+        <h3 class="category-header"><i class="fa-solid fa-map-location-dot"></i> Campa Bhiwandi Vehicles</h3>
         <div class="fleet-grid">
             <a href="Campa Bhiwandi/Cam_Bwd_8472.html" class="card-link">
                 <div class="fleet-card">
@@ -218,8 +201,8 @@
                     <p class="card-description">Bhiwandi Hub vehicle Running</p>
                 </div>
             </a>
-			
-			<a href="Campa Bhiwandi/Cam_Bwd_8783.html" class="card-link">
+            
+            <a href="Campa Bhiwandi/Cam_Bwd_8783.html" class="card-link">
                 <div class="fleet-card">
                     <div class="card-icon"><i class="fa fa-truck"></i></div>
                     <h3 class="card-title">Campa Bhiwandi 8783</h3>
@@ -234,5 +217,29 @@
         &copy; 2026 FleetView Technologies
     </footer>
 
+    <script>
+        /* Theme Synchronizer Logic Hook */
+        function syncThemeWithParent() {
+            // Check cache storage values first
+            const localTheme = localStorage.getItem('user-theme-preference');
+            if (localTheme) {
+                document.body.setAttribute('data-theme', localTheme);
+            } else {
+                // If nested inside an iframe, inherit directly from Dashboard2 body attribute
+                try {
+                    if (window.parent && window.parent.document.body) {
+                        const parentTheme = window.parent.document.body.getAttribute('data-theme');
+                        if (parentTheme) document.body.setAttribute('data-theme', parentTheme);
+                    }
+                } catch(e) { console.log("Cross-origin frame safety intercept setup complete."); }
+            }
+        }
+
+        // Initialize synchronization systems
+        window.addEventListener('DOMContentLoaded', syncThemeWithParent);
+        // Continual observation listener for live theme changes in setting tab
+        window.addEventListener('storage', syncThemeWithParent);
+        setInterval(syncThemeWithParent, 1000); // Fail-safe structural check
+    </script>
 </body>
 </html>
