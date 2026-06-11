@@ -3,966 +3,826 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Smart Logistics Dashboard Pro</title>
+    <title>Fleet Management Dashboard | Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        :root {
-            --primary: #4834d4;
-            --primary-dark: #3c2bb8;
-            --primary-light: #686de0;
-            --accent: #eb4d4b;
-            --success: #00b894;
-            --warning: #f9ca24;
-            --info: #0984e3;
-            --sidebar-width: 280px;
-            --sidebar-width-collapsed: 80px;
-            --header-height: 70px;
-            --bg-color: #f4f7fe;
-            --card-bg: #ffffff;
-            --text-main: #2d3436;
-            --text-light: #636e72;
-            --sidebar-bg: #130f40;
-            --border-color: #e0e0e0;
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
-            --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .dark-mode {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f1f5f9;
-            --text-light: #94a3b8;
-            --sidebar-bg: #020617;
-            --border-color: #334155;
-        }
-
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
-
-        body { 
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            transition: background 0.3s ease, color 0.3s ease;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        /* Scrollbar Styling */
+        /* ===== HIDE SCROLLBAR GLOBALLY BUT KEEP SCROLLING ENABLED ===== */
+        /* For Webkit browsers (Chrome, Safari, Edge) - hide scrollbar but allow scroll */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 0px;
+            height: 0px;
+            background: transparent;
+            display: none;
+        }
+        
+        /* For Firefox - hide scrollbar while keeping scroll functionality */
+        * {
+            scrollbar-width: none;  /* Firefox: hides scrollbar */
+            -ms-overflow-style: none;  /* IE/Edge legacy */
+        }
+        
+        /* Ensure all scrollable containers remain functional */
+        body {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* All scrollable elements will have hidden scrollbars but scroll normally */
+        .sidebar, .main-content, .embed-view, .view-container, iframe, .nav-menu {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .sidebar::-webkit-scrollbar,
+        .main-content::-webkit-scrollbar,
+        .embed-view::-webkit-scrollbar,
+        .view-container::-webkit-scrollbar,
+        iframe::-webkit-scrollbar {
+            display: none;
+            width: 0;
         }
 
-        ::-webkit-scrollbar-track {
-            background: var(--bg-color);
+        :root {
+            --bg-primary: #f4f7fc;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #5b6e8c;
+            --accent-primary: #2563eb;
+            --accent-glow: rgba(37, 99, 235, 0.2);
+            --accent-hover: #1d4ed8;
+            --border-light: #e2e8f0;
+            --card-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --card-border: 1px solid rgba(0, 0, 0, 0.05);
+            --transition: 0.25s ease;
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary-light);
-            border-radius: 4px;
+        [data-theme="dark"] {
+            --bg-primary: #0a0f1c;
+            --bg-sidebar: #111827;
+            --bg-card: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #9ca3af;
+            --accent-primary: #3b82f6;
+            --accent-hover: #60a5fa;
+            --border-light: #1f2a3e;
+            --card-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.5);
+            --card-border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            transition: background var(--transition), color var(--transition);
         }
 
-        /* Header */
-        .header {
-            height: var(--header-height);
-            background: var(--card-bg);
+        /* ----- DESKTOP LAYOUT: SIDEBAR 25% / MAIN 75% (NO FOOTER) ----- */
+        .app-dashboard {
             display: flex;
-            align-items: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Sidebar: exactly 25% width on desktop, scrollable but no visible scrollbar */
+        .sidebar {
+            width: 25%;
+            max-width: 320px;
+            min-width: 260px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
             justify-content: space-between;
-            padding: 0 25px;
-            position: fixed;
-            top: 0;
-            right: 0;
-            left: var(--sidebar-width);
-            z-index: 1000;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            backdrop-filter: blur(10px);
+            padding: 1.8rem 1.5rem;
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1), background var(--transition);
+            z-index: 100;
+            overflow-y: auto;
+            overflow-x: hidden;
+            /* Scrollbar hidden but functional */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .sidebar::-webkit-scrollbar {
+            display: none;
+            width: 0;
         }
 
-        .menu-btn { 
-            font-size: 22px; 
-            cursor: pointer; 
-            display: none; 
-            color: var(--primary);
-            transition: transform 0.2s;
-        }
-
-        .menu-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .logo-text { 
-            font-weight: 800; 
-            font-size: 1.3rem; 
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            letter-spacing: -0.5px;
-        }
-
-        .user-profile {
+        /* Main content fills remaining 75% */
+        .main-content {
+            flex: 1;
+            width: 75%;
             display: flex;
-            align-items: center;
-            gap: 15px;
-            cursor: pointer;
+            flex-direction: column;
+            background: var(--bg-primary);
+            height: 100%;
+            overflow: hidden;
             position: relative;
         }
 
-        .user-profile i {
-            font-size: 2rem;
-            color: var(--primary-light);
-            transition: transform 0.2s;
-        }
-
-        .user-profile:hover i {
-            transform: scale(1.05);
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--sidebar-bg);
-            color: #ffffff;
-            position: fixed;
-            height: 100vh;
-            top: 0;
-            left: 0;
-            z-index: 1100;
-            padding: 20px 15px;
-            transition: var(--transition);
+        /* Content viewport wrapper - scrollable with hidden scrollbar */
+        #contentViewport {
+            flex: 1;
+            width: 100%;
+            height: 100%;
             overflow-y: auto;
             overflow-x: hidden;
-            box-shadow: var(--shadow-lg);
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
-
-        .sidebar.collapsed {
-            width: var(--sidebar-width-collapsed);
+        
+        #contentViewport::-webkit-scrollbar {
+            display: none;
+            width: 0;
         }
-
-        .sidebar.collapsed .sidebar-header span,
-        .sidebar.collapsed li span {
+        
+        /* Embedded iframes also need hidden scrollbars */
+        .view-container {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: var(--bg-primary);
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .view-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        iframe {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        iframe::-webkit-scrollbar {
             display: none;
         }
 
-        .sidebar.collapsed .sidebar-header i {
-            margin: 0 auto;
+        /* Embed view scrollable area inside viewport */
+        .embed-view {
+            padding: 2rem 2rem;
+            overflow-y: auto;
+            height: 100%;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .embed-view::-webkit-scrollbar {
+            display: none;
         }
 
-        .sidebar.collapsed li {
-            justify-content: center;
-            padding: 14px;
+        /* ----- ATTRACTIVE TIME/DATE CARD (REVAMPED) ----- */
+        .datetime-premium {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-sidebar) 100%);
+            border-radius: 28px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            border: var(--card-border);
+            transition: transform 0.2s, box-shadow 0.2s;
+            backdrop-filter: blur(2px);
         }
 
-        .sidebar-header {
-            padding: 10px 15px 30px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px;
+        .datetime-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 24px 38px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        .time-greeting {
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .time-greeting i {
+            font-size: 0.7rem;
+        }
+
+        .clock-large {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Inter', monospace;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+            line-height: 1.2;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .clock-large span {
+            background: var(--accent-glow);
+            padding: 0.1rem 0.2rem;
+            border-radius: 12px;
+        }
+
+        .date-elegant {
+            margin-top: 10px;
             display: flex;
             align-items: center;
             gap: 12px;
-            transition: var(--transition);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            border-top: 1px dashed var(--border-light);
+            padding-top: 10px;
+            flex-wrap: wrap;
         }
 
-        .sidebar ul { list-style: none; }
-        .sidebar li {
-            padding: 14px 18px;
-            margin: 4px 0;
-            border-radius: 12px;
-            cursor: pointer;
+        .date-elegant i {
+            color: var(--accent-primary);
+            font-size: 0.9rem;
+        }
+
+        .day-badge {
+            background: var(--accent-primary);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Brand header */
+        .brand-logo {
             display: flex;
             align-items: center;
-            gap: 15px;
-            font-size: 0.95rem;
-            transition: all 0.2s;
-            color: rgba(255,255,255,0.7);
-            white-space: nowrap;
+            gap: 10px;
+            font-size: 1.35rem;
+            font-weight: 700;
+            background: linear-gradient(120deg, var(--accent-primary), #7c3aed);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 1.8rem;
         }
 
-        .sidebar li i {
-            min-width: 24px;
+        .brand-logo i {
+            background: none;
+            color: var(--accent-primary);
+            font-size: 1.7rem;
+        }
+
+        /* Navigation */
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            flex: 1;
+            overflow-y: visible;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.85rem 1rem;
+            border-radius: 16px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            background: transparent;
+            border: none;
+            width: 100%;
+            text-align: left;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-item i {
+            width: 24px;
             font-size: 1.2rem;
         }
 
-        .sidebar li span {
-            white-space: nowrap;
+        .nav-item:hover {
+            background: var(--bg-primary);
+            color: var(--accent-primary);
+            transform: translateX(4px);
         }
 
-        .sidebar li:hover { 
-            background: rgba(255,255,255,0.1); 
-            color: #fff;
-            transform: translateX(5px);
+        .nav-item.active {
+            background: var(--accent-primary);
+            color: white;
+            box-shadow: 0 6px 12px -6px rgba(37, 99, 235, 0.3);
         }
 
-        .sidebar li.active {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: #fff;
-            box-shadow: 0 4px 15px rgba(72, 52, 212, 0.4);
-        }
-
-        /* Main Content */
-        .main-wrapper {
-            margin-left: var(--sidebar-width);
-            padding: calc(var(--header-height) + 20px) 20px 20px;
-            transition: var(--transition);
-            min-height: 100vh;
-        }
-
-        .sidebar.collapsed + .header,
-        .sidebar.collapsed ~ .main-wrapper {
-            margin-left: var(--sidebar-width-collapsed);
-        }
-
-        /* Dashboard Cards */
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.3s ease;
-            border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--primary-light));
-            transform: scaleX(0);
-            transition: transform 0.3s;
-        }
-
-        .card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .card:hover { 
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .card h3 { 
-            font-size: 0.85rem; 
-            color: var(--text-light);
-            text-transform: uppercase; 
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-        }
-
-        .card .value { 
-            font-size: 2rem; 
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--text-main), var(--primary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .card .trend {
-            font-size: 0.8rem;
-            margin-top: 10px;
-            color: var(--success);
-        }
-
-        /* Settings Container */
-        .settings-container {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 30px;
-            margin-top: 20px;
-            max-width: 600px;
-            border: 1px solid var(--border-color);
-        }
-
-        .settings-item {
-            margin-bottom: 25px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .settings-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .settings-label {
+        /* Settings card */
+        .settings-row {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 1.5rem;
+            border: var(--card-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            cursor: pointer;
+            max-width: 550px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .switch-label strong {
             font-size: 1rem;
         }
 
-        .settings-label span i {
-            margin-right: 10px;
-            color: var(--primary);
+        .switch {
+            position: relative;
+            width: 52px;
+            height: 28px;
         }
 
-        .settings-button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
             cursor: pointer;
-            width: 100%;
-            font-size: 1rem;
-            transition: all 0.3s;
+            inset: 0;
+            background-color: #cbd5e1;
+            transition: 0.2s;
+            border-radius: 34px;
         }
 
-        .settings-button:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        /* Iframe Container */
-        #iframe-container {
-            width: 100%;
-            height: calc(100vh - 120px);
-            border-radius: 15px;
-            overflow: hidden;
-            display: none;
-            background: var(--card-bg);
-            box-shadow: var(--shadow-lg);
-            animation: fadeIn 0.3s ease;
-        }
-
-        iframe { 
-            width: 100%; 
-            height: 100%; 
-            border: none;
-            background: var(--card-bg);
-        }
-
-        /* Loading Spinner */
-        .loading-spinner {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2000;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid var(--border-color);
-            border-top-color: var(--primary);
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.2s;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        input:checked + .slider {
+            background-color: var(--accent-primary);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        input:checked + .slider:before {
+            transform: translateX(24px);
         }
 
-        /* Mobile Overlay */
-        .overlay {
+        /* Mobile header (Title + time) */
+        .mobile-header {
+            display: none;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(8px);
+            padding: 1rem 1.2rem;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            z-index: 15;
+        }
+
+        .mobile-title-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mobile-title-area i {
+            font-size: 1.4rem;
+            color: var(--accent-primary);
+        }
+
+        .mobile-title-area span {
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.3px;
+        }
+
+        .mobile-clock-compact {
+            background: var(--bg-card);
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .menu-toggle-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Mobile overlay & sidebar offcanvas */
+        .sidebar-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
-            z-index: 1050;
-            transition: all 0.3s;
+            z-index: 98;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        /* Notification Toast */
-        .toast-notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            color: var(--text-main);
-            padding: 12px 20px;
-            border-radius: 12px;
-            box-shadow: var(--shadow-lg);
-            z-index: 2000;
-            transform: translateX(400px);
-            transition: transform 0.3s;
-            border-left: 4px solid var(--primary);
+        /* Dashboard cards styling */
+        .dashboard-cards {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 1.5rem;
+            flex: 1;
+            min-width: 180px;
+            border: var(--card-border);
+            box-shadow: var(--card-shadow);
         }
 
-        .toast-notification.show {
-            transform: translateX(0);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .dashboard-cards {
-                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-                gap: 20px;
-            }
-        }
-
-        @media (max-width: 1024px) {
-            :root {
-                --sidebar-width: 280px;
-            }
-            
-            .header { 
-                left: 0; 
-                padding-left: 80px;
-            }
-            
-            .menu-btn { 
-                display: block; 
-                position: absolute; 
-                left: 25px;
-                top: 50%;
-                transform: translateY(-50%);
-            }
-            
-            .sidebar { 
-                left: -280px;
-                box-shadow: var(--shadow-lg);
-            }
-            
-            .sidebar.open { 
-                left: 0;
-            }
-            
-            .sidebar.collapsed {
-                left: -80px;
-            }
-            
-            .sidebar.collapsed.open {
-                left: 0;
-            }
-            
-            .main-wrapper { 
-                margin-left: 0 !important;
-                padding: calc(var(--header-height) + 20px) 15px 20px;
-            }
-            
-            .overlay.show { 
-                display: block;
-                animation: fadeIn 0.3s;
-            }
-        }
-
-        @media (max-width: 768px) {
-            :root {
-                --header-height: 60px;
-            }
-            
-            .dashboard-cards {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 15px;
-            }
-            
-            .card {
-                padding: 20px;
-            }
-            
-            .card .value {
-                font-size: 1.5rem;
-            }
-            
-            .main-wrapper {
-                padding: calc(var(--header-height) + 15px) 12px 15px;
-            }
-            
-            #iframe-container {
-                height: calc(100vh - 100px);
-            }
-            
-            .logo-text {
-                font-size: 1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .dashboard-cards {
-                grid-template-columns: 1fr;
-            }
-            
-            .header {
-                padding: 0 15px;
-            }
-            
-            .menu-btn {
-                left: 15px;
-            }
-            
-            .user-profile i {
-                font-size: 1.5rem;
-            }
-            
-            .card .value {
-                font-size: 1.3rem;
-            }
-            
-            .card h3 {
-                font-size: 0.75rem;
-            }
-            
-            .toast-notification {
-                left: 20px;
-                right: 20px;
-                text-align: center;
-            }
-        }
-
-        @media (max-width: 375px) {
+        /* ---------- RESPONSIVE: MOBILE ---------- */
+        @media (max-width: 992px) {
             .sidebar {
-                width: 260px;
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 280px;
+                transform: translateX(-100%);
+                transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+                z-index: 200;
+                box-shadow: 5px 0 25px rgba(0,0,0,0.2);
+                border-right: none;
             }
-            
-            .sidebar li {
-                padding: 12px 15px;
-                font-size: 0.85rem;
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+                opacity: 1;
+            }
+
+            .main-content {
+                width: 100%;
+                flex: 1;
+                height: 100%;
+            }
+
+            .mobile-header {
+                display: flex;
             }
         }
 
-        /* Print Styles */
-        @media print {
-            .sidebar, .header, .overlay {
-                display: none;
-            }
-            
-            .main-wrapper {
-                margin: 0;
-                padding: 0;
-            }
-            
-            .card {
-                break-inside: avoid;
-                box-shadow: none;
-                border: 1px solid #ddd;
-            }
+        /* Utility - remove footer if any */
+        footer, .footer {
+            display: none;
+        }
+        
+        /* Ensure all scroll containers are functional but invisible */
+        .sidebar, .main-content, #contentViewport, .embed-view, iframe {
+            overflow-y: auto;
+            overflow-x: hidden;
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
+    <div class="app-dashboard" id="appRoot">
+        <!-- Overlay for mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
-    <div class="loading-spinner" id="loadingSpinner">
-        <div class="spinner"></div>
+        <!-- Sidebar (25% desktop) - scrollable but no scrollbar visible -->
+        <aside class="sidebar" id="sidebar">
+            <div>
+                <div class="brand-logo">
+                    <i class="fa-solid fa-truck-fast"></i> 
+                    <span>FleetManager</span>
+                </div>
+
+                <!-- Enhanced time + date card (attractive view) -->
+                <div class="datetime-premium" id="premiumDateTimeCard">
+                    <div class="time-greeting">
+                        <i class="fa-regular fa-clock"></i> LIVE FLEET TIME
+                    </div>
+                    <div class="clock-large" id="dynamicClockDisplay">
+                        --:--:--
+                    </div>
+                    <div class="date-elegant" id="dynamicDateDisplay">
+                        <i class="fa-regular fa-calendar-alt"></i> 
+                        <span id="dateText">--</span>
+                        <span class="day-badge" id="dayBadge">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-view="dashboard">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </button>
+                <button class="nav-item" data-view="payment">
+                    <i class="fa-solid fa-credit-card"></i> Payment Record
+                </button>
+                <button class="nav-item" data-view="driver-details">
+                    <i class="fa-solid fa-id-card"></i> Driver Details
+                </button>
+                <button class="nav-item" data-view="driver-salary">
+                    <i class="fa-solid fa-money-check-dollar"></i> Driver Salary
+                </button>
+                <button class="nav-item" data-view="rough-work">
+                    <i class="fa-solid fa-pen-to-square"></i> Rough Work
+                </button>
+                <button class="nav-item" data-view="settings">
+                    <i class="fa-solid fa-gear"></i> Settings
+                </button>
+            </nav>
+            <div style="height: 10px;"></div>
+        </aside>
+
+        <!-- Main content area 75% -->
+        <main class="main-content">
+            <!-- Mobile header: Title "Fleet Management" + Time (compact) -->
+            <div class="mobile-header">
+                <div class="mobile-title-area">
+                    <button class="menu-toggle-btn" id="menuOpenBtn">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <i class="fa-solid fa-ship"></i>
+                    <span>Fleet Management</span>
+                </div>
+                <div class="mobile-clock-compact" id="mobileTimeHeader">
+                    00:00
+                </div>
+            </div>
+
+            <!-- Scrollable viewport with hidden scrollbar but fully functional scrolling -->
+            <div id="contentViewport"></div>
+        </main>
     </div>
-    <div class="toast-notification" id="toastNotification"></div>
-
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <i class="fas fa-shipping-fast"></i>
-            <span>FleetManager</span>
-        </div>
-        <ul>
-            <li class="active" onclick="loadHome(this)">
-                <i class="fas fa-th-large"></i>
-                <span>Dashboard</span>
-            </li>
-            <li onclick="loadPage(this, 'Driver/GetDriverDet.html')">
-                <i class="fas fa-users"></i>
-                <span>Add Driver</span>
-            </li>
-            <li onclick="loadPage(this, 'Expenses/getexpenses.html')">
-                <i class="fas fa-file-invoice-dollar"></i>
-                <span>Expenses</span>
-            </li>
-            <li onclick="loadPage(this, 'Income/getincomedetails.html')">
-                <i class="fas fa-chart-line"></i>
-                <span>Income</span>
-            </li>
-            <li onclick="loadPage(this, 'Other/getemailDetails.html')">
-                <i class="fas fa-envelope"></i>
-                <span>Emails</span>
-            </li>
-            <li onclick="loadPage(this, 'Driver Salary/dashboard.html')">
-                <i class="fas fa-envelope"></i>
-                <span>Driver Salary</span>
-            </li>
-            <li onclick="loadPage(this, 'Rough/dashboard.html')">
-                <i class="fas fa-truck"></i>
-                <span>Rough Work</span>
-            </li>
-            <li onclick="loadPage(this, 'Vehicle Details/dashboard.html')">
-                <i class="fas fa-truck-moving"></i>
-                <span>Vehicles</span>
-            </li>
-            <li onclick="loadSettings(this)">
-                <i class="fas fa-cog"></i>
-                <span>Settings</span>
-            </li>
-        </ul>
-    </aside>
-
-    <header class="header">
-        <div class="menu-btn" onclick="toggleSidebar()">
-            <i class="fas fa-bars"></i>
-        </div>
-        <div class="logo-text">SMART DASHBOARD PRO</div>
-        <div class="user-profile" onclick="toggleUserMenu()">
-            <i class="fas fa-circle-user"></i>
-            <span id="userName" style="font-size: 0.9rem;">Admin</span>
-        </div>
-    </header>
-
-    <main class="main-wrapper">
-        <div id="main-view">
-            <h2 id="view-title" style="animation: fadeIn 0.5s;">Overview Dashboard</h2>
-            <div class="dashboard-cards">
-                <div class="card">
-                    <h3><i class="fas fa-users"></i> Total Drivers</h3>
-                    <div class="value" id="totalDrivers">15</div>
-                    <div class="trend"><i class="fas fa-arrow-up"></i> +12% from last month</div>
-                </div>
-                <div class="card">
-                    <h3><i class="fas fa-chart-line"></i> Total Income</h3>
-                    <div class="value" id="totalIncome">₹1,50,000</div>
-                    <div class="trend"><i class="fas fa-arrow-up"></i> +8% from last month</div>
-                </div>
-                <div class="card">
-                    <h3><i class="fas fa-file-invoice-dollar"></i> Total Expenses</h3>
-                    <div class="value" id="totalExpenses">₹60,000</div>
-                    <div class="trend"><i class="fas fa-arrow-down"></i> -5% from last month</div>
-                </div>
-                <div class="card">
-                    <h3><i class="fas fa-truck"></i> Active Vehicles</h3>
-                    <div class="value" id="totalVehicles">10</div>
-                    <div class="trend"><i class="fas fa-chart-line"></i> +2 new this month</div>
-                </div>
-            </div>
-            
-            <!-- Quick Actions Section -->
-            <div style="margin-top: 30px;">
-                <h3 style="margin-bottom: 15px;">Quick Actions</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
-                    <button onclick="quickAction('addDriver')" style="background: var(--card-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; cursor: pointer; color: var(--text-main); transition: all 0.3s;">
-                        <i class="fas fa-user-plus"></i><br>Add Driver
-                    </button>
-                    <button onclick="quickAction('addExpense')" style="background: var(--card-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; cursor: pointer; color: var(--text-main); transition: all 0.3s;">
-                        <i class="fas fa-plus-circle"></i><br>Add Expense
-                    </button>
-                    <button onclick="quickAction('addIncome')" style="background: var(--card-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; cursor: pointer; color: var(--text-main); transition: all 0.3s;">
-                        <i class="fas fa-money-bill-wave"></i><br>Add Income
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div id="iframe-container">
-            <iframe id="content-frame" src=""></iframe>
-        </div>
-    </main>
 
     <script>
+        // ------------------------------
+        // VIEW CONFIGURATION (NO FOOTER, SCROLLABLE HIDDEN SCROLLBARS)
+        // ------------------------------
+        const VIEWS_CONFIG = {
+            'dashboard': { 
+                type: 'html', 
+                content: `<div class="embed-view">
+                    <div style="background: var(--bg-card); border-radius: 32px; padding: 2rem; border: var(--card-border); box-shadow: var(--card-shadow);">
+                        <h2 class="view-title" style="margin-top:0;"><i class="fa-solid fa-chart-line"></i> Operational Overview</h2>
+                        <p style="color: var(--text-muted); margin-top: 1rem;">Welcome to FleetManager — central command for logistics, payments, driver insights and real-time analytics. Scroll to explore more content (scrollbar hidden but functional).</p>
+                        <div class="dashboard-cards">
+                            <div class="stat-card"><i class="fa-solid fa-truck" style="font-size: 1.8rem; color: var(--accent-primary);"></i><h3 style="margin: 12px 0 4px;">24</h3><p style="color: var(--text-muted);">Active Vehicles</p></div>
+                            <div class="stat-card"><i class="fa-solid fa-users" style="font-size: 1.8rem; color: var(--accent-primary);"></i><h3 style="margin: 12px 0 4px;">18</h3><p style="color: var(--text-muted);">Drivers Online</p></div>
+                            <div class="stat-card"><i class="fa-solid fa-chart-simple" style="font-size: 1.8rem; color: var(--accent-primary);"></i><h3 style="margin: 12px 0 4px;">97%</h3><p style="color: var(--text-muted);">On-Time Delivery</p></div>
+                        </div>
+                        <div style="margin-top: 2rem; background: var(--bg-primary); border-radius: 24px; padding: 1.5rem;">
+                            <h4><i class="fa-regular fa-bell"></i> Recent Activity</h4>
+                            <ul style="margin-top: 1rem; list-style: none;">
+                                <li style="padding: 0.75rem 0; border-bottom: 1px solid var(--border-light);">✓ Trip #FT-234 completed - New York</li>
+                                <li style="padding: 0.75rem 0; border-bottom: 1px solid var(--border-light);">✓ Salary processed for 12 drivers</li>
+                                <li style="padding: 0.75rem 0;">✓ Maintenance update for vehicle #V-882</li>
+                            </ul>
+                        </div>
+                        <div style="margin-top: 1.5rem; height: 200px; background: linear-gradient(145deg, var(--bg-primary), transparent); border-radius: 24px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                            <i class="fa-regular fa-chart-line"></i> Performance metrics preview (scroll works)
+                        </div>
+                    </div>
+                </div>`
+            },
+            'payment': { type: 'iframe', src: 'payment.html' },
+            'driver-details': { type: 'iframe', src: 'Driver Details/Details.html' },
+            'driver-salary': { type: 'iframe', src: 'Driver Salary/dashboard.html' },
+            'rough-work': { type: 'iframe', src: 'Rough Work/dashboard.html' },
+            'settings': { 
+                type: 'html', 
+                content: `
+                <div class="embed-view">
+                    <div style="max-width: 700px;">
+                        <h2 class="view-title"><i class="fa-solid fa-sliders-h"></i> Preferences & Configuration</h2>
+                        <div class="settings-row">
+                            <div class="switch-label">
+                                <strong>Dark Mode Interface</strong>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">Toggle between light & dark themes</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="globalThemeToggle" ${document.body.getAttribute('data-theme') === 'dark' ? 'checked' : ''}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <p style="margin-top: 2rem; font-size: 0.8rem; color: var(--text-muted);"><i class="fa-regular fa-circle-check"></i> Dashboard preferences saved locally. Scroll area is fully functional without visible scrollbar.</p>
+                        <div style="margin-top: 2rem; background: var(--bg-card); border-radius: 24px; padding: 1.5rem; border: var(--card-border);">
+                            <h4>System Info</h4>
+                            <p style="margin-top: 0.5rem;">Version 2.0 • Fleet Management Suite</p>
+                            <p style="margin-top: 0.5rem;">All scroll containers support native scrolling with hidden scrollbars for clean UI.</p>
+                        </div>
+                    </div>
+                </div>`
+            }
+        };
+
+        // DOM elements
+        let activeViewKey = 'dashboard';
+        const viewport = document.getElementById('contentViewport');
         const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-        const mainView = document.getElementById('main-view');
-        const iframeContainer = document.getElementById('iframe-container');
-        const contentFrame = document.getElementById('content-frame');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const toastNotification = document.getElementById('toastNotification');
-        
-        let startX = 0;
-        let touchStartTime = 0;
-        
-        // Store original dashboard HTML
-        const originalDashboardHTML = mainView.innerHTML;
-        
-        // Check for saved dark mode preference
-        if(localStorage.getItem('darkMode') === 'enabled') {
-            document.body.classList.add('dark-mode');
-        }
-        
-        // Check for saved sidebar state
-        if(localStorage.getItem('sidebarCollapsed') === 'true' && window.innerWidth > 1024) {
-            sidebar.classList.add('collapsed');
-        }
+        const overlay = document.getElementById('sidebarOverlay');
 
-        function showToast(message, isError = false) {
-            toastNotification.textContent = message;
-            toastNotification.style.borderLeftColor = isError ? '#eb4d4b' : '#00b894';
-            toastNotification.classList.add('show');
-            setTimeout(() => {
-                toastNotification.classList.remove('show');
-            }, 3000);
-        }
-
-        function showLoading() {
-            loadingSpinner.style.display = 'block';
-        }
-
-        function hideLoading() {
-            loadingSpinner.style.display = 'none';
-        }
-
-        function toggleSidebar() {
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('show');
+        // Enhanced time & date updater (attractive card)
+        function updateDateTimePremium() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            const timeString12hr = `${hours.toString()}:${minutes}:${seconds} ${ampm}`;
             
-            // Prevent body scroll when sidebar is open on mobile
-            if(sidebar.classList.contains('open')) {
-                document.body.style.overflow = 'hidden';
+            const optionsDate = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' };
+            const fullDateStr = now.toLocaleDateString(undefined, optionsDate);
+            const dayName = now.toLocaleDateString(undefined, { weekday: 'long' });
+            
+            const clockDisplayElem = document.getElementById('dynamicClockDisplay');
+            const dateTextElem = document.getElementById('dateText');
+            const dayBadgeElem = document.getElementById('dayBadge');
+            if (clockDisplayElem) clockDisplayElem.innerHTML = `<span>${timeString12hr}</span>`;
+            if (dateTextElem) dateTextElem.textContent = fullDateStr;
+            if (dayBadgeElem) dayBadgeElem.textContent = dayName;
+            
+            const mobileTimeSpan = document.getElementById('mobileTimeHeader');
+            if (mobileTimeSpan) {
+                const mobileTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                mobileTimeSpan.textContent = mobileTime;
+            }
+        }
+        
+        // Load view manager (keeps scroll hidden but functional)
+        function loadView(viewKey, clickedBtn = null) {
+            if (!VIEWS_CONFIG[viewKey]) return;
+            activeViewKey = viewKey;
+            const config = VIEWS_CONFIG[viewKey];
+            
+            // Update active nav style
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-view') === viewKey) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Render content - scroll remains functional with hidden scrollbars
+            if (config.type === 'iframe') {
+                viewport.innerHTML = `<iframe class="view-container" src="${config.src}" title="Fleet Management Module" style="scrollbar-width: none; -ms-overflow-style: none;"></iframe>`;
+                // Ensure iframe body also hides scrollbar (cross-origin limitation but applies to container)
+                const iframeElem = viewport.querySelector('iframe');
+                if (iframeElem) {
+                    iframeElem.style.scrollbarWidth = 'none';
+                    iframeElem.style.overflow = 'auto';
+                }
             } else {
-                document.body.style.overflow = '';
-            }
-        }
-
-        function setActive(el) {
-            document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
-            el.classList.add('active');
-            if(window.innerWidth <= 1024) {
-                setTimeout(() => toggleSidebar(), 100);
-            }
-        }
-
-        function loadHome(el) {
-            setActive(el);
-            iframeContainer.style.display = 'none';
-            mainView.style.display = 'block';
-            // Restore the original dashboard HTML
-            mainView.innerHTML = originalDashboardHTML;
-            document.getElementById('view-title').innerHTML = 'Overview Dashboard';
-            showToast('Dashboard loaded successfully');
-        }
-
-        function loadPage(el, url) {
-            setActive(el);
-            mainView.style.display = 'none';
-            iframeContainer.style.display = 'block';
-            
-            showLoading();
-            
-            // Set timeout for iframe loading
-            contentFrame.onload = () => {
-                hideLoading();
-                showToast('Page loaded successfully');
-            };
-            
-            contentFrame.onerror = () => {
-                hideLoading();
-                showToast('Error loading page. Please try again.', true);
-            };
-            
-            contentFrame.src = url;
-            
-            // Update title based on menu item
-            const menuText = el.querySelector('span') ? el.querySelector('span').textContent : 'Content';
-            if(document.getElementById('view-title')) {
-                document.getElementById('view-title').innerHTML = menuText;
-            }
-        }
-
-        function loadSettings(el) {
-            setActive(el);
-            iframeContainer.style.display = 'none';
-            mainView.style.display = 'block';
-            
-            // Create settings HTML without overwriting the original dashboard structure
-            mainView.innerHTML = `
-                <h2>Settings</h2>
-                <div class="settings-container">
-                    <div class="settings-item">
-                        <label class="settings-label">
-                            <span><i class="fas fa-moon"></i> Dark Mode</span>
-                            <input type="checkbox" id="darkModeToggle" ${document.body.classList.contains('dark-mode') ? 'checked' : ''}>
-                        </label>
-                    </div>
-                    <div class="settings-item">
-                        <label class="settings-label">
-                            <span><i class="fas fa-compress-alt"></i> Collapse Sidebar (Desktop only)</span>
-                            <input type="checkbox" id="collapseSidebar" ${sidebar.classList.contains('collapsed') ? 'checked' : ''}>
-                        </label>
-                    </div>
-                    <div class="settings-item">
-                        <button class="settings-button" onclick="clearCache()">
-                            <i class="fas fa-trash"></i> Clear Cache
-                        </button>
-                    </div>
-                    <div class="settings-item">
-                        <button class="settings-button" onclick="resetToDefault()" style="background: var(--accent);">
-                            <i class="fas fa-undo-alt"></i> Reset All Settings
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            // Add event listeners after creating the elements
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            if(darkModeToggle) {
-                darkModeToggle.addEventListener('change', (e) => {
-                    document.body.classList.toggle('dark-mode');
-                    if(e.target.checked) {
-                        localStorage.setItem('darkMode', 'enabled');
-                        showToast('Dark mode enabled');
-                    } else {
-                        localStorage.setItem('darkMode', 'disabled');
-                        showToast('Light mode enabled');
+                viewport.innerHTML = config.content;
+                // Force all scrollable containers inside embed-view to hide scrollbars
+                const embedDivs = viewport.querySelectorAll('.embed-view');
+                embedDivs.forEach(div => {
+                    div.style.scrollbarWidth = 'none';
+                    div.style.overflowY = 'auto';
+                });
+                // Re-attach theme toggle if settings view
+                if (viewKey === 'settings') {
+                    const themeToggle = document.getElementById('globalThemeToggle');
+                    if (themeToggle) {
+                        themeToggle.addEventListener('change', (e) => {
+                            const newTheme = e.target.checked ? 'dark' : 'light';
+                            document.body.setAttribute('data-theme', newTheme);
+                            localStorage.setItem('user-theme-preference', newTheme);
+                        });
                     }
-                });
-            }
-            
-            const collapseSidebar = document.getElementById('collapseSidebar');
-            if(collapseSidebar) {
-                collapseSidebar.addEventListener('change', (e) => {
-                    if(window.innerWidth > 1024) {
-                        sidebar.classList.toggle('collapsed');
-                        localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
-                        showToast(e.target.checked ? 'Sidebar collapsed' : 'Sidebar expanded');
-                    } else {
-                        showToast('Sidebar collapse only available on desktop', true);
-                        e.target.checked = false;
-                    }
-                });
-            }
-        }
-        
-        function resetToDefault() {
-            // Reset dark mode
-            document.body.classList.remove('dark-mode');
-            localStorage.setItem('darkMode', 'disabled');
-            
-            // Reset sidebar collapse
-            if(window.innerWidth > 1024) {
-                sidebar.classList.remove('collapsed');
-                localStorage.setItem('sidebarCollapsed', 'false');
-            }
-            
-            // Reset dark mode toggle if it exists
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            if(darkModeToggle) darkModeToggle.checked = false;
-            
-            // Reset collapse sidebar toggle if it exists
-            const collapseSidebar = document.getElementById('collapseSidebar');
-            if(collapseSidebar) collapseSidebar.checked = false;
-            
-            showToast('All settings reset to default');
-            
-            // Reload dashboard after 1 second
-            setTimeout(() => {
-                const dashboardMenu = document.querySelector('.sidebar li:first-child');
-                loadHome(dashboardMenu);
-            }, 1000);
-        }
-        
-        function quickAction(action) {
-            switch(action) {
-                case 'addDriver':
-                    const driverMenu = document.querySelector('.sidebar li:nth-child(2)');
-                    loadPage(driverMenu, 'Driver/GetDriverDet.html');
-                    break;
-                case 'addExpense':
-                    const expenseMenu = document.querySelector('.sidebar li:nth-child(3)');
-                    loadPage(expenseMenu, 'Expenses/getexpenses.html');
-                    break;
-                case 'addIncome':
-                    const incomeMenu = document.querySelector('.sidebar li:nth-child(4)');
-                    loadPage(incomeMenu, 'Income/getincomedetails.html');
-                    break;
-            }
-        }
-        
-        function clearCache() {
-            if('caches' in window) {
-                caches.keys().then(names => {
-                    names.forEach(name => {
-                        caches.delete(name);
-                    });
-                });
-            }
-            showToast('Cache cleared successfully');
-            setTimeout(() => {
-                location.reload();
-            }, 1500);
-        }
-        
-        function toggleUserMenu() {
-            showToast('User profile section coming soon!');
-        }
-        
-        // Touch gestures with improved detection
-        document.addEventListener('touchstart', e => {
-            startX = e.touches[0].clientX;
-            touchStartTime = Date.now();
-        }, {passive: true});
-
-        document.addEventListener('touchmove', e => {
-            if(!startX) return;
-            
-            let moveX = e.touches[0].clientX;
-            let diffX = moveX - startX;
-            let timeDiff = Date.now() - touchStartTime;
-            
-            // Only trigger if swipe is fast enough (< 300ms)
-            if(timeDiff < 300) {
-                // Swipe Right (Open)
-                if (startX < 50 && diffX > 60 && !sidebar.classList.contains('open')) {
-                    toggleSidebar();
-                }
-                // Swipe Left (Close)
-                if (sidebar.classList.contains('open') && diffX < -60) {
-                    toggleSidebar();
                 }
             }
-        }, {passive: true});
+            
+            // Close sidebar on mobile after navigation
+            if (window.innerWidth <= 992) {
+                closeMobileSidebar();
+            }
+        }
         
-        // Handle window resize
-        let resizeTimer;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-                if(window.innerWidth > 1024) {
-                    overlay.classList.remove('show');
-                    sidebar.classList.remove('open');
-                    document.body.style.overflow = '';
+        // Theme initialization
+        function initTheme() {
+            const stored = localStorage.getItem('user-theme-preference');
+            if (stored) {
+                document.body.setAttribute('data-theme', stored);
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+            }
+        }
+        
+        // Bind navigation events
+        function bindNavEvents() {
+            const navBtns = document.querySelectorAll('.nav-item');
+            navBtns.forEach(btn => {
+                btn.removeEventListener('click', navHandler);
+                btn.addEventListener('click', navHandler);
+            });
+        }
+        
+        function navHandler(e) {
+            const view = this.getAttribute('data-view');
+            if (view) loadView(view, this);
+        }
+        
+        // Mobile sidebar controls
+        function openMobileSidebar() {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+        }
+        
+        function closeMobileSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+        
+        // Swipe gestures for mobile
+        function initSwipeGestures() {
+            let touchStart = 0;
+            const container = document.getElementById('appRoot');
+            if (!container) return;
+            container.addEventListener('touchstart', (e) => {
+                touchStart = e.changedTouches[0].screenX;
+            }, { passive: true });
+            container.addEventListener('touchend', (e) => {
+                const touchEnd = e.changedTouches[0].screenX;
+                const diff = touchEnd - touchStart;
+                const isMobile = window.innerWidth <= 992;
+                if (!isMobile) return;
+                if (diff > 70 && touchStart < 45) {
+                    openMobileSidebar();
+                } else if (diff < -70 && sidebar.classList.contains('open')) {
+                    closeMobileSidebar();
                 }
-            }, 250);
-        });
+            });
+        }
         
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            // Alt + S to toggle sidebar
-            if(e.altKey && e.key === 's') {
-                toggleSidebar();
-            }
-            // Esc to close sidebar on mobile
-            if(e.key === 'Escape' && sidebar.classList.contains('open')) {
-                toggleSidebar();
-            }
-        });
+        // Initialize app
+        function initializeApp() {
+            initTheme();
+            bindNavEvents();
+            loadView('dashboard');
+            updateDateTimePremium();
+            setInterval(updateDateTimePremium, 1000);
+            
+            const menuBtn = document.getElementById('menuOpenBtn');
+            if (menuBtn) menuBtn.addEventListener('click', openMobileSidebar);
+            if (overlay) overlay.addEventListener('click', closeMobileSidebar);
+            
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 992) {
+                    closeMobileSidebar();
+                }
+            });
+            
+            initSwipeGestures();
+            
+            // Global theme sync for dynamically created toggle
+            document.addEventListener('change', (e) => {
+                if (e.target && e.target.id === 'globalThemeToggle') {
+                    const isDark = e.target.checked;
+                    document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                    localStorage.setItem('user-theme-preference', isDark ? 'dark' : 'light');
+                }
+            });
+        }
         
-        // Auto-refresh data every 5 minutes (only if dashboard is visible)
-        setInterval(() => {
-            if(mainView.style.display !== 'none' && mainView.innerHTML.includes('dashboard-cards')) {
-                // In production, fetch updated data from API here
-                console.log('Auto-refreshing dashboard data...');
-            }
-        }, 300000);
+        window.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>
 </html>
