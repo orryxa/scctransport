@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Driver Details | Smart Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ======================== CSS VARIABLES FOR THEMING ======================== */
+        :root {
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-light: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --secondary: #f59e0b;
+            --secondary-dark: #d97706;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #fbbf24;
+            --info: #06b6d4;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --table-header-bg: #f8fafc;
+            --table-row-hover: #f1f5f9;
+            --table-border: #e2e8f0;
+            --transition-fast: 150ms ease;
+            --transition-normal: 300ms ease;
+            --transition-slow: 500ms ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: linear-gradient(135deg, #1e1e2e 0%, #2d1b4e 100%);
+            --bg-secondary: #1e1e2e;
+            --card-bg: rgba(30, 30, 46, 0.98);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-light: #64748b;
+            --border-color: #334155;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4);
+            --table-header-bg: #1e293b;
+            --table-row-hover: #334155;
+            --table-border: #334155;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            padding: 20px 16px;
+            color: var(--text-primary);
+            transition: background var(--transition-normal), color var(--transition-normal);
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page {
+            display: none;
+            animation: fadeSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .page.active-page {
+            display: block;
+        }
+        
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .soft-card {
+            background: var(--card-bg);
+            border-radius: 2rem;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .soft-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .card-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        [data-theme="dark"] .card-header {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+        }
+
+        .card-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .search-section {
+            padding: 1.5rem 2rem;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            filter: brightness(1.05);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-sm {
+            padding: 6px 16px;
+            font-size: 0.75rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .desktop-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .mobile-buttons {
+            display: none;
+        }
+
+        .search-wrapper {
+            width: 100%;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 60px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-wrapper input::placeholder {
+            color: var(--text-light);
+        }
+
+        .search-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            overflow-y: visible;
+            scrollbar-width: thin;
+            padding: 0;
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            height: 6px;
+            background: transparent;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.875rem;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 16px 16px;
+            background: var(--table-header-bg);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .data-table td {
+            padding: 16px 16px;
+            border-bottom: 1px solid var(--table-border);
+            color: var(--text-primary);
+            transition: background var(--transition-fast);
+        }
+
+        .data-table tr:hover td {
+            background: var(--table-row-hover);
+        }
+
+        .sync-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            font-size: 14px;
+            margin-left: 8px;
+            cursor: help;
+        }
+        .sync-badge::after {
+            content: "✓";
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            padding: 2rem;
+        }
+
+        @media (max-width: 640px) {
+            .details-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+                padding: 1rem;
+            }
+        }
+
+        .detail-card {
+            background: linear-gradient(135deg, var(--card-bg), rgba(255,255,255,0.05));
+            border-radius: 1.2rem;
+            padding: 1rem 1.2rem;
+            transition: all var(--transition-fast);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .detail-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        .detail-value {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-top: 6px;
+            color: var(--text-primary);
+            word-break: break-word;
+        }
+
+        .action-row {
+            padding: 1rem 2rem 2rem;
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: all var(--transition-normal);
+        }
+
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-box {
+            background: var(--card-bg);
+            width: 92%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 2rem;
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            color: white;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: white;
+            transition: transform var(--transition-fast);
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+        }
+
+        .field input, 
+        .field select, 
+        .field textarea {
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+
+        .field input:focus, 
+        .field select:focus, 
+        .field textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .field input:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+        }
+
+        .fullwidth {
+            grid-column: 1 / -1;
+        }
+
+        .autocomplete-wrap {
+            position: relative;
+        }
+
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 9999;
+            display: none;
+            box-shadow: var(--shadow-lg);
+            margin-top: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all var(--transition-fast);
+            color: var(--text-primary);
+        }
+
+        .autocomplete-item:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Date picker styling */
+        input[type="date"] {
+            font-family: inherit;
+            cursor: pointer;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            filter: var(--date-picker-filter, none);
+        }
+        [data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .card-header { padding: 1rem 1.2rem; }
+            .card-header h2 { font-size: 1.3rem; }
+            .search-section { padding: 1rem 1.2rem; }
+            .desktop-buttons { display: none; }
+            .mobile-buttons { display: grid !important; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; width: 100%; }
+            .mobile-buttons .btn { width: 100%; justify-content: center; padding: 12px 16px; font-size: 0.85rem; }
+            .data-table th, .data-table td { padding: 12px 10px; font-size: 0.75rem; }
+            .btn { padding: 8px 18px; font-size: 0.8rem; }
+            .modal-box { width: 95%; border-radius: 1.5rem; }
+            .form-grid { grid-template-columns: 1fr; gap: 1rem; }
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--table-header-bg); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
+
+        .table-wrapper, .modal-box, .autocomplete-list, .details-grid, body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .table-wrapper { overflow-x: auto; overflow-y: visible; -webkit-overflow-scrolling: touch; }
+        .modal-box { overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+        .autocomplete-list { overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+        .details-grid { overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+        .modal-body { overflow-y: auto; max-height: calc(85vh - 70px); scrollbar-width: none; }
+        .modal-body::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div id="page1" class="page active-page">
+            <div class="soft-card">
+                <div class="card-header">
+                    <h2>👥 Driver Details · Master Data</h2>
+                    <div class="desktop-buttons">
+                        <button id="refreshBtnP1" class="btn btn-outline"><span>⟳</span> Refresh</button>
+                    </div>
+                </div>
+                <div class="search-section">
+                    <div class="search-wrapper">
+                        <input type="text" id="searchInput" placeholder="🔍 Search by Driver Name, Vehicle No, Mobile No...">
+                    </div>
+                    <div class="mobile-buttons">
+                        <button id="mobileRefreshBtn" class="btn btn-outline"><span>⟳</span> Refresh</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Sr. No</th><th>Joining Date</th><th>Driver Name</th><th>Vehicle No</th><th>Mobile No</th><th>Action</th></tr>
+                        </thead>
+                        <tbody id="tableBody"><tr><td colspan="6" style="text-align:center;"><div class="spinner"></div> Loading drivers...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="page2" class="page">
+        <div class="soft-card">
+            <div class="card-header">
+                <h2>📄 Driver Full Details</h2>
+                <button id="backToPage1Btn" class="btn btn-outline">← Back</button>
+            </div>
+            <div id="detailsContainer" class="details-grid"><div class="loading-skeleton" style="height: 200px;"></div></div>
+            <div class="action-row">
+                <button id="manageDriverBtn" class="btn btn-primary">✏️ Edit / Update</button>
+                <button id="deleteRecordBtn" class="btn btn-danger">🗑 Delete Record</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="globalModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 450px;"><div class="modal-header"><h3 id="modalTitle">Notice</h3><button class="close-modal" id="closeGlobalModal">×</button></div><div class="modal-body"><p id="modalMsg"></p><div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;"><button id="confirmModalBtn" class="btn btn-primary">OK</button></div></div></div>
+</div>
+
+<div id="driverModal" class="modal-overlay">
+    <div class="modal-box"><div class="modal-header"><h3>👨‍✈️ Add / Update Driver</h3><button class="close-modal" id="closeDriverModalBtn">×</button></div><div class="modal-body" id="driverModalBody"></div></div>
+</div>
+
+<script>
+    // ======================== DARK MODE SYNC ========================
+    function syncThemeWithParent() {
+        const localTheme = localStorage.getItem('user-theme-preference');
+        if (localTheme) { document.body.setAttribute('data-theme', localTheme); }
+        else {
+            try { if (window.parent && window.parent.document.body) { const parentTheme = window.parent.document.body.getAttribute('data-theme'); if (parentTheme) document.body.setAttribute('data-theme', parentTheme); } }
+            catch(e) { console.log("theme sync"); }
+        }
+    }
+    window.addEventListener('DOMContentLoaded', syncThemeWithParent);
+    window.addEventListener('storage', syncThemeWithParent);
+    setInterval(syncThemeWithParent, 1000);
+    window.addEventListener('message', function(event) { if (event.data && event.data.type === 'themeChange') { const newTheme = event.data.theme; if (newTheme) document.body.setAttribute('data-theme', newTheme); } });
+    
+    // ==================== CONFIGURATION ====================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoDds81u8M5N8micA_hoIBgCS7aCFm0NUmwW6XLH4m_fRJ8R9pGqjgFGMeBxBd2dSL/exec";
+    const SPREADSHEET_ID = "1Aofp--fuGeDzONi8Y67pfCYOhOS6vEilCL8Nq5mBq00";
+    const SHEET_NAME = "Driver Details";
+    const CACHE_KEY = "driver_details_cache_v1";
+    const CACHE_TTL = 15 * 60 * 1000;
+    
+    let allDrivers = [];
+    let currentDriver = null;
+    let currentRowIndex = null;
+    let searchDebounceTimer = null;
+    
+    const indianBanks = ["State Bank of India","HDFC Bank","ICICI Bank","Axis Bank","Kotak Mahindra Bank","Bank of Baroda","Punjab National Bank","Canara Bank","Union Bank of India","Bank of India","Yes Bank","IDFC First Bank","IndusInd Bank","Central Bank of India","Indian Bank","UCO Bank","Bandhan Bank","RBL Bank","South Indian Bank","Federal Bank","Karur Vysya Bank","City Union Bank","Dhanlaxmi Bank","Tamilnad Mercantile Bank","Saraswat Bank","Abhyudaya Bank"];
+
+    function escapeHtml(str) { if (!str) return ''; return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+    function formatToDDMMYYYY(dateInput) {
+        if (!dateInput) return '';
+        try {
+            let dateObj; if (dateInput instanceof Date) dateObj = dateInput;
+            else if (typeof dateInput === 'string') {
+                if (dateInput.match(/^\d{2}\/\d{2}\/\d{4}$/)) return dateInput;
+                if (dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) { const [year, month, day] = dateInput.split('-'); return `${day}/${month}/${year}`; }
+                dateObj = new Date(dateInput); if (isNaN(dateObj.getTime())) return dateInput;
+            } else return '';
+            const day = String(dateObj.getDate()).padStart(2, '0'); const month = String(dateObj.getMonth() + 1).padStart(2, '0'); const year = dateObj.getFullYear();
+            return `${day}/${month}/${year}`;
+        } catch (error) { return dateInput || ''; }
+    }
+    function convertToYYYYMMDD(dateStr) {
+        if (!dateStr) return ""; if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) return dateStr;
+        if (dateStr.includes('/')) { const parts = dateStr.split('/'); if (parts.length === 3) { const day = parts[0].padStart(2,'0'); const month = parts[1].padStart(2,'0'); let year = parts[2]; if (year.length === 2) year = '20'+year; return `${year}-${month}-${day}`; } }
+        const date = new Date(dateStr); if (!isNaN(date.getTime())) return date.toISOString().split('T')[0]; return "";
+    }
+
+    function showModal(msg, title = "Message", isConfirm = false, onConfirm = null, autoClose = 0) {
+        const modal = document.getElementById('globalModal'); if (!modal) return;
+        document.getElementById('modalTitle').innerText = title; document.getElementById('modalMsg').innerHTML = msg;
+        const confirmBtn = document.getElementById('confirmModalBtn'); confirmBtn.onclick = () => { modal.classList.remove('active'); if (isConfirm && onConfirm) onConfirm(); };
+        modal.classList.add('active'); if (autoClose > 0) setTimeout(() => modal.classList.remove('active'), autoClose);
+    }
+
+    function showSpinner(element, show, customHtml = null) { if (!element) return; if (show) { element.disabled = true; element.setAttribute('data-original-text', element.innerHTML); element.innerHTML = customHtml || '<span class="spinner"></span> Loading...'; } else { element.disabled = false; const original = element.getAttribute('data-original-text'); if (original) element.innerHTML = original; } }
+
+    // Vehicle number format: MH 00 AA 0000
+    function formatVehicleNumber(input) {
+        let val = input.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+        if (val.length > 2) val = val.slice(0,2) + ' ' + val.slice(2);
+        if (val.length > 5) val = val.slice(0,5) + ' ' + val.slice(5);
+        if (val.length > 8) val = val.slice(0,8) + ' ' + val.slice(8,12);
+        if (val.length > 13) val = val.slice(0,13);
+        input.value = val;
+    }
+    
+    // IFSC Code: limit to 11 uppercase characters
+    function formatIFSCCode(input) {
+        let val = input.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 11);
+        input.value = val;
+    }
+    
+    function validateMobile(mobile) { return /^[6-9][0-9]{9}$/.test(mobile); }
+    function toUpperCaseName(str) { return str.toUpperCase(); }
+
+    async function fetchWithCache(url, cacheKey, ttl) {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) { try { const { data, timestamp } = JSON.parse(cached); if (Date.now() - timestamp < ttl) return data; } catch(e){} }
+        const response = await fetch(url); const result = await response.json();
+        if (result.status === "success" && Array.isArray(result.data)) {
+            let formatted = result.data.map(row => { if(row['Joining Date']) row['Joining Date'] = formatToDDMMYYYY(row['Joining Date']); return row; });
+            localStorage.setItem(cacheKey, JSON.stringify({ data: formatted, timestamp: Date.now() }));
+            return formatted;
+        }
+        return [];
+    }
+
+    async function loadDrivers() {
+        const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}&_=${Date.now()}`;
+        let data = await fetchWithCache(url, CACHE_KEY, CACHE_TTL);
+        if (!data || data.length === 0) data = [];
+        data.sort((a,b) => (parseInt(a["Sr. No"]) || 0) - (parseInt(b["Sr. No"]) || 0));
+        allDrivers = data;
+        return data;
+    }
+
+    function renderTablePage1(filter = "") {
+        const tbody = document.getElementById('tableBody'); if (!tbody) return;
+        const searchLower = filter.toLowerCase();
+        let filtered = allDrivers.filter(d => (d["Driver Name"] || "").toLowerCase().includes(searchLower) || (d["Vehicle No"] || "").toLowerCase().includes(searchLower) || (d["Mobile No"] || "").includes(searchLower));
+        if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">✨ No drivers found</td></tr>'; return; }
+        const fragment = document.createDocumentFragment();
+        filtered.forEach(d => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${escapeHtml(d["Sr. No"] || "")}</td><td>${escapeHtml(formatToDDMMYYYY(d["Joining Date"]) || '—')}</td><td>${escapeHtml(d["Driver Name"] || "")}</td><td>${escapeHtml(d["Vehicle No"] || "")}</td><td>${escapeHtml(d["Mobile No"] || "")}</td><td><button class="btn btn-sm btn-outline viewBtn" data-sr="${escapeHtml(d["Sr. No"] || "")}">👁️ View</button></td>`;
+            fragment.appendChild(row);
+        });
+        tbody.innerHTML = ''; tbody.appendChild(fragment);
+        document.querySelectorAll('.viewBtn').forEach(btn => btn.addEventListener('click', (e) => { const sr = btn.getAttribute('data-sr'); const found = allDrivers.find(d => String(d["Sr. No"]) === String(sr)); if(found) { currentDriver = found; currentRowIndex = allDrivers.findIndex(d => String(d["Sr. No"]) === String(sr)) + 2; showPage2Details(found); } }));
+    }
+
+    function showPage2Details(driver) {
+        const container = document.getElementById('detailsContainer'); if(!container) return;
+        const fields = ["Sr. No","Joining Date","Driver Name","Vehicle No","Mobile No","Alter Mobile No","Bank Holder Name","Account No","IFSC Code","Bank Name","Note"];
+        const fragment = document.createDocumentFragment();
+        fields.forEach(field => {
+            let val = driver[field] !== undefined ? driver[field] : "";
+            if(field === "Joining Date") val = formatToDDMMYYYY(val);
+            const card = document.createElement('div'); card.className = 'detail-card';
+            card.innerHTML = `<div class="detail-label">${escapeHtml(field)}</div><div class="detail-value">${escapeHtml(val) || '—'}</div>`;
+            fragment.appendChild(card);
+        });
+        container.innerHTML = ''; container.appendChild(fragment);
+        document.getElementById('page1')?.classList.remove('active-page'); document.getElementById('page2')?.classList.add('active-page');
+    }
+
+    function goToPage1() { document.getElementById('page2')?.classList.remove('active-page'); document.getElementById('page1')?.classList.add('active-page'); }
+    
+      async function refreshAllData() { 
+    const btn = document.getElementById('refreshBtnP1'); 
+    if(btn) showSpinner(btn, true); 
+    try { 
+        localStorage.removeItem(CACHE_KEY); 
+        await loadDrivers(); 
+        renderTablePage1(document.getElementById('searchInput')?.value || ""); 
+    } catch(err) { 
+        showModal("Refresh failed: "+err.message, "Error"); 
+    } finally { 
+        if(btn) showSpinner(btn, false); 
+    } 
+}
+
+    function setupAutocomplete(inputId, listId, optionsArray) {
+        const input = document.getElementById(inputId); const listEl = document.getElementById(listId); if(!input || !listEl) return;
+        function showOptions(filterVal='') { const term = filterVal.toLowerCase(); const filtered = optionsArray.filter(opt => opt.toLowerCase().includes(term)); if(filtered.length) { listEl.innerHTML = filtered.map(opt => `<div class="autocomplete-item" data-value="${escapeHtml(opt)}">${escapeHtml(opt)}</div>`).join(''); listEl.style.display = 'block'; listEl.querySelectorAll('.autocomplete-item').forEach(item => { item.addEventListener('click', () => { input.value = item.getAttribute('data-value'); listEl.style.display = 'none'; input.dispatchEvent(new Event('input')); }); }); } else { listEl.style.display = 'none'; } }
+        input.addEventListener('input', (e) => showOptions(e.target.value)); input.addEventListener('focus', () => showOptions(input.value)); input.addEventListener('blur', () => setTimeout(() => listEl.style.display = 'none', 200)); document.addEventListener('click', (e) => { if(!listEl.contains(e.target) && e.target !== input) listEl.style.display = 'none'; });
+    }
+
+    function openDriverModal(isEdit = false) {
+        const bodyDiv = document.getElementById('driverModalBody'); if(!bodyDiv) return;
+        const driver = isEdit ? currentDriver : { "Joining Date": "", "Driver Name": "", "Vehicle No": "", "Mobile No": "", "Alter Mobile No": "", "Bank Holder Name": "", "Account No": "", "IFSC Code": "", "Bank Name": "", "Note": "" };
+        const html = `<form id="driverForm"><div class="form-grid">
+            <div class="field"><label>Joining Date *</label><input type="date" id="joinDate" value="${convertToYYYYMMDD(driver["Joining Date"] || "")}" required></div>
+            <div class="field"><label>Driver Name *</label><input type="text" id="driverName" value="${escapeHtml(driver["Driver Name"] || "")}" required style="text-transform:uppercase"></div>
+            <div class="field"><label>Vehicle No *</label><input type="text" id="vehicleNo" value="${escapeHtml(driver["Vehicle No"] || "")}" placeholder="MH 00 AA 0000" required></div>
+            <div class="field"><label>Mobile No *</label><input type="tel" id="mobileNo" value="${escapeHtml(driver["Mobile No"] || "")}" maxlength="10" pattern="[6-9][0-9]{9}" required></div>
+            <div class="field"><label>Alter Mobile No</label><input type="tel" id="alterMobile" value="${escapeHtml(driver["Alter Mobile No"] || "")}" maxlength="10" pattern="[6-9][0-9]{9}"></div>
+            <div class="field"><label>Bank Holder Name</label><input type="text" id="bankHolder" value="${escapeHtml(driver["Bank Holder Name"] || driver["Driver Name"] || "")}" readonly style="background:#f0f0f0; cursor:default;"></div>
+            <div class="field"><label>Account No</label><input type="number" id="accountNo" value="${escapeHtml(driver["Account No"] || "")}"></div>
+            <div class="field"><label>IFSC Code (11 chars)</label><input type="text" id="ifscCode" value="${escapeHtml(driver["IFSC Code"] || "")}" maxlength="11" placeholder="SBIN0001234"></div>
+            <div class="field autocomplete-wrap"><label>Bank Name</label><input type="text" id="bankName" value="${escapeHtml(driver["Bank Name"] || "")}" autocomplete="off"><div id="bankAutoList" class="autocomplete-list"></div></div>
+            <div class="field fullwidth"><label>Note</label><textarea id="note" rows="2">${escapeHtml(driver["Note"] || "")}</textarea></div>
+        </div><div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 1.5rem;"><button type="button" id="cancelDriverBtn" class="btn btn-outline">Cancel</button><button type="submit" id="saveDriverBtn" class="btn btn-primary">💾 Save Driver</button></div></form>`;
+        bodyDiv.innerHTML = html; document.getElementById('driverModal').classList.add('active');
+        setTimeout(() => { setupAutocomplete('bankName', 'bankAutoList', indianBanks); }, 20);
+        
+        // Vehicle number formatting
+        const vehicleInput = document.getElementById('vehicleNo'); if(vehicleInput) vehicleInput.addEventListener('input', function() { formatVehicleNumber(this); });
+        
+        // Driver Name: uppercase and sync with Bank Holder Name
+        const driverNameInput = document.getElementById('driverName'); 
+        const bankHolderInput = document.getElementById('bankHolder');
+        if(driverNameInput) {
+            driverNameInput.addEventListener('input', function() { 
+                this.value = this.value.toUpperCase();
+                if(bankHolderInput) bankHolderInput.value = this.value;
+            });
+        }
+        
+        // IFSC Code: uppercase and limit to 11 characters
+        const ifscInput = document.getElementById('ifscCode');
+        if(ifscInput) {
+            ifscInput.addEventListener('input', function() { formatIFSCCode(this); });
+            ifscInput.value = (driver["IFSC Code"] || "").toUpperCase().slice(0,11);
+        }
+        
+        // Mobile number validation: only digits, max 10, start with 6-9
+        const mobileInput = document.getElementById('mobileNo'); 
+        if(mobileInput) mobileInput.addEventListener('input', function(e) { this.value = this.value.replace(/[^0-9]/g,'').slice(0,10); });
+        const alterMobileInput = document.getElementById('alterMobile'); 
+        if(alterMobileInput) alterMobileInput.addEventListener('input', function(e) { this.value = this.value.replace(/[^0-9]/g,'').slice(0,10); });
+        
+        document.getElementById('cancelDriverBtn')?.addEventListener('click', () => document.getElementById('driverModal').classList.remove('active'));
+        document.getElementById('driverForm')?.addEventListener('submit', async (e) => { e.preventDefault(); const saveBtn = document.getElementById('saveDriverBtn'); showSpinner(saveBtn, true, 'Saving...');
+            const joinDateRaw = document.getElementById('joinDate')?.value || ""; const joiningDateFormatted = joinDateRaw ? formatToDDMMYYYY(joinDateRaw) : "";
+            const mobile = document.getElementById('mobileNo')?.value || ""; if(!validateMobile(mobile)) { showModal("❌ Mobile number must be 10 digits starting with 6,7,8,9", "Validation Error"); showSpinner(saveBtn, false); return; }
+            const alterMobile = document.getElementById('alterMobile')?.value || ""; if(alterMobile && !validateMobile(alterMobile)) { showModal("❌ Alternate mobile number must be 10 digits starting with 6,7,8,9", "Validation Error"); showSpinner(saveBtn, false); return; }
+            const driverNameVal = (document.getElementById('driverName')?.value || "").toUpperCase().trim(); if(!driverNameVal) { showModal("❌ Driver Name is required", "Error"); showSpinner(saveBtn, false); return; }
+            const vehicleVal = (document.getElementById('vehicleNo')?.value || "").toUpperCase().trim(); if(!vehicleVal) { showModal("❌ Vehicle Number is required", "Error"); showSpinner(saveBtn, false); return; }
+            const ifscVal = (document.getElementById('ifscCode')?.value || "").toUpperCase().trim();
+            const driverData = { "Joining Date": joiningDateFormatted, "Driver Name": driverNameVal, "Vehicle No": vehicleVal, "Mobile No": mobile, "Alter Mobile No": alterMobile, "Bank Holder Name": driverNameVal, "Account No": document.getElementById('accountNo')?.value || "", "IFSC Code": ifscVal, "Bank Name": document.getElementById('bankName')?.value || "", "Note": document.getElementById('note')?.value || "" };
+            const params = new URLSearchParams(); params.append("action", isEdit ? "update" : "insert"); params.append("spreadsheetId", SPREADSHEET_ID); params.append("sheetName", SHEET_NAME); if(isEdit && currentRowIndex) params.append("rowIndex", currentRowIndex);
+            for(let [key,val] of Object.entries(driverData)) params.append(key, val);
+            try { const resp = await fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params }); const result = await resp.json(); if(result.status === "success") { showModal(isEdit ? "✅ Driver updated!" : "✅ Driver added!", "Success", false, null, 1500); document.getElementById('driverModal').classList.remove('active'); await refreshAllData(); if(isEdit && currentDriver) { const refreshed = allDrivers.find(d => String(d["Sr. No"]) === String(currentDriver["Sr. No"])); if(refreshed) { currentDriver = refreshed; showPage2Details(currentDriver); } else goToPage1(); } else goToPage1(); } else { showModal("Save failed: " + (result.message || "unknown"), "Error"); } } catch(err) { showModal("Error: "+err.message, "Error"); } finally { showSpinner(saveBtn, false); } });
+    }
+
+    async function deleteCurrentRecord() { if(!currentDriver) return; const sr = currentDriver["Sr. No"]; showModal(`⚠️ Delete Driver Sr. No ${sr}?`, "Confirm Delete", true, async () => { const btn = document.getElementById('deleteRecordBtn'); if(btn) showSpinner(btn, true); const params = new URLSearchParams(); params.append("action", "delete"); params.append("spreadsheetId", SPREADSHEET_ID); params.append("sheetName", SHEET_NAME); params.append("rowIndex", currentRowIndex); try { const response = await fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params }); const result = await response.json(); if(result.status === "success") { showModal("✅ Driver deleted!", "Success", false, null, 1500); await refreshAllData(); goToPage1(); } else { showModal("Delete failed: " + (result.message || "unknown"), "Error"); } } catch(err) { showModal("Error: "+err.message, "Error"); } finally { if(btn) showSpinner(btn, false); } }); }
+
+    async function fastInit() {
+        document.getElementById('refreshBtnP1')?.addEventListener('click', refreshAllData);
+        document.getElementById('mobileRefreshBtn')?.addEventListener('click', async () => {
+    const btn = document.getElementById('mobileRefreshBtn');
+    if(btn) showSpinner(btn, true);
+    try {
+        localStorage.removeItem(CACHE_KEY);
+        await loadDrivers();
+        renderTablePage1(document.getElementById('searchInput')?.value || "");
+    } catch(err) {
+        showModal("Refresh failed: "+err.message, "Error");
+    } finally {
+        if(btn) showSpinner(btn, false);
+    }
+});
+        document.getElementById('backToPage1Btn')?.addEventListener('click', goToPage1);
+        document.getElementById('manageDriverBtn')?.addEventListener('click', () => openDriverModal(true));
+        document.getElementById('deleteRecordBtn')?.addEventListener('click', deleteCurrentRecord);
+        document.getElementById('searchInput')?.addEventListener('input', (e) => { if(searchDebounceTimer) clearTimeout(searchDebounceTimer); searchDebounceTimer = setTimeout(() => renderTablePage1(e.target.value), 300); });
+        document.getElementById('closeGlobalModal')?.addEventListener('click', () => document.getElementById('globalModal')?.classList.remove('active'));
+        document.getElementById('closeDriverModalBtn')?.addEventListener('click', () => document.getElementById('driverModal')?.classList.remove('active'));
+        window.onclick = (e) => { if(e.target.classList?.contains('modal-overlay')) e.target.classList.remove('active'); };
+        const addBtn = document.createElement('button'); addBtn.className = 'btn btn-primary'; addBtn.innerHTML = '<span>➕</span> Add Driver'; addBtn.style.marginLeft = 'auto'; addBtn.addEventListener('click', () => openDriverModal(false)); document.querySelector('.card-header .desktop-buttons')?.appendChild(addBtn);
+        const mobileAdd = document.createElement('button'); mobileAdd.className = 'btn btn-primary'; mobileAdd.innerHTML = '<span>➕</span> Add Driver'; mobileAdd.style.width = '100%'; mobileAdd.addEventListener('click', () => openDriverModal(false)); document.querySelector('.mobile-buttons')?.appendChild(mobileAdd);
+        await loadDrivers(); renderTablePage1("");
+        setTimeout(() => refreshAllData(), 5000);
+    }
+    fastInit();
+</script>
+</body>
+</html>
