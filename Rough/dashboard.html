@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>FleetView | Driver Salary Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light Mode Fallbacks */
+            --bg-deep: #f8fafc;
+            --bg-card: #ffffff;
+            --accent: #4f46e5;
+            --border: #e2e8f0;
+            --text-main: #0f172a;
+            --text-dim: #64748b;
+            --shadow: rgba(0, 0, 0, 0.04);
+            --category-text: #dc2626;
+            --category-bg: #ffffff;
+            --transition-speed: 0.3s;
+        }
+
+        [data-theme="dark"] {
+            /* Upgraded Matching Premium Dark Mode */
+            --bg-deep: #0f172a;
+            --bg-card: #1e293b;
+            --accent: #6366f1;
+            --border: #334155;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --shadow: rgba(0, 0, 0, 0.2);
+            --category-text: #fda4af; /* Soft rose/crimson tint for dark mode */
+            --category-bg: #1e293b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        /* ========== MAIN CONTENT LAYOUT ========== */
+        .main-content {
+            flex: 1;
+            max-width: 1400px;
+            width: 95%;
+            margin: 1.5rem auto 3rem auto;
+        }
+
+        .category-header {
+            background-color: var(--category-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 16px;
+            text-align: center;
+            color: var(--category-text);
+            margin: 2rem 0 1.25rem 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: 1px solid var(--border);
+            transition: background-color var(--transition-speed), border-color var(--transition-speed);
+        }
+
+        .fleet-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (min-width: 768px) {
+            .fleet-grid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        }
+
+        @media (min-width: 1024px) {
+            .fleet-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+        }
+
+        /* ========== CARD STYLING ========== */
+        .card-link { text-decoration: none; display: block; }
+
+        .fleet-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.75rem 1rem;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px var(--shadow);
+        }
+
+        .fleet-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px -3px rgba(99, 102, 241, 0.15);
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            transition: color var(--transition-speed);
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.4rem;
+        }
+
+        .card-description {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        /* ========== FOOTER ========== */
+        .app-footer {
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-top: 1px solid var(--border);
+            background: var(--bg-card);
+            transition: background-color var(--transition-speed), border-color var(--transition-speed);
+        }
+    </style>
+</head>
+<body data-theme="dark"> <!-- Listens to Dashboard2 state automatically via Script below -->
+
+    <main class="main-content">
+        
+        <h3 class="category-header"><i class="fa-solid fa-map-location-dot"></i> Campa Taloja Vehicles</h3>
+        <div class="fleet-grid">
+            <a href="Campa Taloja/Cam_Taloja_3104.html" class="card-link">
+                <div class="fleet-card">
+                    <div class="card-icon"><i class="fa fa-truck"></i></div>
+                    <h3 class="card-title">Campa Taloja 3104</h3>
+                    <p class="card-description">Taloja Hub vehicle Running</p>
+                </div>
+            </a>
+
+            <a href="Campa Taloja/Cam_Taloja_3106.html" class="card-link">
+                <div class="fleet-card">
+                    <div class="card-icon"><i class="fa fa-truck"></i></div>
+                    <h3 class="card-title">Campa Taloja 3106</h3>
+                    <p class="card-description">Taloja Hub vehicle Running</p>
+                </div>
+            </a>
+
+            <a href="Campa Taloja/Cam_Taloja_3107.html" class="card-link">
+                <div class="fleet-card">
+                    <div class="card-icon"><i class="fa fa-truck"></i></div>
+                    <h3 class="card-title">Campa Taloja 3107</h3>
+                    <p class="card-description">Taloja Hub vehicle Running</p>
+                </div>
+            </a>
+
+            <a href="Campa Taloja/Cam_Taloja_3108.html" class="card-link">
+                <div class="fleet-card">
+                    <div class="card-icon"><i class="fa fa-truck"></i></div>
+                    <h3 class="card-title">Campa Taloja 3108</h3>
+                    <p class="card-description">Taloja Hub vehicle Running</p>
+                </div>
+            </a>
+        </div>
+
+        <h3 class="category-header"><i class="fa-solid fa-map-location-dot"></i> Campa Bhiwandi Vehicles</h3>
+        <div class="fleet-grid">
+            <a href="Campa Bhiwandi/Cam_Bwd_8472.html" class="card-link">
+                <div class="fleet-card">
+                    <div class="card-icon"><i class="fa fa-truck"></i></div>
+                    <h3 class="card-title">Campa Bhiwandi 8472</h3>
+                    <p class="card-description">Bhiwandi Hub vehicle Running</p>
+                </div>
+            </a>
+            
+            <a href="Campa Bhiwandi/Cam_Bwd_8473.html" class="card-link">
+                <div class="fleet-card">
+                    <div class="card-icon"><i class="fa fa-truck"></i></div>
+                    <h3 class="card-title">Campa Bhiwandi 8473</h3>
+                    <p class="card-description">Bhiwandi Hub vehicle Running</p>
+                </div>
+            </a>
+            
+            <a href="Campa Bhiwandi/Cam_Bwd_8782.html" class="card-link">
+                <div class="fleet-card">
+                    <div class="card-icon"><i class="fa fa-truck"></i></div>
+                    <h3 class="card-title">Campa Bhiwandi 8782</h3>
+                    <p class="card-description">Bhiwandi Hub vehicle Running</p>
+                </div>
+            </a>
+            
+            <a href="Campa Bhiwandi/Cam_Bwd_8783.html" class="card-link">
+                <div class="fleet-card">
+                    <div class="card-icon"><i class="fa fa-truck"></i></div>
+                    <h3 class="card-title">Campa Bhiwandi 8783</h3>
+                    <p class="card-description">Bhiwandi Hub vehicle Running</p>
+                </div>
+            </a>
+        </div>
+
+    </main>
+
+    <footer class="app-footer">
+        &copy; 2026 FleetView Technologies
+    </footer>
+
+    <script>
+        /* Theme Synchronizer Logic Hook */
+        function syncThemeWithParent() {
+            // Check cache storage values first
+            const localTheme = localStorage.getItem('user-theme-preference');
+            if (localTheme) {
+                document.body.setAttribute('data-theme', localTheme);
+            } else {
+                // If nested inside an iframe, inherit directly from Dashboard2 body attribute
+                try {
+                    if (window.parent && window.parent.document.body) {
+                        const parentTheme = window.parent.document.body.getAttribute('data-theme');
+                        if (parentTheme) document.body.setAttribute('data-theme', parentTheme);
+                    }
+                } catch(e) { console.log("Cross-origin frame safety intercept setup complete."); }
+            }
+        }
+
+        // Initialize synchronization systems
+        window.addEventListener('DOMContentLoaded', syncThemeWithParent);
+        // Continual observation listener for live theme changes in setting tab
+        window.addEventListener('storage', syncThemeWithParent);
+        setInterval(syncThemeWithParent, 1000); // Fail-safe structural check
+    </script>
+</body>
+</html>
