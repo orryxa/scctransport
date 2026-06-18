@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>5039 MIS | Trip Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-light: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --secondary: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #fbbf24;
+            --table-header-bg: #f8fafc;
+            --table-row-hover: #f1f5f9;
+            --table-border: #e2e8f0;
+            --transition-fast: 150ms ease;
+            --transition-normal: 300ms ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: linear-gradient(135deg, #1e1e2e 0%, #2d1b4e 100%);
+            --bg-secondary: #1e1e2e;
+            --card-bg: rgba(30, 30, 46, 0.98);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --table-header-bg: #1e293b;
+            --table-row-hover: #334155;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            padding: 20px 16px;
+            color: var(--text-primary);
+            transition: all var(--transition-normal);
+        }
+
+        .app-container { max-width: 1400px; margin: 0 auto; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .page { display: none; animation: fadeSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .page.active-page { display: block; }
+        @keyframes fadeSlide { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        .soft-card {
+            background: var(--card-bg);
+            border-radius: 2rem;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .soft-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-xl); }
+
+        .card-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        [data-theme="dark"] .card-header {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+        }
+        .card-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .search-section { padding: 1.5rem 2rem; background: var(--card-bg); border-bottom: 1px solid var(--border-color); }
+        
+        .btn {
+            border: none; padding: 10px 24px; border-radius: 60px; font-weight: 600; font-size: 0.875rem;
+            cursor: pointer; transition: all var(--transition-fast); display: inline-flex; align-items: center; gap: 8px;
+            position: relative; overflow: hidden;
+        }
+        .btn::before {
+            content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0;
+            border-radius: 50%; background: rgba(255, 255, 255, 0.3); transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        .btn:active::before { width: 300px; height: 300px; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: var(--shadow-sm); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); filter: brightness(1.05); }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; transform: translateY(-2px); }
+        .btn-danger { background: linear-gradient(135deg, var(--danger), #dc2626); color: white; }
+        .btn-warning { background: linear-gradient(135deg, var(--warning), #d97706); color: #1e293b; }
+        .btn-sm { padding: 6px 16px; font-size: 0.75rem; }
+        .btn-xs { padding: 4px 12px; font-size: 0.7rem; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* ======================== BUTTON VISIBILITY ======================== */
+        .desktop-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .mobile-buttons {
+            display: none;
+        }
+
+        /* ======================== RESPONSIVE DESIGN ======================== */
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .card-header { padding: 1rem 1.2rem; }
+            .card-header h2 { font-size: 1.3rem; }
+            .search-section { padding: 1rem 1.2rem; }
+            
+            .desktop-buttons {
+                display: none !important;
+            }
+
+            .mobile-buttons {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+                margin-top: 16px;
+                width: 100%;
+            }
+
+            .mobile-buttons .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 12px 16px;
+                font-size: 0.85rem;
+            }
+
+            .data-table th, .data-table td { padding: 12px 10px; font-size: 0.75rem; }
+            .btn { padding: 8px 18px; font-size: 0.8rem; }
+            .modal-box { width: 95%; border-radius: 1.5rem; }
+            .form-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .section-title { flex-direction: column; align-items: flex-start; }
+            .section-actions { align-self: flex-end; }
+        }
+
+        @media (min-width: 769px) {
+            .desktop-buttons {
+                display: flex !important;
+            }
+            
+            .mobile-buttons {
+                display: none !important;
+            }
+        }
+
+        .search-wrapper input {
+            width: 100%; padding: 14px 20px; border: 2px solid var(--border-color); border-radius: 60px;
+            background: var(--bg-secondary); color: var(--text-primary); font-size: 0.95rem;
+            transition: all var(--transition-fast);
+        }
+        .search-wrapper input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); transform: translateY(-1px); }
+
+        .table-wrapper { overflow-x: auto; }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.875rem; }
+        .data-table th { text-align: left; padding: 16px; background: var(--table-header-bg); color: var(--primary); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--primary); }
+        .data-table td { padding: 16px; border-bottom: 1px solid var(--table-border); color: var(--text-primary); transition: background var(--transition-fast); }
+        .data-table tr:hover td { background: var(--table-row-hover); }
+
+        /* Page 2 Grid Layout */
+        .details-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 2rem;
+        }
+        @media (max-width: 768px) {
+            .details-grid { padding: 1rem; gap: 1rem; }
+        }
+
+        /* Individual Collapse Section Styles */
+        .trip-section {
+            background: var(--card-bg);
+            border-radius: 1.5rem;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all var(--transition-fast);
+        }
+        .section-header {
+            padding: 1.2rem 1.5rem;
+            background: var(--table-header-bg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background var(--transition-fast);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .section-header:hover { background: var(--table-row-hover); }
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .section-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .collapse-icon { font-size: 1.2rem; transition: transform 0.3s ease; }
+        .collapse-icon.collapsed { transform: rotate(-90deg); }
+        .section-content { padding: 1.5rem; border-top: 1px solid var(--border-color); }
+        .section-content.hidden { display: none; }
+        
+        /* Grid for trip details - 2 column on mobile */
+        .details-grid-inner {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+        }
+        @media (max-width: 640px) {
+            .details-grid-inner {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+        }
+        
+        .detail-card {
+            background: linear-gradient(135deg, var(--card-bg), rgba(255,255,255,0.05));
+            border-radius: 1.2rem;
+            padding: 1rem 1.2rem;
+            transition: all var(--transition-fast);
+            border: 1px solid var(--border-color);
+        }
+        .detail-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+        .detail-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+            font-weight: 700;
+        }
+        .detail-value {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-top: 6px;
+            word-break: break-word;
+            color: var(--text-primary);
+        }
+
+        .incomplete-section {
+            border-left: 4px solid var(--warning);
+        }
+        .warning-badge {
+            background: var(--warning);
+            color: #1e293b;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        /* Modal Styles - Scrollable without visible scrollbar */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center;
+            z-index: 2000; visibility: hidden; opacity: 0; transition: all var(--transition-normal);
+        }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal-box {
+            background: var(--card-bg); width: 92%; max-width: 1000px; max-height: 85vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            border-radius: 2rem;
+            box-shadow: var(--shadow-xl);
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .modal-box::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 1.2rem 1.5rem; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 10; color: white;
+        }
+        .modal-header h3 { font-size: 1.3rem; font-weight: 700; }
+        .close-modal { background: none; border: none; font-size: 2rem; cursor: pointer; color: white; transition: transform var(--transition-fast); line-height: 1; }
+        .close-modal:hover { transform: rotate(90deg); }
+        .modal-body { 
+            padding: 1.5rem; 
+            overflow-y: auto; 
+            max-height: calc(85vh - 70px);
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .modal-body::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .field label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+        }
+        .field input, .field select, .field textarea {
+            padding: 12px 16px; border-radius: 16px; border: 2px solid var(--border-color);
+            background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+        .field input:focus, .field select:focus, .field textarea:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        .fullwidth { grid-column: 1 / -1; }
+        .calculated-field {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+            font-weight: 600;
+        }
+        
+        /* Time input styling */
+        input[type="time"] {
+            font-family: inherit;
+            cursor: pointer;
+        }
+        [data-theme="dark"] input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+        
+        .autocomplete-wrap { position: relative; }
+        .autocomplete-list {
+            position: absolute; top: 100%; left: 0; right: 0; background: var(--card-bg);
+            border-radius: 16px; max-height: 200px; overflow-y: auto; z-index: 9999;
+            display: none; box-shadow: var(--shadow-lg); margin-top: 6px; border: 1px solid var(--border-color);
+        }
+        .autocomplete-item { padding: 12px 16px; cursor: pointer; transition: all var(--transition-fast); color: var(--text-primary); }
+        .autocomplete-item:hover { background: var(--primary); color: white; }
+        
+        .spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid var(--border-color); border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 0.6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Hide scrollbar but keep functionality */
+        ::-webkit-scrollbar { width: 0px; height: 0px; background: transparent; display: none; }
+        * { scrollbar-width: none; -ms-overflow-style: none; }
+
+        /* ======================== MODAL Z-INDEX HIERARCHY ======================== */
+        .modal-overlay {
+            z-index: 2000;
+        }
+
+        #globalModal.modal-overlay {
+            z-index: 9999 !important;
+        }
+
+        #holidayModal.modal-overlay {
+            z-index: 3000;
+        }
+
+        #tripModal.modal-overlay {
+            z-index: 3000;
+        }
+
+        .modal-overlay.active {
+            z-index: 9999;
+        }
+
+        #holidayModal.modal-overlay.active {
+            z-index: 3000;
+        }
+
+        #globalModal.modal-overlay.active {
+            z-index: 9999 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div id="page1" class="page active-page">
+            <div class="soft-card">
+                <div class="card-header">
+                    <h2>🚛 MH 04 MR 5039 - MIS EV Vehicle</h2>
+                    <div class="desktop-buttons">
+                        <button id="refreshBtnP1" class="btn btn-outline"><span>⟳</span> Refresh</button>
+                    </div>
+                </div>
+                <div class="search-section">
+                    <div class="search-wrapper">
+                        <input type="text" id="searchInput" placeholder="🔍 Search by Trip No, Reference No, City...">
+                    </div>
+                    <div class="mobile-buttons">
+                        <button id="mobileRefreshBtn" class="btn btn-outline"><span>⟳</span> Refresh</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Trip No</th>
+                                <th>Date</th>
+                                <th>Reference No</th>
+                                <th>City</th>
+                                <th>Total Boxes</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td colspan="6" style="text-align:center;">
+                                    <div class="spinner"></div> Loading trips...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="page2" class="page">
+            <div class="soft-card">
+                <div class="card-header">
+                    <h2>📋 Trip Details</h2>
+                    <button id="backToPage1Btn" class="btn btn-outline">← Back</button>
+                </div>
+                <div id="detailsContainer" class="details-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Modal -->
+    <div id="globalModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 id="modalTitle">Notice</h3>
+                <button class="close-modal" id="closeGlobalModal">×</button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMsg" style="font-size: 1rem; line-height: 1.5;"></p>
+                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button id="confirmModalBtn" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trip Modal -->
+    <div id="tripModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="tripModalTitle">🚚 Add New Trip</h3>
+                <button class="close-modal" id="closeTripModalBtn">×</button>
+            </div>
+            <div class="modal-body" id="tripModalBody"></div>
+        </div>
+    </div>
+
+    <script>
+    // ======================== DARK MODE SYNC ========================
+    function syncThemeWithParent() {
+        const localTheme = localStorage.getItem('user-theme-preference');
+        if (localTheme) {
+            document.body.setAttribute('data-theme', localTheme);
+            document.documentElement.setAttribute('data-theme', localTheme);
+        } else {
+            try {
+                if (window.parent && window.parent.document.body) {
+                    const parentTheme = window.parent.document.body.getAttribute('data-theme');
+                    if (parentTheme) {
+                        document.body.setAttribute('data-theme', parentTheme);
+                        document.documentElement.setAttribute('data-theme', parentTheme);
+                    }
+                }
+            } catch(e) { }
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', syncThemeWithParent);
+    window.addEventListener('storage', syncThemeWithParent);
+    setInterval(syncThemeWithParent, 1000);
+    
+    window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'themeChange') {
+            const newTheme = event.data.theme;
+            if (newTheme) {
+                document.body.setAttribute('data-theme', newTheme);
+                document.documentElement.setAttribute('data-theme', newTheme);
+            }
+        }
+    });
+
+    // ======================== CONFIGURATION ========================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoDds81u8M5N8micA_hoIBgCS7aCFm0NUmwW6XLH4m_fRJ8R9pGqjgFGMeBxBd2dSL/exec";
+    const SPREADSHEET_ID = "1pr3_hygCg1SIIGzHMU2eAdluTdZjjyXY2n8IZkC4umE";
+    const SHEET_NAME = "5039";
+    const DETAILS_SHEET_ID = "1pr3_hygCg1SIIGzHMU2eAdluTdZjjyXY2n8IZkC4umE";
+    const DETAILS_SHEET_NAME = "Details";
+    const CACHE_KEY = "trips_5039_cache";
+    const DETAILS_CACHE_KEY = "details_options_cache";
+    const HOLIDAY_CACHE_KEY = "holiday_cache_5039";
+    const CACHE_TTL = 15 * 60 * 1000;
+    const HOLIDAY_REFRESH_INTERVAL = 30000;
+
+    let allTrips = [];
+    let currentTrip = null;
+    let currentRowIndex = null;
+    let searchDebounce = null;
+    let holidayData = [];
+    let holidaySaveInProgress = false;
+    let holidayRefreshInterval = null;
+    
+    // Dropdown options from Details sheet
+    let pickupLocationOptions = [];
+    let cityOptions = [];
+    let fromOptions = [];
+    let destinationOptions = [];
+
+    // Indian and International Holidays List
+    const HOLIDAY_OPTIONS = [
+        "Sunday","Republic Day", "Independence Day", "Gandhi Jayanti",
+        "Makar Sankranti", "Pongal", "Lohri", "Basant Panchami", "Vasant Panchami",
+        "Valentine's Day", "Maha Shivaratri", "Holi", "Dhulandi", "Rang Panchami",
+        "Good Friday", "Easter Sunday", "Easter Monday", "Baisakhi", "Vishu",
+        "Ram Navami", "Mahavir Jayanti", "Buddha Purnima", "Naraka Chaturdashi",
+        "Diwali", "Deepavali", "Kali Puja", "Govardhan Puja", "Bhai Dooj",
+        "Chhath Puja", "Karwa Chauth", "Raksha Bandhan", "Janmashtami",
+        "Ganesh Chaturthi", "Anant Chaturdashi", "Navratri", "Durga Puja",
+        "Vijayadashami", "Dussehra", "Sharad Purnima", "Kojagiri Purnima",
+        "Guru Nanak Jayanti", "Guru Tegh Bahadur Martyrdom Day",
+        "Christmas", "New Year's Day", "Eid-ul-Fitr", "Eid-ul-Adha", "Bakrid",
+        "Muharram", "Milad-un-Nabi", "Mahalaya", "Saraswati Puja",
+        "Bhogali Bihu", "Rongali Bihu", "Kati Bihu", "Onam", "Thiruvonam",
+        "Makaravilakku", "Sabarmala", "Mahashivratri", "Tulsi Vivah",
+        "Kartik Purnima", "Vaikuntha Ekadashi", "Masa Shivaratri",
+        "International New Year Day", "International Women's Day", "International Workers' Day",
+        "International Yoga Day", "World Environment Day", "World Health Day",
+        "International Literacy Day", "World Teachers' Day", "International Peace Day",
+        "World AIDS Day", "International Human Rights Day", "International Tolerance Day",
+        "International Day of Happiness", "World Water Day", "World Book Day",
+        "World Earth Day", "International Dance Day", "World Red Cross Day",
+        "International Day of Families", "World Tourism Day", "World Heart Day",
+        "International Coffee Day", "World Animal Day", "International Day of Girl Child",
+        "World Food Day", "World Peace Day", "International Volunteer Day"
+    ];
+
+    // Field labels mapping for 5039 - HOLIDAY FIELDS REMOVED from trip fields
+    const fieldLabels = {
+        "Trip No": "Trip No", "Date": "Date", "Pickup Location": "Pickup Location", "Reference No": "Reference No",
+        "City": "City", "Invoice No": "Invoice No", "Number of Boxes": "Number of Boxes", "Vehicle No": "Vehicle No",
+        "Driver Name": "Driver Name", "From": "From", "Destination": "Destination", "Start Time": "Start Time",
+        "End Time": "End Time", "Start KM": "Start KM", "End KM": "End KM", "KM Run": "KM Run",
+        "No of Labours": "No of Labours", "LR No": "LR No", "Note": "Note"
+    };
+
+    // ✅ FIX: Removed Holiday Date and Holiday Name from allFields
+    const allFields = [
+        "Trip No", "Date", "Pickup Location", "Reference No", "City", "Invoice No", "Number of Boxes",
+        "Vehicle No", "Driver Name", "From", "Destination", "Start Time", "End Time", "Start KM",
+        "End KM", "KM Run", "No of Labours", "LR No", "Note"
+    ];
+
+    // ======================== DATE FORMATTING FUNCTIONS ========================
+    
+    function isValidDateYYYYMMDD(dateStr) {
+        if (!dateStr) return false;
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return false;
+        
+        const [year, month, day] = dateStr.split('-').map(Number);
+        const date = new Date(year, month - 1, day);
+        
+        return date.getFullYear() === year && 
+               date.getMonth() === month - 1 && 
+               date.getDate() === day;
+    }
+
+    function formatToDDMMYYYY(dateInput) {
+        if (!dateInput || dateInput === '') return '—';
+        
+        try {
+            if (typeof dateInput === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
+                if (isValidDateYYYYMMDD(dateInput)) {
+                    const [year, month, day] = dateInput.split('-');
+                    return `${day}/${month}/${year}`;
+                }
+                return '—';
+            }
+            
+            if (typeof dateInput === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(dateInput)) {
+                const [day, month, year] = dateInput.split('/');
+                const testDate = new Date(year, month - 1, day);
+                if (testDate.getFullYear() == year && 
+                    testDate.getMonth() == month - 1 && 
+                    testDate.getDate() == day) {
+                    return dateInput;
+                }
+                return '—';
+            }
+            
+            const dateObj = new Date(dateInput);
+            if (!isNaN(dateObj.getTime())) {
+                const year = dateObj.getFullYear();
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                return `${day}/${month}/${year}`;
+            }
+            
+            return '—';
+        } catch (error) {
+            console.error('Date display formatting error:', error);
+            return '—';
+        }
+    }
+
+    function convertToYYYYMMDD(dateString) {
+        if (!dateString || dateString === '') return '';
+        
+        try {
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+                if (isValidDateYYYYMMDD(dateString)) {
+                    return dateString;
+                }
+                return '';
+            }
+            
+            if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+                const [day, month, year] = dateString.split('/');
+                const testDate = new Date(year, month - 1, day);
+                if (testDate.getFullYear() == year && 
+                    testDate.getMonth() == month - 1 && 
+                    testDate.getDate() == day) {
+                    return `${year}-${month}-${day}`;
+                }
+                return '';
+            }
+            
+            const dateObj = new Date(dateString);
+            if (!isNaN(dateObj.getTime())) {
+                const year = dateObj.getFullYear();
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            
+            return '';
+        } catch (error) {
+            console.error('Date conversion error:', error);
+            return '';
+        }
+    }
+
+    function formatDisplayDate(dateInput) {
+        if (!dateInput) return '—';
+        const formatted = formatToDDMMYYYY(dateInput);
+        return formatted || '—';
+    }
+    
+    // ======================== TIME FORMATTING FUNCTIONS ========================
+    
+    function convertToTimeInput(timeStr) {
+        if (!timeStr) return '';
+        let match = timeStr.match(/(\d+)[.:](\d+)\s*(AM|PM)/i);
+        if (match) {
+            let hour = parseInt(match[1]);
+            let minute = parseInt(match[2]);
+            let isPM = match[3].toUpperCase() === 'PM';
+            if (isPM && hour !== 12) hour += 12;
+            if (!isPM && hour === 12) hour = 0;
+            return `${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')}`;
+        }
+        if (timeStr.match(/^\d{1,2}:\d{2}$/)) return timeStr;
+        return '';
+    }
+    
+    function convertToDisplayTime(timeVal) {
+        if (!timeVal) return '';
+        let [hour, minute] = timeVal.split(':');
+        let h = parseInt(hour);
+        let ampm = h >= 12 ? 'PM' : 'AM';
+        let displayHour = h % 12 || 12;
+        return `${displayHour}.${minute} ${ampm}`;
+    }
+
+    // ======================== UTILITY FUNCTIONS ========================
+    
+    function escapeHtml(str) { 
+        if (!str) return ''; 
+        return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); 
+    }
+
+    function isMainTrip(trip) {
+        return trip['Trip No'] && trip['Trip No'].toString().trim() !== '' && 
+               trip['Date'] && trip['Date'].trim() !== '';
+    }
+
+    function hasTripData(trip) {
+        if (!trip) return false;
+        for (let key of allFields) {
+            let val = trip[key];
+            if (val && val.toString().trim() !== '') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function calculateTotalBoxes(mainTripIndex) {
+        let total = 0;
+        let mainBoxes = parseFloat(allTrips[mainTripIndex]?.['Number of Boxes']) || 0;
+        total += mainBoxes;
+        
+        for (let i = mainTripIndex + 1; i < allTrips.length; i++) {
+            if (isMainTrip(allTrips[i])) break;
+            let addBoxes = parseFloat(allTrips[i]?.['Number of Boxes']) || 0;
+            total += addBoxes;
+        }
+        return total;
+    }
+
+    // ======================== MODAL FUNCTIONS ========================
+    
+    function showModal(msg, title = "Message", isConfirm = false, onConfirm = null, autoClose = 0) {
+        const modal = document.getElementById('globalModal');
+        
+        modal.style.zIndex = '9999';
+        
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalMsg').innerHTML = msg;
+        
+        const confirmBtn = document.getElementById('confirmModalBtn');
+        confirmBtn.onclick = () => { 
+            modal.classList.remove('active'); 
+            modal.style.zIndex = '2000';
+            if (isConfirm && onConfirm) onConfirm(); 
+        };
+        
+        modal.classList.add('active');
+        
+        if (autoClose > 0) {
+            setTimeout(() => {
+                modal.classList.remove('active');
+                modal.style.zIndex = '2000';
+            }, autoClose);
+        }
+    }
+
+    function showSpinner(element, show, customHtml = null) {
+        if (!element) return;
+        if (show) {
+            element.disabled = true;
+            element.setAttribute('data-original-text', element.innerHTML);
+            element.innerHTML = customHtml || '<span class="spinner"></span> Loading...';
+        } else {
+            element.disabled = false;
+            let orig = element.getAttribute('data-original-text');
+            if (orig) element.innerHTML = orig;
+        }
+    }
+
+    // ======================== HOLIDAY FUNCTIONS (SAME AS 1039) ========================
+    
+    function getActualRowIndexForHoliday(holidayEntry) {
+        if (holidayEntry._actualRowIndex) {
+            return holidayEntry._actualRowIndex;
+        }
+        const index = holidayData.findIndex(h => 
+            h['Holiday Date'] === holidayEntry['Holiday Date'] && 
+            h['Holiday Name'] === holidayEntry['Holiday Name']
+        );
+        if (index !== -1) {
+            return holidayData[index]._actualRowIndex || (index + 2);
+        }
+        return null;
+    }
+
+    async function loadHolidays(forceRefresh = false) {
+        try {
+            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}&_=${Date.now()}`;
+            
+            if (forceRefresh) {
+                localStorage.removeItem(HOLIDAY_CACHE_KEY);
+            }
+            
+            const cached = localStorage.getItem(HOLIDAY_CACHE_KEY);
+            let cachedData = null;
+            
+            if (cached) {
+                try {
+                    const { data, timestamp } = JSON.parse(cached);
+                    if (Date.now() - timestamp < CACHE_TTL) {
+                        cachedData = data;
+                    }
+                } catch (e) { }
+            }
+            
+            let data = cachedData;
+            if (!data || forceRefresh) {
+                const response = await fetch(url);
+                const result = await response.json();
+                if (result.status === "success" && Array.isArray(result.data)) {
+                    data = result.data;
+                    localStorage.setItem(HOLIDAY_CACHE_KEY, JSON.stringify({
+                        data: data,
+                        timestamp: Date.now()
+                    }));
+                }
+            }
+            
+            if (data && Array.isArray(data)) {
+                holidayData = data.map((row, idx) => {
+                    const hasHolidayDate = row['Holiday Date'] && row['Holiday Date'].toString().trim() !== '';
+                    const hasHolidayName = row['Holiday Name'] && row['Holiday Name'].toString().trim() !== '';
+                    if (hasHolidayDate && hasHolidayName) {
+                        return {
+                            ...row,
+                            _actualRowIndex: idx + 2,
+                            _displayIndex: idx + 1
+                        };
+                    }
+                    return null;
+                }).filter(row => row !== null);
+            } else {
+                holidayData = [];
+            }
+            
+            console.log('✅ Loaded holidays with actual row indices:', holidayData.length);
+            return holidayData;
+        } catch (err) {
+            console.error('Error loading holidays:', err);
+            holidayData = [];
+            return [];
+        }
+    }
+
+    function startHolidayBackgroundRefresh() {
+        if (holidayRefreshInterval) {
+            clearInterval(holidayRefreshInterval);
+            holidayRefreshInterval = null;
+        }
+        
+        holidayRefreshInterval = setInterval(async () => {
+            console.log('🔄 Background refreshing holidays...');
+            try {
+                const freshData = await loadHolidays(true);
+                const holidayModal = document.getElementById('holidayModal');
+                if (holidayModal && holidayModal.classList.contains('active')) {
+                    renderHolidayTable();
+                }
+                console.log('✅ Background holiday refresh completed');
+            } catch (err) {
+                console.error('Background holiday refresh failed:', err);
+            }
+        }, HOLIDAY_REFRESH_INTERVAL);
+    }
+
+    function stopHolidayBackgroundRefresh() {
+        if (holidayRefreshInterval) {
+            clearInterval(holidayRefreshInterval);
+            holidayRefreshInterval = null;
+            console.log('⏹️ Holiday background refresh stopped');
+        }
+    }
+
+    async function saveHolidayToSheet(holidayDate, holidayName, actualRowIndex = null) {
+        try {
+            console.log('📝 Saving holiday:', { holidayDate, holidayName, actualRowIndex });
+            
+            const params = new URLSearchParams();
+            params.append("action", actualRowIndex ? "update" : "insert");
+            params.append("spreadsheetId", SPREADSHEET_ID);
+            params.append("sheetName", SHEET_NAME);
+            if (actualRowIndex) {
+                params.append("rowIndex", actualRowIndex);
+            }
+            params.append("Holiday Date", holidayDate);
+            params.append("Holiday Name", holidayName);
+            
+            const response = await fetch(SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: params.toString()
+            });
+            
+            const result = await response.json();
+            console.log('📤 Save response:', result);
+            
+            if (result.status === "success") {
+                localStorage.removeItem(HOLIDAY_CACHE_KEY);
+                await loadHolidays(true);
+                return true;
+            }
+            return false;
+        } catch (err) {
+            console.error('Error saving holiday:', err);
+            return false;
+        }
+    }
+
+    async function deleteHolidayFromSheet(actualRowIndex) {
+        try {
+            console.log('🗑️ Deleting holiday at row:', actualRowIndex);
+            
+            const params = new URLSearchParams();
+            params.append("action", "delete");
+            params.append("spreadsheetId", SPREADSHEET_ID);
+            params.append("sheetName", SHEET_NAME);
+            params.append("rowIndex", actualRowIndex);
+            
+            const response = await fetch(SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: params.toString()
+            });
+            
+            const result = await response.json();
+            console.log('🗑️ Delete response:', result);
+            
+            if (result.status === "success") {
+                localStorage.removeItem(HOLIDAY_CACHE_KEY);
+                await loadHolidays(true);
+                return true;
+            }
+            return false;
+        } catch (err) {
+            console.error('Error deleting holiday:', err);
+            return false;
+        }
+    }
+
+    function renderHolidayTable() {
+        const tableBody = document.getElementById('holidayTableBody');
+        if (!tableBody) return;
+        
+        if (!holidayData || holidayData.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">No holidays found. Add your first holiday!</td></tr>';
+            return;
+        }
+        
+        let html = '';
+        holidayData.forEach((holiday, index) => {
+            const displayDate = formatDisplayDate(holiday['Holiday Date']);
+            const actualRowIndex = holiday._actualRowIndex || (index + 2);
+            
+            html += `
+                <tr data-rowindex="${actualRowIndex}">
+                    <td>${index + 1}</td>
+                    <td>${escapeHtml(displayDate)}</td>
+                    <td>${escapeHtml(holiday['Holiday Name'] || '')}</td>
+                    <td style="display: flex; gap: 8px; align-items: center; justify-content: center;">
+                        <button class="btn btn-sm btn-warning holiday-edit-btn" data-rowindex="${actualRowIndex}" style="padding: 6px 12px; font-size: 14px;">✏️</button>
+                        <button class="btn btn-sm btn-danger holiday-delete-btn" data-rowindex="${actualRowIndex}" style="padding: 6px 12px; font-size: 14px;">🗑️</button>
+                    </td>
+                </tr>
+            `;
+        });
+        tableBody.innerHTML = html;
+        
+        document.querySelectorAll('.holiday-edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const actualRowIndex = parseInt(this.getAttribute('data-rowindex'));
+                const holiday = holidayData.find(h => h._actualRowIndex === actualRowIndex);
+                if (holiday) {
+                    console.log('✏️ Editing holiday at row:', actualRowIndex, holiday);
+                    openHolidayEditModal(holiday, actualRowIndex);
+                }
+            });
+        });
+        
+        document.querySelectorAll('.holiday-delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const actualRowIndex = parseInt(this.getAttribute('data-rowindex'));
+                const holiday = holidayData.find(h => h._actualRowIndex === actualRowIndex);
+                if (holiday) {
+                    confirmDeleteHoliday(holiday, actualRowIndex);
+                }
+            });
+        });
+    }
+
+    function openHolidayModal() {
+        const modal = document.getElementById('holidayModal');
+        
+        document.getElementById('holidayDate').value = '';
+        document.getElementById('holidayName').value = '';
+        document.getElementById('holidayModalTitle').innerText = '📅 Add Holiday';
+        document.getElementById('holidaySubmitBtn').innerText = 'Add Holiday';
+        document.getElementById('holidayRowIndex').value = '';
+        document.getElementById('holidayCancelBtn').style.display = 'none';
+        
+        modal.classList.add('active');
+        
+        startHolidayBackgroundRefresh();
+        
+        loadHolidays().then(() => {
+            renderHolidayTable();
+        });
+        
+        setupHolidayAutocomplete('holidayName', 'holidayAutoList', HOLIDAY_OPTIONS);
+    }
+
+    function openHolidayEditModal(holiday, actualRowIndex) {
+        console.log('✏️ Opening edit for row:', actualRowIndex, holiday);
+        
+        const modal = document.getElementById('holidayModal');
+        const dateValue = holiday['Holiday Date'] ? convertToYYYYMMDD(holiday['Holiday Date']) : '';
+        
+        document.getElementById('holidayDate').value = dateValue;
+        document.getElementById('holidayName').value = holiday['Holiday Name'] || '';
+        document.getElementById('holidayModalTitle').innerText = '✏️ Edit Holiday';
+        document.getElementById('holidaySubmitBtn').innerText = 'Update Holiday';
+        document.getElementById('holidayRowIndex').value = actualRowIndex;
+        document.getElementById('holidayCancelBtn').style.display = 'inline-block';
+        
+        modal.classList.add('active');
+        renderHolidayTable();
+        
+        setupHolidayAutocomplete('holidayName', 'holidayAutoList', HOLIDAY_OPTIONS);
+    }
+
+    function closeHolidayModal() {
+        document.getElementById('holidayModal').classList.remove('active');
+        document.getElementById('holidayRowIndex').value = '';
+        stopHolidayBackgroundRefresh();
+    }
+
+    function setupHolidayAutocomplete(inputId, listId, optionsArray) {
+        const input = document.getElementById(inputId);
+        const listEl = document.getElementById(listId);
+        if (!input || !listEl) return;
+        
+        function showOptions(filterVal = '') {
+            const term = filterVal.toLowerCase();
+            const filtered = optionsArray.filter(opt => opt.toLowerCase().includes(term));
+            if (filtered.length > 0) {
+                listEl.innerHTML = filtered.map(opt => 
+                    `<div class="autocomplete-item" data-value="${escapeHtml(opt)}">${escapeHtml(opt)}</div>`
+                ).join('');
+                listEl.style.display = 'block';
+                listEl.style.position = 'absolute';
+                listEl.style.top = '100%';
+                listEl.style.left = '0';
+                listEl.style.right = '0';
+                listEl.style.zIndex = '9999';
+                listEl.style.maxHeight = '200px';
+                listEl.style.overflowY = 'auto';
+                listEl.style.background = 'var(--card-bg)';
+                listEl.style.borderRadius = '16px';
+                listEl.style.boxShadow = 'var(--shadow-lg)';
+                listEl.style.marginTop = '6px';
+                listEl.style.border = '1px solid var(--border-color)';
+                
+                listEl.querySelectorAll('.autocomplete-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        input.value = item.getAttribute('data-value');
+                        listEl.style.display = 'none';
+                        input.dispatchEvent(new Event('input', { bubbles: true }));
+                    });
+                });
+            } else {
+                listEl.style.display = 'none';
+            }
+        }
+        
+        input.addEventListener('input', (e) => showOptions(e.target.value));
+        input.addEventListener('focus', () => showOptions(input.value));
+        input.addEventListener('blur', () => setTimeout(() => listEl.style.display = 'none', 200));
+        document.addEventListener('click', (e) => {
+            if (!listEl.contains(e.target) && e.target !== input) listEl.style.display = 'none';
+        });
+    }
+
+    function handleHolidaySubmit(e) {
+        e.preventDefault();
+        
+        if (holidaySaveInProgress) {
+            console.log('Holiday save already in progress');
+            return;
+        }
+        holidaySaveInProgress = true;
+        
+        const dateInput = document.getElementById('holidayDate');
+        const nameInput = document.getElementById('holidayName');
+        const rowIndexInput = document.getElementById('holidayRowIndex');
+        const submitBtn = document.getElementById('holidaySubmitBtn');
+        
+        const dateValue = dateInput?.value || '';
+        const nameValue = nameInput?.value?.trim() || '';
+        const actualRowIndex = rowIndexInput?.value ? parseInt(rowIndexInput.value) : null;
+        
+        console.log('📝 Form submission:', { dateValue, nameValue, actualRowIndex });
+        
+        if (!dateValue) {
+            showModal('❌ Please select a holiday date.', 'Validation Error');
+            holidaySaveInProgress = false;
+            return;
+        }
+        
+        if (!nameValue) {
+            showModal('❌ Please enter a holiday name.', 'Validation Error');
+            holidaySaveInProgress = false;
+            return;
+        }
+        
+        if (!isValidDateYYYYMMDD(dateValue)) {
+            showModal('❌ Invalid date format. Please select a valid date.', 'Validation Error');
+            holidaySaveInProgress = false;
+            return;
+        }
+        
+        showSpinner(submitBtn, true, 'Saving...');
+        
+        saveHolidayToSheet(dateValue, nameValue, actualRowIndex).then(success => {
+            if (success) {
+                showModal(actualRowIndex ? '✅ Holiday updated successfully!' : '✅ Holiday added successfully!', 'Success', false, null, 1500);
+                
+                dateInput.value = '';
+                nameInput.value = '';
+                document.getElementById('holidayRowIndex').value = '';
+                document.getElementById('holidayModalTitle').innerText = '📅 Add Holiday';
+                document.getElementById('holidaySubmitBtn').innerText = 'Add Holiday';
+                document.getElementById('holidayCancelBtn').style.display = 'none';
+                
+                loadHolidays(true).then(() => {
+                    renderHolidayTable();
+                });
+            } else {
+                showModal('❌ Failed to save holiday. Please try again.', 'Error');
+            }
+            showSpinner(submitBtn, false);
+            holidaySaveInProgress = false;
+        }).catch(err => {
+            console.error('Holiday save error:', err);
+            showModal('❌ Error saving holiday: ' + err.message, 'Error');
+            showSpinner(submitBtn, false);
+            holidaySaveInProgress = false;
+        });
+    }
+
+    function confirmDeleteHoliday(holiday, actualRowIndex) {
+        const displayDate = formatDisplayDate(holiday['Holiday Date']);
+        const name = holiday['Holiday Name'];
+        showModal(
+            `⚠️ Are you sure you want to delete holiday "${escapeHtml(name)}" on ${escapeHtml(displayDate)}?`,
+            'Confirm Delete',
+            true,
+            async () => {
+                const success = await deleteHolidayFromSheet(actualRowIndex);
+                if (success) {
+                    showModal('✅ Holiday deleted successfully!', 'Success', false, null, 1500);
+                    await loadHolidays(true);
+                    renderHolidayTable();
+                } else {
+                    showModal('❌ Failed to delete holiday. Please try again.', 'Error');
+                }
+            }
+        );
+    }
+
+    function cancelHolidayEdit() {
+        document.getElementById('holidayDate').value = '';
+        document.getElementById('holidayName').value = '';
+        document.getElementById('holidayRowIndex').value = '';
+        document.getElementById('holidayModalTitle').innerText = '📅 Add Holiday';
+        document.getElementById('holidaySubmitBtn').innerText = 'Add Holiday';
+        document.getElementById('holidayCancelBtn').style.display = 'none';
+    }
+
+    // ======================== DATA FETCHING FUNCTIONS ========================
+    
+    async function fetchWithCache(url, cacheKey, ttl) {
+        const cached = localStorage.getItem(cacheKey);
+        let cachedData = null;
+        
+        if (cached) {
+            try {
+                const { data, timestamp } = JSON.parse(cached);
+                if (Date.now() - timestamp < ttl) {
+                    cachedData = data;
+                }
+            } catch (e) { }
+        }
+        
+        if (cachedData) {
+            fetchFreshDataInBackground(url, cacheKey);
+            return cachedData;
+        }
+        
+        try {
+            const response = await fetch(url);
+            const result = await response.json();
+            if (result.status === "success" && Array.isArray(result.data)) {
+                localStorage.setItem(cacheKey, JSON.stringify({
+                    data: result.data,
+                    timestamp: Date.now()
+                }));
+                return result.data;
+            }
+            return [];
+        } catch (err) {
+            console.error("Fetch error:", err);
+            return cachedData || [];
+        }
+    }
+
+    async function fetchFreshDataInBackground(url, cacheKey) {
+        try {
+            const response = await fetch(url);
+            const result = await response.json();
+            if (result.status === "success" && Array.isArray(result.data)) {
+                localStorage.setItem(cacheKey, JSON.stringify({
+                    data: result.data,
+                    timestamp: Date.now()
+                }));
+                
+                if (cacheKey === CACHE_KEY) {
+                    allTrips = result.data;
+                    renderTablePage1(document.getElementById('searchInput')?.value || "");
+                }
+                if (cacheKey === DETAILS_CACHE_KEY) {
+                    updateDropdownOptionsFromData(result.data);
+                }
+                if (cacheKey === HOLIDAY_CACHE_KEY) {
+                    holidayData = result.data.map((row, idx) => {
+                        const hasHolidayDate = row['Holiday Date'] && row['Holiday Date'].toString().trim() !== '';
+                        const hasHolidayName = row['Holiday Name'] && row['Holiday Name'].toString().trim() !== '';
+                        if (hasHolidayDate && hasHolidayName) {
+                            return {
+                                ...row,
+                                _actualRowIndex: idx + 2,
+                                _displayIndex: idx + 1
+                            };
+                        }
+                        return null;
+                    }).filter(row => row !== null);
+                    renderHolidayTable();
+                }
+            }
+        } catch (err) {
+            console.warn("Background fetch failed:", err);
+        }
+    }
+
+    // ======================== SAVE TO DETAILS SHEET ========================
+    async function saveToDetailsSheet(type, value) {
+        if (!value || value.trim() === '') return false;
+        
+        const trimmedValue = value.trim();
+        let columnName = '';
+        if (type === 'pickup') {
+            columnName = 'Name';
+        } else if (type === 'city') {
+            columnName = 'From Location';
+        } else if (type === 'from') {
+            columnName = 'From Location';
+        } else if (type === 'destination') {
+            columnName = 'Destination';
+        } else {
+            return false;
+        }
+        
+        console.log(`📝 Saving ${type} "${trimmedValue}" to column "${columnName}"`);
+        
+        try {
+            const url = `${SCRIPT_URL}?spreadsheetId=${DETAILS_SHEET_ID}&sheetName=${DETAILS_SHEET_NAME}&_=${Date.now()}`;
+            const response = await fetch(url);
+            const result = await response.json();
+            
+            if (result.status !== "success" || !Array.isArray(result.data)) {
+                console.error('Failed to fetch Details sheet data');
+                return false;
+            }
+            
+            const data = result.data;
+            console.log(`📊 Fetched ${data.length} rows from Details sheet`);
+            
+            const columnIndex = data.length > 0 ? Object.keys(data[0]).indexOf(columnName) : -1;
+            if (columnIndex === -1) {
+                console.error(`Column "${columnName}" not found in Details sheet`);
+                return false;
+            }
+            
+            const exists = data.some(row => {
+                const cellValue = row[columnName];
+                return cellValue && cellValue.toString().trim().toLowerCase() === trimmedValue.toLowerCase();
+            });
+            
+            if (exists) {
+                console.log(`✅ Value "${trimmedValue}" already exists in column "${columnName}"`);
+                return true;
+            }
+            
+            let targetRowIndex = null;
+            for (let i = 0; i < data.length; i++) {
+                const row = data[i];
+                const cellValue = row[columnName];
+                if (!cellValue || cellValue.toString().trim() === '') {
+                    targetRowIndex = i + 2;
+                    console.log(`🔍 Found empty cell in column "${columnName}" at row ${targetRowIndex}`);
+                    break;
+                }
+            }
+            
+            if (targetRowIndex === null) {
+                targetRowIndex = data.length + 2;
+                console.log(`📝 No empty row found, creating new row at ${targetRowIndex}`);
+                
+                const params = new URLSearchParams();
+                params.append("action", "insert");
+                params.append("spreadsheetId", DETAILS_SHEET_ID);
+                params.append("sheetName", DETAILS_SHEET_NAME);
+                params.append(columnName, trimmedValue);
+                
+                const insertResponse = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: params.toString()
+                });
+                
+                const insertResult = await insertResponse.json();
+                if (insertResult.status === "success") {
+                    console.log(`✅ New row created with "${trimmedValue}" in column "${columnName}"`);
+                    localStorage.removeItem(DETAILS_CACHE_KEY);
+                    await loadDropdownOptions();
+                    return true;
+                } else {
+                    console.error('Failed to create new row:', insertResult);
+                    return false;
+                }
+            }
+            
+            const updateParams = new URLSearchParams();
+            updateParams.append("action", "update");
+            updateParams.append("spreadsheetId", DETAILS_SHEET_ID);
+            updateParams.append("sheetName", DETAILS_SHEET_NAME);
+            updateParams.append("rowIndex", targetRowIndex);
+            updateParams.append(columnName, trimmedValue);
+            
+            console.log(`📤 Updating row ${targetRowIndex}, column "${columnName}" with "${trimmedValue}"`);
+            
+            const updateResponse = await fetch(SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: updateParams.toString()
+            });
+            
+            const updateResult = await updateResponse.json();
+            if (updateResult.status === "success") {
+                console.log(`✅ Successfully updated row ${targetRowIndex} with "${trimmedValue}"`);
+                localStorage.removeItem(DETAILS_CACHE_KEY);
+                await loadDropdownOptions();
+                return true;
+            } else {
+                console.error('Update failed:', updateResult);
+                return false;
+            }
+            
+        } catch (err) {
+            console.error(`Error saving ${type}:`, err);
+            return false;
+        }
+    }
+
+    function updateDropdownOptionsFromData(data) {
+        if (data && Array.isArray(data)) {
+            pickupLocationOptions = [...new Set(data.map(r => r['Name']).filter(Boolean))];
+            cityOptions = [...new Set(data.map(r => r['From Location']).filter(Boolean))];
+            fromOptions = [...new Set(data.map(r => r['From Location']).filter(Boolean))];
+            destinationOptions = [...new Set(data.map(r => r['Destination']).filter(Boolean))];
+            console.log("Dropdown loaded - Pickup:", pickupLocationOptions.length, "City:", cityOptions.length, "From:", fromOptions.length, "Destination:", destinationOptions.length);
+        }
+    }
+
+    async function loadDropdownOptions() {
+        const url = `${SCRIPT_URL}?spreadsheetId=${DETAILS_SHEET_ID}&sheetName=${DETAILS_SHEET_NAME}&_=${Date.now()}`;
+        let data = await fetchWithCache(url, DETAILS_CACHE_KEY, CACHE_TTL);
+        updateDropdownOptionsFromData(data);
+        return { pickupLocationOptions, cityOptions, fromOptions, destinationOptions };
+    }
+
+    async function loadTrips() {
+        const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}&_=${Date.now()}`;
+        let data = await fetchWithCache(url, CACHE_KEY, CACHE_TTL);
+        allTrips = (data || []).map((trip, idx) => ({ ...trip, _rowIndex: idx + 2 }));
+        return allTrips;
+    }
+
+    // ======================== RENDER FUNCTIONS ========================
+    
+    function renderTablePage1(filter = "") {
+        let tbody = document.getElementById('tableBody');
+        let searchLower = filter.toLowerCase();
+        let mainTrips = [];
+        
+        for (let i = 0; i < allTrips.length; i++) {
+            if (isMainTrip(allTrips[i])) {
+                let totalBoxes = calculateTotalBoxes(i);
+                mainTrips.push({ ...allTrips[i], _totalBoxes: totalBoxes });
+            }
+        }
+        
+        let filtered = mainTrips.filter(t => 
+            (t['Trip No']?.toString().toLowerCase().includes(searchLower)) ||
+            (t['Reference No']?.toString().toLowerCase().includes(searchLower)) ||
+            (t['City']?.toString().toLowerCase().includes(searchLower))
+        );
+        
+        if (!filtered.length) { 
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">✨ No trips found</td></tr>'; 
+            return; 
+        }
+        
+        let fragment = document.createDocumentFragment();
+        filtered.forEach(t => {
+            let row = document.createElement('tr');
+            const displayDate = formatDisplayDate(t['Date']);
+            row.innerHTML = `
+                <td><strong>${escapeHtml(t['Trip No'] || '')}</strong></td>
+                <td>${escapeHtml(displayDate)}</td>
+                <td>${escapeHtml(t['Reference No'] || '')}</td>
+                <td>${escapeHtml(t['City'] || '')}</td>
+                <td><strong>${escapeHtml(t._totalBoxes || '0')}</strong></td>
+                <td><button class="btn btn-sm btn-outline viewBtn" data-rowindex="${t._rowIndex}">👁️ View</button></td>
+            `;
+            fragment.appendChild(row);
+        });
+        tbody.innerHTML = ''; 
+        tbody.appendChild(fragment);
+        
+        document.querySelectorAll('.viewBtn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                let rowIndex = parseInt(btn.getAttribute('data-rowindex'));
+                let found = allTrips.find(t => t._rowIndex === rowIndex);
+                if (found) {
+                    currentTrip = found;
+                    currentRowIndex = rowIndex;
+                    showPage2Details(found);
+                }
+            });
+        });
+    }
+
+    function generateDetailCards(trip) {
+        let nonEmptyFields = allFields.filter(field => {
+            let val = trip[field];
+            return val !== undefined && val !== null && val !== '';
+        });
+        
+        return nonEmptyFields.map(field => {
+            let val = trip[field];
+            if (field === "Date") val = formatDisplayDate(val);
+            return `
+                <div class="detail-card">
+                    <div class="detail-label">${fieldLabels[field]}</div>
+                    <div class="detail-value">${escapeHtml(val)}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function generateTripSection(trip, isIncomplete = false, sectionIndex = 0, totalBoxes = null) {
+        if (!hasTripData(trip)) {
+            return '';
+        }
+        
+        const isCompleteMain = isMainTrip(trip);
+        const titleText = isCompleteMain ? `Trip #${escapeHtml(trip['Trip No'] || '—')}` : `Additional Entry ${sectionIndex + 1}`;
+        const dateText = trip['Date'] ? ` | Date: ${escapeHtml(formatDisplayDate(trip['Date']))}` : '';
+        const refText = trip['Reference No'] ? ` | Ref: ${escapeHtml(trip['Reference No'])}` : '';
+        const cityText = trip['City'] ? ` | City: ${escapeHtml(trip['City'])}` : '';
+        const boxesText = trip['Number of Boxes'] ? ` | Boxes: ${escapeHtml(trip['Number of Boxes'])}` : '';
+        const totalBoxesText = totalBoxes !== null ? ` | Total Boxes: ${totalBoxes}` : '';
+        const warningBadge = isIncomplete ? '<span class="warning-badge">⚠️ Incomplete</span>' : '';
+        
+        return `
+            <div class="trip-section ${isIncomplete ? 'incomplete-section' : ''}" data-section-index="${sectionIndex}" data-rowindex="${trip._rowIndex}">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <div class="section-title">
+                        <span class="collapse-icon">▼</span>
+                        <strong>${titleText}</strong>${dateText}${refText}${cityText}${boxesText}${totalBoxesText}
+                        ${warningBadge}
+                    </div>
+                    <div class="section-actions" onclick="event.stopPropagation()">
+                        <button class="btn btn-xs btn-warning edit-section-btn" data-rowindex="${trip._rowIndex}">✏️ Edit</button>
+                        <button class="btn btn-xs btn-danger delete-section-btn" data-rowindex="${trip._rowIndex}">🗑 Delete</button>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="details-grid-inner">
+                        ${generateDetailCards(trip)}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function showPage2Details(selectedTrip) {
+        let container = document.getElementById('detailsContainer');
+        if (!container) return;
+        
+        let selectedIndex = allTrips.findIndex(t => t._rowIndex === selectedTrip._rowIndex);
+        
+        if (selectedIndex === -1) {
+            container.innerHTML = '<p>Error: Trip not found</p>';
+            return;
+        }
+        
+        let relatedTrips = [];
+        for (let i = selectedIndex; i < allTrips.length; i++) {
+            let trip = allTrips[i];
+            if (i !== selectedIndex && isMainTrip(trip)) {
+                break;
+            }
+            relatedTrips.push(trip);
+        }
+        
+        let mainTrip = relatedTrips[0];
+        let additionalTrips = relatedTrips.slice(1);
+        let totalBoxes = calculateTotalBoxes(selectedIndex);
+        
+        let html = '';
+        if (hasTripData(mainTrip)) {
+            html += generateTripSection(mainTrip, false, 0, totalBoxes);
+        }
+        
+        additionalTrips.forEach((trip, idx) => {
+            if (hasTripData(trip)) {
+                html += generateTripSection(trip, true, idx + 1, null);
+            }
+        });
+        
+        if (!html) {
+            html = '<p style="text-align:center; padding: 40px; color: var(--text-secondary);">No trip data available</p>';
+        }
+        
+        container.innerHTML = html;
+        
+        document.querySelectorAll('.edit-section-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                let rowIndex = parseInt(btn.getAttribute('data-rowindex'));
+                let tripToEdit = allTrips.find(t => t._rowIndex === rowIndex);
+                if (tripToEdit) openTripModal(true, tripToEdit);
+            });
+        });
+        
+        document.querySelectorAll('.delete-section-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                let rowIndex = parseInt(btn.getAttribute('data-rowindex'));
+                let tripToDelete = allTrips.find(t => t._rowIndex === rowIndex);
+                if (tripToDelete) deleteSingleTrip(tripToDelete);
+            });
+        });
+        
+        document.getElementById('page1')?.classList.remove('active-page');
+        document.getElementById('page2')?.classList.add('active-page');
+    }
+
+    // ======================== TRIP OPERATIONS ========================
+    
+    async function deleteSingleTrip(tripToDelete) {
+        let tripIdentifier = tripToDelete['Trip No'] ? `Trip #${tripToDelete['Trip No']}` : 'this entry';
+        showModal(`⚠️ Are you sure you want to delete ${tripIdentifier}?`, "Confirm Delete", true, async () => {
+            let params = new URLSearchParams();
+            params.append("action", "delete");
+            params.append("spreadsheetId", SPREADSHEET_ID);
+            params.append("sheetName", SHEET_NAME);
+            params.append("rowIndex", tripToDelete._rowIndex);
+            try {
+                let resp = await fetch(SCRIPT_URL, { 
+                    method: "POST", 
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" }, 
+                    body: params 
+                });
+                let result = await resp.json();
+                if (result.status === "success") {
+                    showModal("✅ Entry deleted successfully!", "Success", false, null, 1500);
+                    await refreshAllData();
+                    if (currentTrip) {
+                        let refreshed = allTrips.find(t => t._rowIndex === currentTrip._rowIndex);
+                        if (refreshed) showPage2Details(refreshed);
+                        else goToPage1();
+                    } else goToPage1();
+                } else showModal("Delete failed: " + (result.message || "unknown"), "Error");
+            } catch(err) { 
+                showModal("Error: "+err.message, "Error"); 
+            }
+        });
+    }
+
+    function goToPage1() {
+        document.getElementById('page2')?.classList.remove('active-page');
+        document.getElementById('page1')?.classList.add('active-page');
+        currentTrip = null;
+        currentRowIndex = null;
+    }
+
+    async function refreshAllData() {
+        let btn = document.getElementById('refreshBtnP1');
+        if (btn) showSpinner(btn, true);
+        try {
+            localStorage.removeItem(CACHE_KEY);
+            localStorage.removeItem(DETAILS_CACHE_KEY);
+            localStorage.removeItem(HOLIDAY_CACHE_KEY);
+            await loadDropdownOptions();
+            await loadTrips();
+            await loadHolidays(true);
+            renderTablePage1(document.getElementById('searchInput')?.value || "");
+            renderHolidayTable();
+        } catch(err) {
+            showModal("Refresh failed: "+err.message, "Error");
+        } finally {
+            if (btn) showSpinner(btn, false);
+        }
+    }
+
+    // ======================== AUTOCOMPLETE FUNCTIONS ========================
+    
+    function setupAutocomplete(inputId, listId, optionsArray, type) {
+        let input = document.getElementById(inputId);
+        let listEl = document.getElementById(listId);
+        if (!input || !listEl) return;
+        
+        let saveTimeout = null;
+        
+        let wrapper = input.closest('.autocomplete-wrap');
+        if (wrapper) {
+            wrapper.style.position = 'relative';
+        }
+        
+        function showOptions(filterVal = '') {
+            let term = filterVal.toLowerCase();
+            let filtered = optionsArray.filter(opt => opt.toLowerCase().includes(term));
+            if (filtered.length) {
+                listEl.innerHTML = filtered.map(opt => 
+                    `<div class="autocomplete-item" data-value="${escapeHtml(opt)}">${escapeHtml(opt)}</div>`
+                ).join('');
+                listEl.style.display = 'block';
+                listEl.style.position = 'absolute';
+                listEl.style.top = '100%';
+                listEl.style.left = '0';
+                listEl.style.right = '0';
+                listEl.style.zIndex = '9999';
+                listEl.style.maxHeight = '200px';
+                listEl.style.overflowY = 'auto';
+                listEl.style.background = 'var(--card-bg)';
+                listEl.style.borderRadius = '16px';
+                listEl.style.boxShadow = 'var(--shadow-lg)';
+                listEl.style.marginTop = '6px';
+                listEl.style.border = '1px solid var(--border-color)';
+                
+                listEl.querySelectorAll('.autocomplete-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        input.value = item.getAttribute('data-value');
+                        listEl.style.display = 'none';
+                        input.dispatchEvent(new Event('input'));
+                    });
+                });
+            } else { 
+                listEl.style.display = 'none'; 
+            }
+        }
+        
+        input.addEventListener('input', (e) => {
+            showOptions(e.target.value);
+            
+            if (saveTimeout) clearTimeout(saveTimeout);
+            
+            let newValue = e.target.value.trim();
+            if (newValue && !optionsArray.includes(newValue)) {
+                saveTimeout = setTimeout(async () => {
+                    let saved = await saveToDetailsSheet(type, newValue);
+                    if (saved) {
+                        await loadDropdownOptions();
+                        if (type === 'pickup') pickupLocationOptions.push(newValue);
+                        else if (type === 'city') cityOptions.push(newValue);
+                        else if (type === 'from') fromOptions.push(newValue);
+                        else if (type === 'destination') destinationOptions.push(newValue);
+                        console.log(`New ${type} "${newValue}" saved to Details sheet`);
+                    }
+                }, 1000);
+            }
+        });
+        
+        input.addEventListener('focus', () => showOptions(input.value));
+        input.addEventListener('blur', () => setTimeout(() => listEl.style.display = 'none', 200));
+        document.addEventListener('click', (e) => { 
+            if(!listEl.contains(e.target) && e.target !== input) listEl.style.display = 'none'; 
+        });
+    }
+
+    // ======================== ✅ FIXED: TRIP MODAL - HOLIDAY FIELDS REMOVED ========================
+    
+    function openTripModal(isEdit = false, tripData = null) {
+        let bodyDiv = document.getElementById('tripModalBody');
+        let modalTitle = document.getElementById('tripModalTitle');
+        modalTitle.innerText = isEdit ? "✏️ Update Trip" : "🚚 Add New Trip";
+        
+        let trip = isEdit && tripData ? tripData : (currentTrip || {
+            "Trip No": "", "Date": "", "Pickup Location": "", "Reference No": "", "City": "",
+            "Invoice No": "", "Number of Boxes": "", "Vehicle No": "MH 04 MR 5039", "Driver Name": "Raj",
+            "From": "", "Destination": "", "Start Time": "09.00 AM", "End Time": "",
+            "Start KM": "", "End KM": "", "KM Run": "", "No of Labours": "1", "LR No": "",
+            "Note": ""
+        });
+        
+        let editRowIndex = isEdit && tripData ? tripData._rowIndex : null;
+        
+        let startTimeVal = convertToTimeInput(trip['Start Time'] || '09.00 AM');
+        let endTimeVal = convertToTimeInput(trip['End Time'] || '');
+        
+        const dateValue = trip['Date'] ? convertToYYYYMMDD(trip['Date']) : "";
+        
+        // ✅ FIX: Removed Holiday Date and Holiday Name fields from form
+        let html = `<form id="tripForm"><div class="form-grid">
+            <div class="field"><label>Trip No</label><input type="number" id="tripNo" value="${escapeHtml(trip['Trip No'] || '')}"></div>
+            <div class="field"><label>Date</label><input type="date" id="date" value="${dateValue}"></div>
+            <div class="field autocomplete-wrap"><label>Pickup Location</label><input type="text" id="pickupLocation" value="${escapeHtml(trip['Pickup Location'] || '')}" autocomplete="off"><div id="pickupAutoList" class="autocomplete-list"></div></div>
+            <div class="field"><label>Reference No</label><input type="text" id="referenceNo" value="${escapeHtml(trip['Reference No'] || '')}"></div>
+            <div class="field autocomplete-wrap"><label>City</label><input type="text" id="city" value="${escapeHtml(trip['City'] || '')}" autocomplete="off"><div id="cityAutoList" class="autocomplete-list"></div></div>
+            <div class="field"><label>Invoice No</label><input type="text" id="invoiceNo" value="${escapeHtml(trip['Invoice No'] || '')}"></div>
+            <div class="field"><label>Number of Boxes</label><input type="number" id="numberOfBoxes" value="${escapeHtml(trip['Number of Boxes'] || '')}"></div>
+            <div class="field"><label>Vehicle No</label><input type="text" id="vehicleNo" value="${escapeHtml(trip['Vehicle No'] || 'MH 04 MR 5039')}"></div>
+            <div class="field"><label>Driver Name</label><input type="text" id="driverName" value="${escapeHtml(trip['Driver Name'] || 'Raj')}"></div>
+            <div class="field autocomplete-wrap"><label>From</label><input type="text" id="fromLoc" value="${escapeHtml(trip['From'] || '')}" autocomplete="off"><div id="fromAutoList" class="autocomplete-list"></div></div>
+            <div class="field autocomplete-wrap"><label>Destination</label><input type="text" id="destination" value="${escapeHtml(trip['Destination'] || '')}" autocomplete="off"><div id="destAutoList" class="autocomplete-list"></div></div>
+            <div class="field"><label>Start Time</label><input type="time" id="startTime" value="${startTimeVal}" step="60"></div>
+            <div class="field"><label>End Time</label><input type="time" id="endTime" value="${endTimeVal}" step="60"></div>
+            <div class="field"><label>Start KM</label><input type="number" id="startKM" value="${escapeHtml(trip['Start KM'] || '')}"></div>
+            <div class="field"><label>End KM</label><input type="number" id="endKM" value="${escapeHtml(trip['End KM'] || '')}"></div>
+            <div class="field"><label>KM Run (Auto)</label><input type="text" id="kmRun" readonly class="calculated-field" value="${escapeHtml(trip['KM Run'] || '')}"></div>
+            <div class="field"><label>No of Labours</label><input type="number" id="noOfLabours" value="${escapeHtml(trip['No of Labours'] || '1')}"></div>
+            <div class="field"><label>LR No</label><input type="text" id="lrNo" value="${escapeHtml(trip['LR No'] || '')}"></div>
+            <div class="field fullwidth"><label>Note</label><textarea id="note" rows="2">${escapeHtml(trip['Note'] || '')}</textarea></div>
+        </div><div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 1.5rem;"><button type="button" id="cancelTripBtn" class="btn btn-outline">Cancel</button><button type="submit" id="saveTripBtn" class="btn btn-primary">💾 Save Trip</button></div></form>`;
+        
+        bodyDiv.innerHTML = html;
+        document.getElementById('tripModal').classList.add('active');
+        
+        setTimeout(() => {
+            setupAutocomplete('pickupLocation', 'pickupAutoList', pickupLocationOptions, 'pickup');
+            setupAutocomplete('city', 'cityAutoList', cityOptions, 'city');
+            setupAutocomplete('fromLoc', 'fromAutoList', fromOptions, 'from');
+            setupAutocomplete('destination', 'destAutoList', destinationOptions, 'destination');
+        }, 20);
+        
+        let startKM = document.getElementById('startKM');
+        let endKM = document.getElementById('endKM');
+        let kmRun = document.getElementById('kmRun');
+        function calcKmRun() {
+            let s = parseFloat(startKM?.value) || 0;
+            let e = parseFloat(endKM?.value) || 0;
+            let run = e - s;
+            if (kmRun) kmRun.value = run > 0 ? run : 0;
+        }
+        startKM?.addEventListener('input', calcKmRun);
+        endKM?.addEventListener('input', calcKmRun);
+        calcKmRun();
+        
+        document.getElementById('cancelTripBtn')?.addEventListener('click', () => document.getElementById('tripModal').classList.remove('active'));
+        document.getElementById('tripForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            let saveBtn = document.getElementById('saveTripBtn');
+            showSpinner(saveBtn, true, 'Saving...');
+            
+            const dateInput = document.getElementById('date');
+            if (dateInput) dateInput.blur();
+            
+            const rawDateValue = dateInput?.value || "";
+            
+            let startTimeRaw = document.getElementById('startTime')?.value || '';
+            let endTimeRaw = document.getElementById('endTime')?.value || '';
+            let startTimeDisplay = startTimeRaw ? convertToDisplayTime(startTimeRaw) : '';
+            let endTimeDisplay = endTimeRaw ? convertToDisplayTime(endTimeRaw) : '';
+            
+            let pickupValue = document.getElementById('pickupLocation')?.value || '';
+            let cityValue = document.getElementById('city')?.value || '';
+            let fromValue = document.getElementById('fromLoc')?.value || '';
+            let destinationValue = document.getElementById('destination')?.value || '';
+            
+            if (pickupValue && !pickupLocationOptions.includes(pickupValue)) {
+                await saveToDetailsSheet('pickup', pickupValue);
+            }
+            if (cityValue && !cityOptions.includes(cityValue)) {
+                await saveToDetailsSheet('city', cityValue);
+            }
+            if (fromValue && !fromOptions.includes(fromValue)) {
+                await saveToDetailsSheet('from', fromValue);
+            }
+            if (destinationValue && !destinationOptions.includes(destinationValue)) {
+                await saveToDetailsSheet('destination', destinationValue);
+            }
+            
+            const dateToSend = rawDateValue;
+            
+            // ✅ FIX: Removed Holiday Date and Holiday Name from trip data
+            let tripDataObj = {
+                "Trip No": document.getElementById('tripNo')?.value || "",
+                "Date": dateToSend,
+                "Pickup Location": pickupValue,
+                "Reference No": document.getElementById('referenceNo')?.value || "",
+                "City": cityValue,
+                "Invoice No": document.getElementById('invoiceNo')?.value || "",
+                "Number of Boxes": document.getElementById('numberOfBoxes')?.value || "",
+                "Vehicle No": document.getElementById('vehicleNo')?.value || "MH 04 MR 5039",
+                "Driver Name": document.getElementById('driverName')?.value || "Raj",
+                "From": fromValue,
+                "Destination": destinationValue,
+                "Start Time": startTimeDisplay,
+                "End Time": endTimeDisplay,
+                "Start KM": document.getElementById('startKM')?.value || "",
+                "End KM": document.getElementById('endKM')?.value || "",
+                "KM Run": document.getElementById('kmRun')?.value || "",
+                "No of Labours": document.getElementById('noOfLabours')?.value || "1",
+                "LR No": document.getElementById('lrNo')?.value || "",
+                "Note": document.getElementById('note')?.value || ""
+            };
+            
+            let params = new URLSearchParams();
+            params.append("action", isEdit ? "update" : "insert");
+            params.append("spreadsheetId", SPREADSHEET_ID);
+            params.append("sheetName", SHEET_NAME);
+            if (isEdit && editRowIndex) params.append("rowIndex", editRowIndex);
+            for (let [k, v] of Object.entries(tripDataObj)) params.append(k, v);
+            
+            try {
+                let resp = await fetch(SCRIPT_URL, { 
+                    method: "POST", 
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" }, 
+                    body: params 
+                });
+                let result = await resp.json();
+                if (result.status === "success") {
+                    await loadDropdownOptions();
+                    showModal(isEdit ? "✅ Trip updated!" : "✅ Trip added!", "Success", false, null, 1500);
+                    document.getElementById('tripModal').classList.remove('active');
+                    await refreshAllData();
+                    goToPage1();
+                } else { 
+                    showModal("Save failed: " + (result.message || "unknown"), "Error"); 
+                }
+            } catch(err) { 
+                showModal("Error: "+err.message, "Error"); 
+            } finally { 
+                showSpinner(saveBtn, false); 
+            }
+        });
+    }
+
+    // ======================== INITIALIZATION ========================
+    
+    window.toggleSection = function(header) {
+        let content = header.nextElementSibling;
+        let icon = header.querySelector('.collapse-icon');
+        if (content) {
+            content.classList.toggle('hidden');
+            if (icon) icon.classList.toggle('collapsed');
+        }
+    };
+
+    function addHolidayModalHTML() {
+        const holidayModalHTML = `
+            <div id="holidayModal" class="modal-overlay">
+                <div class="modal-box" style="max-width: 900px;">
+                    <div class="modal-header">
+                        <h3 id="holidayModalTitle">📅 Add Holiday</h3>
+                        <button class="close-modal" id="closeHolidayModalBtn">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="holidayForm" style="margin-bottom: 20px;">
+                            <div class="form-grid" style="grid-template-columns: 1fr 2fr;">
+                                <div class="field">
+                                    <label>Date *</label>
+                                    <input type="date" id="holidayDate" required>
+                                </div>
+                                <div class="field autocomplete-wrap">
+                                    <label>Holiday Name *</label>
+                                    <input type="text" id="holidayName" placeholder="Enter or select holiday name..." autocomplete="off" required>
+                                    <div id="holidayAutoList" class="autocomplete-list"></div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="holidayRowIndex">
+                            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
+                                <button type="button" id="holidayCancelBtn" class="btn btn-outline" style="display: none;">Cancel</button>
+                                <button type="submit" id="holidaySubmitBtn" class="btn btn-primary">Add Holiday</button>
+                            </div>
+                        </form>
+                        
+                        <div style="margin-top: 20px; border-top: 2px solid var(--border-color); padding-top: 20px;">
+                            <h4 style="margin-bottom: 15px; color: var(--primary);">📋 Holiday List</h4>
+                            <div class="table-wrapper">
+                                <table class="data-table" style="font-size: 0.85rem;">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 60px;">Sr. No</th>
+                                            <th>Date</th>
+                                            <th>Holiday</th>
+                                            <th style="width: 120px;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="holidayTableBody">
+                                        <tr><td colspan="4" style="text-align:center; padding: 20px;">Loading holidays...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', holidayModalHTML);
+        
+        document.getElementById('closeHolidayModalBtn')?.addEventListener('click', closeHolidayModal);
+        document.getElementById('holidayCancelBtn')?.addEventListener('click', cancelHolidayEdit);
+        document.getElementById('holidayForm')?.addEventListener('submit', handleHolidaySubmit);
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('holidayModal');
+            if (e.target === modal) closeHolidayModal();
+        });
+    }
+
+    async function fastInit() {
+        addHolidayModalHTML();
+        
+        const desktopButtons = document.querySelector('.card-header .desktop-buttons');
+        const mobileButtons = document.querySelector('.mobile-buttons');
+        
+        // Desktop Buttons
+        const holidayBtn = document.createElement('button');
+        holidayBtn.className = 'btn btn-primary';
+        holidayBtn.innerHTML = '📅 Holiday';
+        holidayBtn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+        holidayBtn.addEventListener('click', openHolidayModal);
+        desktopButtons?.appendChild(holidayBtn);
+        
+        let addBtn = document.createElement('button'); 
+        addBtn.className = 'btn btn-primary'; 
+        addBtn.innerHTML = '<span>➕</span> Add Trip'; 
+        addBtn.style.marginLeft = 'auto';
+        addBtn.addEventListener('click', () => openTripModal(false));
+        desktopButtons?.appendChild(addBtn);
+        
+        // Mobile Buttons
+        const mobileHolidayBtn = document.createElement('button');
+        mobileHolidayBtn.className = 'btn btn-primary';
+        mobileHolidayBtn.innerHTML = '📅 Holiday';
+        mobileHolidayBtn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+        mobileHolidayBtn.style.width = '100%';
+        mobileHolidayBtn.style.justifyContent = 'center';
+        mobileHolidayBtn.style.padding = '12px 16px';
+        mobileHolidayBtn.style.fontSize = '0.85rem';
+        mobileHolidayBtn.addEventListener('click', openHolidayModal);
+        mobileButtons?.appendChild(mobileHolidayBtn);
+        
+        const mobileRefreshBtn = document.getElementById('mobileRefreshBtn');
+        if (mobileRefreshBtn) {
+            mobileRefreshBtn.style.width = '100%';
+            mobileRefreshBtn.style.justifyContent = 'center';
+            mobileRefreshBtn.style.padding = '12px 16px';
+            mobileRefreshBtn.style.fontSize = '0.85rem';
+        }
+        
+        let mobileAddBtn = document.getElementById('mobileAddBtn');
+        if (mobileAddBtn) {
+            mobileAddBtn.style.width = '100%';
+            mobileAddBtn.style.justifyContent = 'center';
+            mobileAddBtn.style.padding = '12px 16px';
+            mobileAddBtn.style.fontSize = '0.85rem';
+        } else {
+            let mobileAdd = document.createElement('button'); 
+            mobileAdd.id = 'mobileAddBtn';
+            mobileAdd.className = 'btn btn-primary'; 
+            mobileAdd.innerHTML = '<span>➕</span> Add Trip'; 
+            mobileAdd.style.width = '100%';
+            mobileAdd.style.justifyContent = 'center';
+            mobileAdd.style.padding = '12px 16px';
+            mobileAdd.style.fontSize = '0.85rem';
+            mobileAdd.addEventListener('click', () => openTripModal(false));
+            mobileButtons?.appendChild(mobileAdd);
+        }
+        
+        // Event Listeners
+        document.getElementById('refreshBtnP1')?.addEventListener('click', refreshAllData);
+        document.getElementById('mobileRefreshBtn')?.addEventListener('click', refreshAllData);
+        document.getElementById('backToPage1Btn')?.addEventListener('click', goToPage1);
+        
+        document.getElementById('searchInput')?.addEventListener('input', (e) => {
+            if (searchDebounce) clearTimeout(searchDebounce);
+            searchDebounce = setTimeout(() => renderTablePage1(e.target.value), 300);
+        });
+        
+        document.getElementById('closeGlobalModal')?.addEventListener('click', () => {
+            document.getElementById('globalModal')?.classList.remove('active');
+        });
+        
+        document.getElementById('closeTripModalBtn')?.addEventListener('click', () => {
+            document.getElementById('tripModal')?.classList.remove('active');
+        });
+        
+        window.onclick = (e) => { 
+            if (e.target.classList?.contains('modal-overlay')) {
+                const modalId = e.target.id;
+                if (modalId === 'globalModal' || modalId === 'tripModal' || modalId === 'holidayModal') {
+                    e.target.classList.remove('active');
+                }
+            }
+        };
+        
+        await loadDropdownOptions();
+        await loadTrips();
+        await loadHolidays();
+        renderTablePage1("");
+        renderHolidayTable();
+        setTimeout(() => refreshAllData(), 5000);
+    }
+    
+    fastInit();
+</script>
+</body>
+</html>
