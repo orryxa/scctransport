@@ -551,6 +551,9 @@
                 <button class="nav-item active" data-view="dashboard">
                     <i class="fa-solid fa-chart-pie"></i> Dashboard
                 </button>
+				<button class="nav-item" data-view="reporting">
+                    <i class="fa-solid fa fa-file"></i> Reporting
+                </button>
                 <button class="nav-item" data-view="payment">
                     <i class="fa-solid fa-credit-card"></i> Payment Record
                 </button>
@@ -624,6 +627,7 @@
                     </div>
                 </div>`
             },
+			'reporting': { type: 'iframe', src: 'Reporting/Reporting.html' },
             'payment': { type: 'iframe', src: 'payment.html' },
             'driver-details': { type: 'iframe', src: 'Others/DriverDet.html' },
 			'MIS-EV-Vehicle': { type: 'iframe', src: 'MIS EV/dashboard.html' },
