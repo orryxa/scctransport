@@ -1,0 +1,2108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>📋 Reporting Portal | Smart Dashboard</title>
+    
+    <style>
+        /* ======================== CSS VARIABLES FOR THEMING ======================== */
+        :root {
+            /* Light Mode Colors */
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-light: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            
+            /* Brand Colors */
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --secondary: #f59e0b;
+            --secondary-dark: #d97706;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #fbbf24;
+            --info: #06b6d4;
+            
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            
+            /* Table Colors */
+            --table-header-bg: #f8fafc;
+            --table-row-hover: #f1f5f9;
+            --table-border: #e2e8f0;
+            
+            /* Animation */
+            --transition-fast: 150ms ease;
+            --transition-normal: 300ms ease;
+            --transition-slow: 500ms ease;
+        }
+
+        /* Dark Mode Variables */
+        [data-theme="dark"] {
+            --bg-primary: linear-gradient(135deg, #1e1e2e 0%, #2d1b4e 100%);
+            --bg-secondary: #1e1e2e;
+            --card-bg: rgba(30, 30, 46, 0.98);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-light: #64748b;
+            --border-color: #334155;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4);
+            
+            --table-header-bg: #1e293b;
+            --table-row-hover: #334155;
+            --table-border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            padding: 20px 16px;
+            color: var(--text-primary);
+            transition: background var(--transition-normal), color var(--transition-normal);
+            position: relative;
+        }
+
+        /* App Container */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Page animations */
+        .page {
+            display: none;
+            animation: fadeSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .page.active-page {
+            display: block;
+        }
+        
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Cards */
+        .soft-card {
+            background: var(--card-bg);
+            border-radius: 2rem;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .soft-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* Headers */
+        .card-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 14px;
+        }
+
+        [data-theme="dark"] .card-header {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+        }
+
+        .card-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-header .btn {
+            flex-shrink: 0;
+        }
+
+        /* Search Section */
+        .search-section {
+            padding: 1.5rem 2rem;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Buttons */
+        .btn {
+            border: none;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            filter: brightness(1.05);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-sm {
+            padding: 6px 16px;
+            font-size: 0.75rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Search Input */
+        .search-wrapper {
+            width: 100%;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 60px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-wrapper input::placeholder {
+            color: var(--text-light);
+        }
+
+        .search-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* Table Styles */
+        .table-wrapper {
+            overflow-x: auto;
+            overflow-y: visible;
+            scrollbar-width: thin;
+            padding: 0;
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            height: 6px;
+            background: transparent;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.875rem;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 16px 20px;
+            background: var(--table-header-bg);
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border-bottom: 3px solid var(--primary);
+            position: relative;
+        }
+
+        .data-table th:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        .data-table th:last-child {
+            border-top-right-radius: 12px;
+        }
+
+        .data-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--table-border);
+            color: var(--text-primary);
+            transition: background var(--transition-fast);
+            font-size: 0.9rem;
+        }
+
+        .data-table tr:hover td {
+            background: var(--table-row-hover);
+        }
+
+        .view-action-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .view-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+            filter: brightness(1.05);
+        }
+
+        /* Details Grid */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            padding: 2rem;
+        }
+
+        @media (max-width: 640px) {
+            .details-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+                padding: 1rem;
+            }
+        }
+
+        .detail-card {
+            background: linear-gradient(135deg, var(--card-bg), rgba(255,255,255,0.05));
+            border-radius: 1.2rem;
+            padding: 1rem 1.2rem;
+            transition: all var(--transition-fast);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .detail-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        .detail-value {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-top: 6px;
+            color: var(--text-primary);
+            word-break: break-word;
+        }
+
+        /* Action Row */
+        .action-row {
+            padding: 1rem 2rem 2rem;
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: all var(--transition-normal);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-box {
+            background: var(--card-bg);
+            width: 92%;
+            max-width: 700px;
+            max-height: 85vh;
+            border-radius: 2rem;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-box-large {
+            max-width: 800px;
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            color: white;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: white;
+            transition: transform var(--transition-fast);
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            max-height: calc(85vh - 70px);
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+        }
+
+        .field input, 
+        .field select, 
+        .field textarea {
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+
+        .field input:focus, 
+        .field select:focus, 
+        .field textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .field input:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+        }
+
+        .field input[readonly] {
+            background: var(--table-header-bg);
+            cursor: pointer;
+        }
+
+        .fullwidth {
+            grid-column: 1 / -1;
+        }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Status Message */
+        .status-message {
+            padding: 12px 20px;
+            border-radius: 16px;
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .status-error {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            
+            .card-header {
+                padding: 0.8rem 1rem;
+                flex-direction: row;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: nowrap;
+            }
+            
+            .card-header h2 {
+                font-size: 1rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .card-header .btn {
+                flex-shrink: 0;
+                font-size: 0.7rem;
+                padding: 4px 12px;
+            }
+            
+            .desktop-buttons {
+                display: none;
+            }
+            
+            .mobile-buttons {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin-top: 12px;
+                width: 100%;
+            }
+            
+            .mobile-buttons .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 12px 16px;
+                font-size: 0.85rem;
+                border-radius: 60px;
+            }
+            
+            .search-section {
+                padding: 1rem 1.2rem;
+            }
+            
+            .search-wrapper {
+                width: 100%;
+            }
+            
+            .search-wrapper input {
+                padding: 14px 20px;
+                font-size: 0.95rem;
+                border-radius: 60px;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 12px 12px;
+                font-size: 0.7rem;
+            }
+            
+            .btn {
+                padding: 8px 18px;
+                font-size: 0.8rem;
+            }
+            
+            .modal-box {
+                width: 95%;
+                border-radius: 1.5rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-buttons {
+                display: none !important;
+            }
+        }
+
+        .mobile-buttons {
+            display: none;
+            gap: 12px;
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        .mobile-buttons .btn {
+            border: none;
+            padding: 12px 16px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .mobile-buttons .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .mobile-buttons .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .mobile-buttons .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .mobile-buttons .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .mobile-buttons .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .mobile-buttons .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            filter: brightness(1.05);
+        }
+
+        .mobile-buttons .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .mobile-buttons .btn .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--table-header-bg);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        .table-wrapper::-webkit-scrollbar,
+        .modal-box::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+            background: transparent;
+            display: none;
+        }
+        
+        .table-wrapper,
+        .modal-box {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .loading-skeleton {
+            background: linear-gradient(90deg, var(--border-color) 25%, var(--table-header-bg) 50%, var(--border-color) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .alert-popup {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: var(--card-bg);
+            border-left: 5px solid var(--primary);
+            padding: 16px 24px;
+            box-shadow: var(--shadow-xl);
+            border-radius: 0 16px 16px 0;
+            font-weight: 600;
+            font-size: 0.95rem;
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+            color: var(--text-primary);
+            max-width: 400px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .alert-popup.success {
+            border-left-color: var(--success);
+        }
+
+        .alert-popup.error {
+            border-left-color: var(--danger);
+        }
+
+        .text-rose-500 {
+            color: #ef4444;
+        }
+
+        /* WhatsApp Copy Button */
+        .copy-whatsapp-btn {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copy-whatsapp-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+        }
+
+        .copy-whatsapp-btn.copied {
+            background: linear-gradient(135deg, #128C7E, #075E54);
+        }
+
+        .copy-whatsapp-btn i {
+            font-size: 1.1rem;
+        }
+
+        /* Vehicle dropdown styling */
+        .vehicle-input-wrapper {
+            position: relative;
+        }
+
+        .vehicle-input-wrapper input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+            text-transform: uppercase;
+        }
+
+        .vehicle-input-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .vehicle-input-wrapper .icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        /* Time input styling */
+        input[type="time"] {
+            cursor: pointer;
+        }
+
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.6;
+        }
+
+        input[type="time"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- ===================== PAGE 1 - LIST VIEW ===================== -->
+    <div id="page1" class="page active-page">
+        <div class="soft-card">
+            <div class="card-header">
+                <h2>📋 Reporting Portal</h2>
+                
+                <div class="desktop-buttons">
+                    <button id="refreshBtn" class="btn btn-outline">
+                        <span>⟳</span> Refresh
+                    </button>
+                    <button id="addNewBtn" class="btn btn-primary">
+                        <span>+</span> New Report
+                    </button>
+                </div>
+            </div>
+            
+            <div class="search-section">
+                <div class="search-wrapper">
+                    <input type="text" id="searchInput" 
+                           placeholder="🔍 Search by Vehicle No or Sending Site...">
+                </div>
+                
+                <div class="mobile-buttons">
+                    <button id="mobileRefreshBtn" class="btn btn-outline">
+                        <span>⟳</span> Refresh
+                    </button>
+                    <button id="mobileAddBtn" class="btn btn-primary">
+                        <span>+</span> New Report
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Sr. No</th>
+                            <th>Vehicle No</th>
+                            <th>Sending Site</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="4" style="text-align:center;">
+                                <div class="spinner"></div> Loading records...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 2 - DETAIL VIEW ===================== -->
+    <div id="page2" class="page">
+        <div class="soft-card">
+            <div class="card-header">
+                <h2>📋 Report Details</h2>
+                <button id="backToPage1Btn" class="btn btn-outline">← Back</button>
+            </div>
+            
+            <div id="detailsContainer" class="details-grid">
+                <div class="loading-skeleton" style="height: 200px;"></div>
+            </div>
+            
+            <div class="action-row">
+                <button id="copyWhatsAppBtn" class="copy-whatsapp-btn">
+                    <i class="fab fa-whatsapp"></i> Copy for WhatsApp
+                </button>
+                <button id="editFromDetailBtn" class="btn btn-primary">✏️ Edit</button>
+                <button id="deleteFromDetailBtn" class="btn btn-danger">🗑 Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== GLOBAL MODAL ===================== -->
+    <div id="globalModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 id="modalTitle">Notice</h3>
+                <button class="close-modal" id="closeGlobalModal">×</button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMsg" style="font-size: 1rem; line-height: 1.5;"></p>
+                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button id="confirmModalBtn" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== FORM MODAL ===================== -->
+    <div id="formModal" class="modal-overlay">
+        <div class="modal-box modal-box-large">
+            <div class="modal-header">
+                <h3 id="formModalTitle">Add New Report</h3>
+                <button class="close-modal" id="closeFormModalBtn">×</button>
+            </div>
+            <div class="modal-body" id="formModalBody"></div>
+        </div>
+    </div>
+
+    <!-- ===================== ALERT POPUP ===================== -->
+    <div id="alertBox" class="alert-popup">Message...</div>
+
+</div>
+
+<script>
+    /* ======================== DARK MODE SYNC ======================== */
+    function syncThemeWithParent() {
+        const localTheme = localStorage.getItem('user-theme-preference');
+        if (localTheme) {
+            document.body.setAttribute('data-theme', localTheme);
+            document.documentElement.setAttribute('data-theme', localTheme);
+        } else {
+            try {
+                if (window.parent && window.parent.document.body) {
+                    const parentTheme = window.parent.document.body.getAttribute('data-theme');
+                    if (parentTheme) {
+                        document.body.setAttribute('data-theme', parentTheme);
+                        document.documentElement.setAttribute('data-theme', parentTheme);
+                    }
+                }
+            } catch(e) { }
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', syncThemeWithParent);
+    window.addEventListener('storage', syncThemeWithParent);
+    setInterval(syncThemeWithParent, 1000);
+    
+    window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'themeChange') {
+            const newTheme = event.data.theme;
+            if (newTheme) {
+                document.body.setAttribute('data-theme', newTheme);
+                document.documentElement.setAttribute('data-theme', newTheme);
+            }
+        }
+    });
+
+    /* ======================== CONFIGURATION ======================== */
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyg5EwL2WVufTR0Ks1mH9ZEHWwyuIBXshTvjANGhIq8zD7yZEmgOfimxdpB8pTjkqwq/exec";
+    const SPREADSHEET_ID = "1948D4EB8t_Tr5Wq7zeOjHIYjNXM3pIIYW34ETwgnSWc";
+    const SHEET_NAME = "Reporting";
+
+    const CACHE_KEY = "reporting_cache";
+    const CACHE_TTL = 15 * 60 * 1000;
+
+    // Vehicle options for dropdown
+    const VEHICLE_OPTIONS = [
+        "MH 20 GC 3104",
+        "MH 20 GC 3106",
+        "MH 20 GC 3107",
+        "MH 20 GC 3108",
+        "MH 20 GC 8472",
+        "MH 20 GC 8473",
+        "MH 20 GC 8782",
+        "MH 20 GC 8783"
+    ];
+
+    /* ======================== GLOBAL STATE ======================== */
+    let allReports = [];
+    let currentViewReport = null;
+    let selectedRowIndex = 2;
+    let selectedSrNo = null;
+    let searchDebounceTimer = null;
+    let saveInProgress = false;
+    let computedNextSrNo = 1;
+    let isDataLoaded = false;
+    let formHtmlCacheData = null;
+
+    /* ======================== DOM REFS ======================== */
+    const dom = {};
+
+    function cacheDomElements() {
+        dom.page1 = document.getElementById('page1');
+        dom.page2 = document.getElementById('page2');
+        dom.tableBody = document.getElementById('tableBody');
+        dom.searchInput = document.getElementById('searchInput');
+        dom.refreshBtn = document.getElementById('refreshBtn');
+        dom.addNewBtn = document.getElementById('addNewBtn');
+        dom.backBtn = document.getElementById('backToPage1Btn');
+        dom.editBtn = document.getElementById('editFromDetailBtn');
+        dom.deleteBtn = document.getElementById('deleteFromDetailBtn');
+        dom.detailsContainer = document.getElementById('detailsContainer');
+        dom.globalModal = document.getElementById('globalModal');
+        dom.formModal = document.getElementById('formModal');
+        dom.modalTitle = document.getElementById('modalTitle');
+        dom.modalMsg = document.getElementById('modalMsg');
+        dom.formModalTitle = document.getElementById('formModalTitle');
+        dom.formModalBody = document.getElementById('formModalBody');
+        dom.alertBox = document.getElementById('alertBox');
+        dom.copyWhatsAppBtn = document.getElementById('copyWhatsAppBtn');
+    }
+
+    /* ======================== MOBILE BUTTON HANDLERS ======================== */
+    const mobileRefreshBtn = document.getElementById('mobileRefreshBtn');
+    const mobileAddBtn = document.getElementById('mobileAddBtn');
+
+    if (mobileRefreshBtn) {
+        mobileRefreshBtn.addEventListener('click', function() {
+            if (dom.refreshBtn) {
+                dom.refreshBtn.click();
+            } else {
+                refreshData();
+            }
+        });
+    }
+
+    if (mobileAddBtn) {
+        mobileAddBtn.addEventListener('click', function() {
+            if (dom.addNewBtn) {
+                dom.addNewBtn.click();
+            } else {
+                openAddModal();
+            }
+        });
+    }
+
+    /* ======================== UTILITY FUNCTIONS ======================== */
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    }
+
+    function formatDateForDisplay(dateStr) {
+        if (!dateStr) return '—';
+        try {
+            if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return dateStr;
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                const [year, month, day] = dateStr.split('-');
+                return `${day}/${month}/${year}`;
+            }
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return '—';
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${day}/${month}/${year}`;
+        } catch { return '—'; }
+    }
+
+    function formatDateForSheet(dateStr) {
+        if (!dateStr) return '';
+        try {
+            if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return dateStr;
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                const [year, month, day] = dateStr.split('-');
+                return `${day}/${month}/${year}`;
+            }
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return '';
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${day}/${month}/${year}`;
+        } catch { return ''; }
+    }
+
+    function formatDateForInput(dateStr) {
+        if (!dateStr) return '';
+        try {
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+            if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+                const [day, month, year] = dateStr.split('/');
+                return `${year}-${month}-${day}`;
+            }
+            return '';
+        } catch { return ''; }
+    }
+
+    function getTodayDate() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function getCurrentTime() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+
+    // Format time for display
+    function formatTimeForDisplay(timeStr) {
+    if (!timeStr) return '—';
+    
+    // If it's already in HH:MM format with AM/PM, return as is
+    if (/^\d{1,2}:\d{2}\s*(AM|PM)$/i.test(timeStr)) {
+        return timeStr;
+    }
+    
+    // Try to parse as ISO timestamp (e.g., 1899-12-30T15:01:50.000Z)
+    try {
+        const date = new Date(timeStr);
+        if (!isNaN(date.getTime())) {
+            let hours = date.getHours();
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            return `${hours}:${minutes} ${ampm}`;
+        }
+    } catch (e) {
+        console.log('Failed to parse time:', timeStr);
+    }
+    
+    // Try to parse as HH:MM:SS format
+    try {
+        if (/^\d{2}:\d{2}:\d{2}/.test(timeStr)) {
+            const parts = timeStr.split(':');
+            if (parts.length >= 2) {
+                let hours = parseInt(parts[0]);
+                const minutes = parts[1];
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                return `${hours}:${minutes} ${ampm}`;
+            }
+        }
+    } catch (e) {}
+    
+    // Try to extract time from any string that might contain time
+    try {
+        const timeMatch = timeStr.match(/(\d{1,2}):(\d{2})/);
+        if (timeMatch) {
+            let hours = parseInt(timeMatch[1]);
+            const minutes = timeMatch[2];
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            return `${hours}:${minutes} ${ampm}`;
+        }
+    } catch (e) {}
+    
+    return timeStr; // Return as is if nothing works
+}
+
+    function showToast(msg, type = 'info') {
+        const box = dom.alertBox;
+        box.textContent = msg;
+        box.className = `alert-popup ${type}`;
+        box.style.display = 'block';
+        clearTimeout(box._timeout);
+        box._timeout = setTimeout(() => { box.style.display = 'none'; }, 4500);
+    }
+
+    function showModal(msg, title = "Message", isConfirm = false, onConfirm = null) {
+        dom.modalTitle.innerText = title;
+        dom.modalMsg.innerHTML = msg;
+        const confirmBtn = document.getElementById('confirmModalBtn');
+        confirmBtn.onclick = () => {
+            dom.globalModal.classList.remove('active');
+            if (isConfirm && onConfirm) onConfirm();
+        };
+        dom.globalModal.classList.add('active');
+    }
+
+    function showSpinner(element, show) {
+        if (!element) return;
+        if (show) {
+            element.disabled = true;
+            const originalText = element.innerHTML;
+            element.setAttribute('data-original-text', originalText);
+            element.innerHTML = '<span class="spinner"></span> Loading...';
+        } else {
+            element.disabled = false;
+            const original = element.getAttribute('data-original-text');
+            if (original) element.innerHTML = original;
+        }
+    }
+
+    /* ======================== OPTIMIZED DATA MANAGEMENT ======================== */
+    function getCache(key) {
+        try {
+            const cached = sessionStorage.getItem(key);
+            if (cached) {
+                const { data, timestamp } = JSON.parse(cached);
+                if (Date.now() - timestamp < CACHE_TTL) {
+                    return data;
+                }
+            }
+        } catch { }
+        return null;
+    }
+
+    function setCache(key, data) {
+        try {
+            sessionStorage.setItem(key, JSON.stringify({
+                data: data,
+                timestamp: Date.now()
+            }));
+        } catch { }
+    }
+
+    /* ======================== BACKGROUND DATA LOADING ======================== */
+    async function loadReports(forceRefresh = false) {
+        if (!forceRefresh) {
+            const cached = getCache(CACHE_KEY);
+            if (cached) {
+                allReports = cached;
+                isDataLoaded = true;
+                renderTable();
+                refreshDataInBackground();
+                return allReports;
+            }
+        }
+
+        try {
+            const response = await fetch(`${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${encodeURIComponent(SHEET_NAME)}&_=${Date.now()}`);
+            const result = await response.json();
+            if (result.status === "success" && Array.isArray(result.data)) {
+                // ✅ FIXED: Properly map data with _rowIndex
+                allReports = result.data.map((item, idx) => {
+                    return { ...item, _rowIndex: idx + 2 };
+                });
+                setCache(CACHE_KEY, allReports);
+                isDataLoaded = true;
+                renderTable();
+                return allReports;
+            }
+            throw new Error(result.message || "Failed to load data");
+        } catch (err) {
+            showToast("❌ Failed to load records: " + err.message, "error");
+            // Try to load from cache even if refresh fails
+            const cached = getCache(CACHE_KEY);
+            if (cached) {
+                allReports = cached;
+                isDataLoaded = true;
+                renderTable();
+                return allReports;
+            }
+            return [];
+        }
+    }
+
+    async function refreshDataInBackground() {
+        try {
+            const response = await fetch(`${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${encodeURIComponent(SHEET_NAME)}&_=${Date.now()}`);
+            const result = await response.json();
+            if (result.status === "success" && Array.isArray(result.data)) {
+                const newData = result.data.map((item, idx) => {
+                    return { ...item, _rowIndex: idx + 2 };
+                });
+                if (JSON.stringify(newData) !== JSON.stringify(allReports)) {
+                    allReports = newData;
+                    setCache(CACHE_KEY, allReports);
+                    renderTable();
+                }
+            }
+        } catch (err) {
+            console.log("Background refresh failed:", err.message);
+        }
+    }
+
+    /* ======================== TABLE RENDERING ======================== */
+    function renderTable(filter = "") {
+        if (!dom.tableBody) return;
+        
+        // If no data, show loading or empty state
+        if (!allReports || allReports.length === 0) {
+            dom.tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 40px;">📋 No records found</td></tr>';
+            return;
+        }
+        
+        const searchLower = filter.toLowerCase();
+        let filtered = allReports.filter(s => {
+            const vehicle = String(s['Vehicle No'] || '').toLowerCase();
+            const site = String(s['Sending Site'] || '').toLowerCase();
+            return vehicle.includes(searchLower) || site.includes(searchLower);
+        });
+
+        if (!filtered.length) {
+            dom.tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 40px;">📋 No records found</td></tr>';
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        filtered.forEach((s, idx) => {
+            const row = document.createElement('tr');
+            const srNo = s['Sr. No'] || idx + 1;
+            row.innerHTML = `
+                <td><strong>${escapeHtml(String(srNo))}</strong></td>
+                <td>${escapeHtml(s['Vehicle No'] || '—')}</td>
+                <td>${escapeHtml(s['Sending Site'] || '—')}</td>
+                <td><button class="view-action-btn" data-srno="${escapeHtml(String(srNo))}">👁️ View</button></td>
+            `;
+            fragment.appendChild(row);
+        });
+
+        dom.tableBody.innerHTML = '';
+        dom.tableBody.appendChild(fragment);
+
+        dom.tableBody.querySelectorAll('.view-action-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const srNoVal = this.getAttribute('data-srno');
+                const found = allReports.find(s => String(s['Sr. No']) === String(srNoVal));
+                if (found) {
+                    currentViewReport = found;
+                    showDetailView(found);
+                } else {
+                    showToast("❌ Record not found", "error");
+                }
+            });
+        });
+    }
+
+    /* ======================== DETAIL VIEW ======================== */
+    function showDetailView(report) {
+        selectedSrNo = report['Sr. No'];
+        selectedRowIndex = report._rowIndex || 2;
+
+        const fields = [
+            { label: "Sr. No", value: report['Sr. No'] },
+            { label: "Sending Site", value: report['Sending Site'] },
+            { label: "SO Number", value: report['So Number'] },
+            { label: "Channel (GT/MT)", value: report['Channel (GT/MT)'] },
+            { label: "Destination", value: report['Destination'] },
+            { label: "Date of Reporting at Customer", value: formatDateForDisplay(report['Date of Reporting at Customer']) },
+            { label: "Time of Reporting at Customer", value: formatTimeForDisplay(report['Time of Reporting at Customer']) },
+            { label: "Unloading Date", value: formatDateForDisplay(report['Unloading Date']) },
+            { label: "Cases", value: report['Cases'] },
+            { label: "Vehicle No", value: report['Vehicle No'] },
+            { label: "Transport Name", value: report['Transport Name'] },
+            { label: "Invoice No", value: report['Invoice No'] },
+            { label: "Internal Ref No", value: report['Internal Ref No'] },
+            { label: "Remarks", value: report['Remarks'], full: true }
+        ];
+
+        const grid = dom.detailsContainer;
+        grid.innerHTML = '';
+        fields.forEach(f => {
+            const card = document.createElement('div');
+            card.className = `detail-card${f.full ? ' fullwidth' : ''}`;
+            card.innerHTML = `
+                <div class="detail-label">${f.label}</div>
+                <div class="detail-value">${escapeHtml(String(f.value || '—'))}</div>
+            `;
+            grid.appendChild(card);
+        });
+
+        dom.page1.classList.remove('active-page');
+        dom.page2.classList.add('active-page');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* ======================== WHATSAPP COPY FUNCTION ======================== */
+    function generateWhatsAppText(report) {
+    if (!report) return '';
+
+    const lines = [
+        "📋 *REPORT DETAILS*",
+        "═══════════════════════",
+        "",
+        `🔹 *Sr. No:* ${report['Sr. No'] || '—'}`,
+        `🔹 *Sending Site:* ${report['Sending Site'] || '—'}`,
+        `🔹 *SO Number:* ${report['So Number'] || '—'}`,
+        `🔹 *Channel (GT/MT):* ${report['Channel (GT/MT)'] || '—'}`,
+        `🔹 *Destination:* ${report['Destination'] || '—'}`,
+        `🔹 *Date of Reporting at Customer:* ${formatDateForDisplay(report['Date of Reporting at Customer'])}`,
+        `🔹 *Time of Reporting at Customer:* ${formatTimeForDisplay(report['Time of Reporting at Customer'])}`,
+        `🔹 *Unloading Date:* ${formatDateForDisplay(report['Unloading Date'])}`,
+        `🔹 *Cases:* ${report['Cases'] || '—'}`,
+        `🔹 *Vehicle No:* ${report['Vehicle No'] || '—'}`,
+        `🔹 *Transport Name:* ${report['Transport Name'] || '—'}`,
+        `🔹 *Invoice No:* ${report['Invoice No'] || '—'}`,
+        `🔹 *Internal Ref No:* ${report['Internal Ref No'] || '—'}`,
+        `🔹 *Remarks:* ${report['Remarks'] || '—'}`,
+        "",
+        "═══════════════════════",
+        `📅 *Generated on:* ${new Date().toLocaleString('en-IN')}`,
+        "✅ *Report Details Shared*"
+    ];
+
+    return lines.join('\n');
+}
+	
+    async function copyWhatsAppText() {
+        if (!currentViewReport) {
+            showToast("❌ No report loaded", "error");
+            return;
+        }
+
+        const text = generateWhatsAppText(currentViewReport);
+        const btn = dom.copyWhatsAppBtn;
+
+        try {
+            await navigator.clipboard.writeText(text);
+            btn.classList.add('copied');
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            showToast("✅ Copied for WhatsApp! Ready to paste.", "success");
+            
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                btn.innerHTML = '<i class="fab fa-whatsapp"></i> Copy for WhatsApp';
+            }, 3000);
+        } catch (err) {
+            // Fallback for older browsers
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            btn.classList.add('copied');
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            showToast("✅ Copied for WhatsApp! Ready to paste.", "success");
+            
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                btn.innerHTML = '<i class="fab fa-whatsapp"></i> Copy for WhatsApp';
+            }, 3000);
+        }
+    }
+
+    /* ======================== NAVIGATION ======================== */
+    function goToListView() {
+        dom.page2.classList.remove('active-page');
+        dom.page1.classList.add('active-page');
+    }
+
+    /* ======================== CRUD OPERATIONS ======================== */
+    function findRowIndexBySrNo(srNo) {
+        const idx = allReports.findIndex(s => String(s['Sr. No']) === String(srNo));
+        return idx !== -1 ? allReports[idx]._rowIndex : null;
+    }
+
+    async function deleteReport() {
+        if (!currentViewReport) return;
+        const srNo = currentViewReport['Sr. No'];
+        const rowIdx = findRowIndexBySrNo(srNo);
+        if (!rowIdx) {
+            showModal("Row not found", "Error");
+            return;
+        }
+
+        showModal(
+            `⚠️ Are you sure you want to delete report for vehicle <strong>${currentViewReport['Vehicle No']}</strong>?<br><br>This action cannot be undone.`,
+            "Confirm Delete",
+            true,
+            async () => {
+                showSpinner(dom.deleteBtn, true);
+                try {
+                    const params = new URLSearchParams();
+                    params.append("action", "delete");
+                    params.append("spreadsheetId", SPREADSHEET_ID);
+                    params.append("sheetName", SHEET_NAME);
+                    params.append("rowIndex", rowIdx);
+
+                    const response = await fetch(SCRIPT_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: params.toString()
+                    });
+                    const result = await response.json();
+
+                    if (result.status === "success") {
+                        showToast("✅ Report deleted successfully!", "success");
+                        setCache(CACHE_KEY, null);
+                        await loadReports(true);
+                        goToListView();
+                    } else {
+                        showModal("❌ Delete failed: " + result.message, "Error");
+                    }
+                } catch (err) {
+                    showModal("❌ Error: " + err.message, "Error");
+                } finally {
+                    showSpinner(dom.deleteBtn, false);
+                }
+            }
+        );
+    }
+
+    /* ======================== FORM BUILDER ======================== */
+    function buildFormHtml(report = null, isEdit = false) {
+    const def = {
+        "Sending Site": "",
+        "So Number": "",
+        "Channel (GT/MT)": "",
+        "Destination": "",
+        "Date of Reporting at Customer": "",
+        "Time of Reporting at Customer": "",
+        "Unloading Date": "",
+        "Cases": "",
+        "Vehicle No": "",
+        "Transport Name": "",
+        "Remarks": "",
+        "Invoice No": "",
+        "Internal Ref No": ""
+    };
+
+    if (report) {
+        Object.keys(def).forEach(k => {
+            if (report[k] !== undefined) def[k] = report[k];
+        });
+    }
+
+    const dateReporting = formatDateForInput(def['Date of Reporting at Customer']) || '';
+    const dateUnloading = formatDateForInput(def['Unloading Date']) || '';
+    
+    // For time input field, we need 24-hour format for the HTML5 time picker
+    let timeReporting = getCurrentTime();
+    if (def['Time of Reporting at Customer']) {
+        // Convert from 12-hour to 24-hour for the time picker
+        const timeStr = def['Time of Reporting at Customer'];
+        try {
+            // If it's an ISO timestamp, extract time
+            const date = new Date(timeStr);
+            if (!isNaN(date.getTime())) {
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                timeReporting = `${hours}:${minutes}`;
+            } else {
+                // Try to parse HH:MM AM/PM format
+                const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+                if (match) {
+                    let hours = parseInt(match[1]);
+                    const minutes = match[2];
+                    const ampm = match[3].toUpperCase();
+                    if (ampm === 'PM' && hours !== 12) hours += 12;
+                    if (ampm === 'AM' && hours === 12) hours = 0;
+                    timeReporting = `${String(hours).padStart(2, '0')}:${minutes}`;
+                }
+            }
+        } catch (e) {
+            timeReporting = getCurrentTime();
+        }
+    }
+
+    // Build vehicle options for datalist
+    const vehicleOptions = VEHICLE_OPTIONS.map(v => `<option value="${v}">`).join('');
+
+    return `
+        <form id="reportForm">
+            <div class="form-grid">
+                <!-- Sending Site -->
+                <div class="field">
+                    <label>Sending Site <span class="text-rose-500">*</span></label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);">
+                            <i class="fas fa-warehouse"></i>
+                        </span>
+                        <input type="text" id="fSendingSite" value="${escapeHtml(def['Sending Site'])}" 
+                               list="sendingSiteOptions" required
+                               placeholder="Select or type sending site..."
+                               style="width: 100%; padding: 12px 16px 12px 40px; border: 2px solid var(--border-color); border-radius: 16px; 
+                                      background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem; 
+                                      transition: all var(--transition-fast); font-family: inherit;">
+                        <datalist id="sendingSiteOptions">
+                            <option value="Bhiwandi">
+                            <option value="Taloja">
+                        </datalist>
+                    </div>
+                </div>
+                
+                <!-- SO Number -->
+                <div class="field">
+                    <label>SO Number <span class="text-rose-500">*</span></label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);">
+                            <i class="fas fa-hashtag"></i>
+                        </span>
+                        <input type="number" id="fSoNumber" value="${escapeHtml(def['So Number'])}" required
+                               placeholder="Enter SO number..."
+                               style="width: 100%; padding: 12px 16px 12px 40px; border: 2px solid var(--border-color); border-radius: 16px; 
+                                      background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem; 
+                                      transition: all var(--transition-fast); font-family: inherit;">
+                    </div>
+                </div>
+                
+                <!-- Channel (GT/MT) -->
+                <div class="field">
+                    <label>Channel (GT/MT)</label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);">
+                            <i class="fas fa-arrow-right-arrow-left"></i>
+                        </span>
+                        <input type="text" id="fChannel" value="${escapeHtml(def['Channel (GT/MT)'])}" 
+                               placeholder="Enter GT or MT..."
+                               style="width: 100%; padding: 12px 16px 12px 40px; border: 2px solid var(--border-color); border-radius: 16px; 
+                                      background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem; 
+                                      transition: all var(--transition-fast); font-family: inherit;">
+                    </div>
+                </div>
+                
+                <!-- Destination -->
+                <div class="field">
+                    <label>Destination <span class="text-rose-500">*</span></label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </span>
+                        <input type="text" id="fDestination" value="${escapeHtml(def['Destination'])}" required
+                               placeholder="Enter destination..."
+                               style="width: 100%; padding: 12px 16px 12px 40px; border: 2px solid var(--border-color); border-radius: 16px; 
+                                      background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem; 
+                                      transition: all var(--transition-fast); font-family: inherit;">
+                    </div>
+                </div>
+                
+                <!-- Date of Reporting -->
+                <div class="field">
+                    <label>Date of Reporting at Customer <span class="text-rose-500">*</span></label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);">
+                            <i class="fas fa-calendar-check"></i>
+                        </span>
+                        <input type="date" id="fDateReporting" value="${dateReporting}" required
+                               style="width: 100%; padding: 12px 16px 12px 40px; border: 2px solid var(--border-color); border-radius: 16px; 
+                                      background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem; 
+                                      transition: all var(--transition-fast); font-family: inherit;">
+                    </div>
+                </div>
+                
+                <!-- Time of Reporting -->
+                <div class="field">
+                    <label>Time of Reporting at Customer</label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);">
+                            <i class="fas fa-clock"></i>
+                        </span>
+                        <input type="time" id="fTimeReporting" value="${timeReporting}"
+                               style="width: 100%; padding: 12px 16px 12px 40px; border: 2px solid var(--border-color); border-radius: 16px; 
+                                      background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem; 
+                                      transition: all var(--transition-fast); font-family: inherit;">
+                    </div>
+                    <div style="font-size: 0.65rem; color: var(--text-light); margin-top: 4px;">
+                        <i class="fas fa-info-circle"></i> Select the time of reporting at customer location
+                    </div>
+                </div>
+                
+                <!-- Unloading Date -->
+                <div class="field">
+                    <label>Unloading Date</label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);">
+                            <i class="fas fa-calendar-day"></i>
+                        </span>
+                        <input type="date" id="fUnloadingDate" value="${dateUnloading}"
+                               style="width: 100%; padding: 12px 16px 12px 40px; border: 2px solid var(--border-color); border-radius: 16px; 
+                                      background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem; 
+                                      transition: all var(--transition-fast); font-family: inherit;">
+                    </div>
+                </div>
+                
+                <!-- Cases -->
+                <div class="field">
+                    <label>Cases <span class="text-rose-500">*</span></label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);">
+                            <i class="fas fa-box"></i>
+                        </span>
+                        <input type="number" id="fCases" value="${escapeHtml(def['Cases'])}" required
+                               min="0" step="1" placeholder="Enter number of cases..."
+                               style="width: 100%; padding: 12px 16px 12px 40px; border: 2px solid var(--border-color); border-radius: 16px; 
+                                      background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem; 
+                                      transition: all var(--transition-fast); font-family: inherit;">
+                    </div>
+                </div>
+                
+                <!-- Vehicle No -->
+                <div class="field">
+                    <label>Vehicle No <span class="text-rose-500">*</span></label>
+                    <div class="vehicle-input-wrapper">
+                        <span class="icon"><i class="fas fa-truck"></i></span>
+                        <input type="text" id="fVehicleNo" value="${escapeHtml(def['Vehicle No'])}" 
+                               list="vehicleOptions" required
+                               placeholder="Select or type vehicle number..."
+                               autocomplete="off">
+                        <datalist id="vehicleOptions">
+                            ${vehicleOptions}
+                        </datalist>
+                    </div>
+                    <div style="font-size: 0.65rem; color: var(--text-light); margin-top: 4px;">
+                        <i class="fas fa-info-circle"></i> Select from list or type custom (Auto-uppercase)
+                    </div>
+                </div>
+                
+                <!-- Transport Name -->
+                <div class="field">
+                    <label>Transport Name</label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);">
+                            <i class="fas fa-shipping-fast"></i>
+                        </span>
+                        <input type="text" id="fTransportName" value="${escapeHtml(def['Transport Name'])}" 
+                               list="transportOptions"
+                               placeholder="Select or type transport name..."
+                               style="width: 100%; padding: 12px 16px 12px 40px; border: 2px solid var(--border-color); border-radius: 16px; 
+                                      background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem; 
+                                      transition: all var(--transition-fast); font-family: inherit;">
+                        <datalist id="transportOptions">
+                            <option value="SCC Transport">
+                        </datalist>
+                    </div>
+                </div>
+                
+                <!-- Invoice No -->
+                <div class="field">
+                    <label>Invoice No</label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);">
+                            <i class="fas fa-file-invoice"></i>
+                        </span>
+                        <input type="text" id="fInvoiceNo" value="${escapeHtml(def['Invoice No'])}" 
+                               placeholder="Enter invoice number..."
+                               style="width: 100%; padding: 12px 16px 12px 40px; border: 2px solid var(--border-color); border-radius: 16px; 
+                                      background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem; 
+                                      transition: all var(--transition-fast); font-family: inherit;">
+                    </div>
+                </div>
+                
+                <!-- Internal Ref No -->
+                <div class="field">
+                    <label>Internal Ref No</label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);">
+                            <i class="fas fa-tag"></i>
+                        </span>
+                        <input type="number" id="fInternalRefNo" value="${escapeHtml(def['Internal Ref No'])}" 
+                               placeholder="Enter internal reference number..."
+                               style="width: 100%; padding: 12px 16px 12px 40px; border: 2px solid var(--border-color); border-radius: 16px; 
+                                      background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem; 
+                                      transition: all var(--transition-fast); font-family: inherit;">
+                    </div>
+                </div>
+                
+                <!-- Remarks -->
+                <div class="field fullwidth">
+                    <label>Remarks</label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 14px; color: var(--text-light);">
+                            <i class="fas fa-comment"></i>
+                        </span>
+                        <textarea id="fRemarks" rows="3" placeholder="Enter any additional remarks or notes..."
+                                  style="width: 100%; padding: 12px 16px 12px 40px; border: 2px solid var(--border-color); border-radius: 16px; 
+                                         background: var(--bg-secondary); color: var(--text-primary); font-size: 0.9rem; 
+                                         transition: all var(--transition-fast); font-family: inherit; resize: vertical; min-height: 60px;">${escapeHtml(def['Remarks'])}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div id="formStatus" class="status-message"></div>
+
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                <button type="button" id="cancelFormBtn" class="btn btn-outline" style="padding: 12px 28px; border-radius: 16px; font-size: 0.9rem;">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="submit" id="saveFormBtn" class="btn btn-primary" style="padding: 12px 32px; border-radius: 16px; font-size: 0.9rem;">
+                    <i class="fas ${isEdit ? 'fa-save' : 'fa-paper-plane'}"></i> ${isEdit ? "Update Report" : "Save Report"}
+                </button>
+            </div>
+        </form>
+    `;
+}
+    /* ======================== FORM EVENTS ======================== */
+    function attachFormEvents(isEdit, rowIdx) {
+        const form = document.getElementById('reportForm');
+        if (!form) {
+            console.error("❌ Form not found!");
+            return;
+        }
+
+        // Vehicle Number - Auto uppercase
+        const vehicleInput = document.getElementById('fVehicleNo');
+        if (vehicleInput) {
+            vehicleInput.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+        }
+
+        // Cancel button
+        const cancelBtn = document.getElementById('cancelFormBtn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                dom.formModal.classList.remove('active');
+            });
+        }
+
+        // Form submit
+        form.onsubmit = (e) => {
+            handleFormSubmit(e, isEdit, rowIdx);
+        };
+    }
+
+    /* ======================== FORM SUBMIT ======================== */
+    async function handleFormSubmit(e, isEdit, rowIdx) {
+        e.preventDefault();
+        if (saveInProgress) return;
+        saveInProgress = true;
+
+        const saveBtn = document.getElementById('saveFormBtn');
+        showSpinner(saveBtn, true);
+        document.getElementById('formStatus').style.display = 'none';
+
+        try {
+            const timeValue = document.getElementById('fTimeReporting')?.value || '';
+            
+            const formData = {
+                "Sending Site": document.getElementById('fSendingSite')?.value || "",
+                "So Number": document.getElementById('fSoNumber')?.value || "",
+                "Channel (GT/MT)": document.getElementById('fChannel')?.value || "",
+                "Destination": document.getElementById('fDestination')?.value || "",
+                "Date of Reporting at Customer": document.getElementById('fDateReporting')?.value || "",
+                "Time of Reporting at Customer": timeValue,
+                "Unloading Date": document.getElementById('fUnloadingDate')?.value || "",
+                "Cases": document.getElementById('fCases')?.value || "",
+                "Vehicle No": document.getElementById('fVehicleNo')?.value || "",
+                "Transport Name": document.getElementById('fTransportName')?.value || "",
+                "Remarks": document.getElementById('fRemarks')?.value || "",
+                "Invoice No": document.getElementById('fInvoiceNo')?.value || "",
+                "Internal Ref No": document.getElementById('fInternalRefNo')?.value || ""
+            };
+
+            // Validate required fields
+            const required = ['Sending Site', 'So Number', 'Destination', 'Date of Reporting at Customer', 'Cases', 'Vehicle No'];
+            for (const field of required) {
+                if (!formData[field] || formData[field].trim() === '') {
+                    showToast(`❌ ${field} is required`, "error");
+                    saveInProgress = false;
+                    showSpinner(saveBtn, false);
+                    return;
+                }
+            }
+
+            // Validate Cases is positive number
+            if (parseInt(formData['Cases']) < 0) {
+                showToast("❌ Cases must be a positive number", "error");
+                saveInProgress = false;
+                showSpinner(saveBtn, false);
+                return;
+            }
+
+            const params = new URLSearchParams();
+            params.append("action", isEdit ? "update" : "insert");
+            params.append("spreadsheetId", SPREADSHEET_ID);
+            params.append("sheetName", SHEET_NAME);
+            if (isEdit && rowIdx) params.append("rowIndex", rowIdx);
+
+            if (!isEdit) {
+                const nextSrNo = allReports.length + 1;
+                params.append("Sr. No", nextSrNo);
+            }
+
+            for (const [key, value] of Object.entries(formData)) {
+                if (key === "Date of Reporting at Customer" || key === "Unloading Date") {
+                    const formattedDate = formatDateForSheet(value);
+                    params.append(key, formattedDate);
+                } else {
+                    params.append(key, value);
+                }
+            }
+
+            const response = await fetch(SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: params.toString()
+            });
+
+            const result = await response.json();
+
+            if (result.status === "success") {
+                showToast(`✅ Report ${isEdit ? 'updated' : 'saved'} successfully!`, "success");
+                setCache(CACHE_KEY, null);
+                dom.formModal.classList.remove('active');
+                await loadReports(true);
+                goToListView();
+            } else {
+                showToast("❌ Error: " + result.message, "error");
+            }
+        } catch (err) {
+            console.error("Submission error:", err);
+            showToast("❌ Error: " + err.message, "error");
+        } finally {
+            saveInProgress = false;
+            showSpinner(saveBtn, false);
+        }
+    }
+
+    /* ======================== OPTIMIZED MODAL OPEN FUNCTIONS ======================== */
+    async function openAddModal() {
+        dom.formModal.classList.add('active');
+        dom.formModalTitle.textContent = "📋 Add New Report";
+        
+        dom.formModalBody.innerHTML = buildFormHtml(null, false);
+        
+        setTimeout(() => {
+            attachFormEvents(false, null);
+        }, 50);
+    }
+
+    async function openEditModal() {
+        if (!currentViewReport) {
+            showModal("No report selected", "Error");
+            return;
+        }
+        
+        const rowIdx = findRowIndexBySrNo(currentViewReport['Sr. No']);
+        if (!rowIdx) { 
+            showModal("Row error", "Error"); 
+            return; 
+        }
+
+        dom.formModal.classList.add('active');
+        dom.formModalTitle.textContent = "✏️ Edit Report";
+        
+        dom.formModalBody.innerHTML = buildFormHtml(currentViewReport, true);
+        
+        setTimeout(() => {
+            attachFormEvents(true, rowIdx);
+        }, 50);
+    }
+
+    /* ======================== INITIALIZATION ======================== */
+    function init() {
+        cacheDomElements();
+
+        dom.tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;"><div class="spinner"></div> Loading records...</td></tr>';
+        
+        loadReports();
+
+        dom.searchInput?.addEventListener('input', (e) => {
+            clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(() => renderTable(e.target.value), 300);
+        });
+
+        dom.refreshBtn?.addEventListener('click', async () => {
+            showSpinner(dom.refreshBtn, true);
+            setCache(CACHE_KEY, null);
+            showToast("🔄 Syncing with Google Sheets...", "info");
+            try {
+                await loadReports(true);
+                showToast("✅ Data refreshed successfully!", "success");
+            } catch (err) {
+                showToast("❌ Refresh failed: " + err.message, "error");
+            } finally {
+                showSpinner(dom.refreshBtn, false);
+            }
+        });
+
+        dom.addNewBtn?.addEventListener('click', openAddModal);
+        dom.backBtn?.addEventListener('click', goToListView);
+        dom.editBtn?.addEventListener('click', openEditModal);
+        dom.deleteBtn?.addEventListener('click', deleteReport);
+        
+        // WhatsApp Copy Button
+        dom.copyWhatsAppBtn?.addEventListener('click', copyWhatsAppText);
+
+        document.getElementById('closeGlobalModal')?.addEventListener('click', () => dom.globalModal.classList.remove('active'));
+        document.getElementById('closeFormModalBtn')?.addEventListener('click', () => {
+            dom.formModal.classList.remove('active');
+        });
+
+        window.onclick = (e) => {
+            if (e.target.classList?.contains('modal-overlay')) {
+                e.target.classList.remove('active');
+            }
+        };
+
+        // Background refresh every 5 minutes
+        setInterval(() => {
+            refreshDataInBackground();
+        }, 5 * 60 * 1000);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
