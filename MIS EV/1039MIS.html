@@ -1705,7 +1705,7 @@
         
         let trip = isEdit && tripData ? tripData : (currentTrip || {
             "Trip No": "", "Date": "", "Consignment No": "", "Invoice No": "", "Consignee Name": "",
-            "Vehicle No": "MH 04 MR 1039", "Truck Type": "EV", "Driver Name": "Maruti",
+            "Vehicle No": "MH 04 MR 1039", "Truck Type": "EV", "Driver Name": "Raj",
             "From": "", "Destination": "", "Boxes": "", "Start Time": "09.00 AM", "End Time": "",
             "Start KM": "", "End KM": "", "KM Run": "", "No of Labours": "1", "LR No": "", "Note": ""
         });
@@ -1725,7 +1725,7 @@
             <div class="field autocomplete-wrap"><label>Consignee Name</label><input type="text" id="consigneeName" value="${escapeHtml(trip['Consignee Name'] || '')}" autocomplete="off"><div id="consigneeAutoList" class="autocomplete-list"></div></div>
             <div class="field"><label>Vehicle No</label><input type="text" id="vehicleNo" value="${escapeHtml(trip['Vehicle No'] || 'MH 04 MR 1039')}"></div>
             <div class="field"><label>Truck Type</label><input type="text" id="truckType" value="${escapeHtml(trip['Truck Type'] || 'EV')}"></div>
-            <div class="field"><label>Driver Name</label><input type="text" id="driverName" value="${escapeHtml(trip['Driver Name'] || 'Maruti')}"></div>
+            <div class="field"><label>Driver Name</label><input type="text" id="driverName" value="${escapeHtml(trip['Driver Name'] || 'Raj')}"></div>
             <div class="field autocomplete-wrap"><label>From</label><input type="text" id="fromLoc" value="${escapeHtml(trip['From'] || '')}" autocomplete="off"><div id="fromAutoList" class="autocomplete-list"></div></div>
             <div class="field autocomplete-wrap"><label>Destination</label><input type="text" id="destination" value="${escapeHtml(trip['Destination'] || '')}" autocomplete="off"><div id="destAutoList" class="autocomplete-list"></div></div>
             <div class="field"><label>Boxes</label><input type="number" id="boxes" value="${escapeHtml(trip['Boxes'] || '')}"></div>
@@ -1801,7 +1801,7 @@
                 "Consignee Name": consigneeValue,
                 "Vehicle No": document.getElementById('vehicleNo')?.value || "MH 04 MR 1039",
                 "Truck Type": document.getElementById('truckType')?.value || "EV",
-                "Driver Name": document.getElementById('driverName')?.value || "Maruti",
+                "Driver Name": document.getElementById('driverName')?.value || "Raj",
                 "From": fromValue,
                 "Destination": destinationValue,
                 "Boxes": document.getElementById('boxes')?.value || "",
