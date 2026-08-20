@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Yash Transport | Fleet Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ======================== CSS VARIABLES FOR THEMING ======================== */
+        :root {
+            /* Light Mode Colors */
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-light: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            
+            /* Brand Colors */
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --secondary: #f59e0b;
+            --secondary-dark: #d97706;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #fbbf24;
+            --info: #06b6d4;
+            
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            
+            /* Table Colors */
+            --table-header-bg: #f8fafc;
+            --table-row-hover: #f1f5f9;
+            --table-border: #e2e8f0;
+            
+            /* Animation */
+            --transition-fast: 150ms ease;
+            --transition-normal: 300ms ease;
+            --transition-slow: 500ms ease;
+        }
+
+        /* Dark Mode Variables */
+        [data-theme="dark"] {
+            --bg-primary: linear-gradient(135deg, #1e1e2e 0%, #2d1b4e 100%);
+            --bg-secondary: #1e1e2e;
+            --card-bg: rgba(30, 30, 46, 0.98);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-light: #64748b;
+            --border-color: #334155;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4);
+            
+            /* Table Colors Dark */
+            --table-header-bg: #1e293b;
+            --table-row-hover: #334155;
+            --table-border: #334155;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            padding: 20px 16px;
+            color: var(--text-primary);
+            transition: background var(--transition-normal), color var(--transition-normal);
+            position: relative;
+        }
+
+        /* App Container */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Page animations */
+        .page {
+            display: none;
+            animation: fadeSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .page.active-page {
+            display: block;
+        }
+        
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Cards */
+        .soft-card {
+            background: var(--card-bg);
+            border-radius: 2rem;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .soft-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* Headers */
+        .card-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        [data-theme="dark"] .card-header {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+        }
+
+        .card-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        /* Search Section */
+        .search-section {
+            padding: 1.5rem 2rem;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Buttons */
+        .btn {
+            border: none;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            filter: brightness(1.05);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-sm {
+            padding: 6px 16px;
+            font-size: 0.75rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Desktop Buttons */
+        .desktop-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* Mobile Buttons Grid */
+        .mobile-buttons {
+            display: none;
+        }
+
+        /* Search Input */
+        .search-wrapper {
+            width: 100%;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 60px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-wrapper input::placeholder {
+            color: var(--text-light);
+        }
+
+        .search-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(26, 71, 42, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* Table Styles */
+        .table-wrapper {
+            overflow-x: auto;
+            overflow-y: visible;
+            scrollbar-width: thin;
+            padding: 0;
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            height: 6px;
+            background: transparent;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.875rem;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 16px 20px;
+            background: var(--table-header-bg);
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border-bottom: 3px solid var(--primary);
+            position: relative;
+        }
+
+        .data-table th:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        .data-table th:last-child {
+            border-top-right-radius: 12px;
+        }
+
+        .data-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--table-border);
+            color: var(--text-primary);
+            transition: background var(--transition-fast);
+            font-size: 0.9rem;
+        }
+
+        .data-table tr:hover td {
+            background: var(--table-row-hover);
+        }
+
+        /* Total Badge styling */
+        .total-badge {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 40px;
+            display: inline-block;
+            font-size: 0.8rem;
+            box-shadow: var(--shadow-sm);
+            min-width: 85px;
+            text-align: center;
+        }
+
+        /* Action button in table */
+        .view-action-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .view-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+            filter: brightness(1.05);
+        }
+
+        /* Details Grid */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            padding: 2rem;
+        }
+
+        @media (max-width: 640px) {
+            .details-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+                padding: 1rem;
+            }
+        }
+
+        .detail-card {
+            background: linear-gradient(135deg, var(--card-bg), rgba(255,255,255,0.05));
+            border-radius: 1.2rem;
+            padding: 1rem 1.2rem;
+            transition: all var(--transition-fast);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .detail-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        .detail-value {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-top: 6px;
+            color: var(--text-primary);
+            word-break: break-word;
+        }
+
+        /* Action Row */
+        .action-row {
+            padding: 1rem 2rem 2rem;
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: all var(--transition-normal);
+        }
+
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-box {
+            background: var(--card-bg);
+            width: 92%;
+            max-width: 900px;
+            max-height: 85vh;
+            border-radius: 2rem;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes modalPop {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            color: white;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: white;
+            transition: transform var(--transition-fast);
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+        }
+
+        .field input, 
+        .field select, 
+        .field textarea {
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+
+        .field input:focus, 
+        .field select:focus, 
+        .field textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(26, 71, 42, 0.1);
+        }
+
+        .field input:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+        }
+
+        .fullwidth {
+            grid-column: 1 / -1;
+        }
+
+        /* Autocomplete Styles */
+        .autocomplete-wrap {
+            position: relative;
+        }
+
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 9999;
+            display: none;
+            box-shadow: var(--shadow-lg);
+            margin-top: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all var(--transition-fast);
+            color: var(--text-primary);
+        }
+
+        .autocomplete-item:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            .card-header {
+                padding: 1rem 1.2rem;
+            }
+
+            .card-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .search-section {
+                padding: 1rem 1.2rem;
+            }
+
+            .desktop-buttons {
+                display: none;
+            }
+
+            .mobile-buttons {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin-top: 16px;
+                width: 100%;
+            }
+
+            .mobile-buttons .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 12px 16px;
+                font-size: 0.85rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 12px 12px;
+                font-size: 0.7rem;
+            }
+
+            .total-badge {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+                min-width: 65px;
+            }
+
+            .view-action-btn {
+                padding: 4px 10px;
+                font-size: 0.65rem;
+            }
+
+            .btn {
+                padding: 8px 18px;
+                font-size: 0.8rem;
+            }
+
+            .modal-box {
+                width: 95%;
+                border-radius: 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--table-header-bg);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Loading States */
+        .loading-skeleton {
+            background: linear-gradient(90deg, var(--border-color) 25%, var(--table-header-bg) 50%, var(--border-color) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Hide scrollbars but keep scrolling */
+        .table-wrapper::-webkit-scrollbar,
+        .modal-box::-webkit-scrollbar,
+        .autocomplete-list::-webkit-scrollbar,
+        .details-grid::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+            background: transparent;
+            display: none;
+        }
+        
+        .table-wrapper,
+        .modal-box,
+        .autocomplete-list,
+        .details-grid,
+        body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .modal-body {
+            overflow-y: auto;
+            max-height: calc(85vh - 70px);
+            scrollbar-width: none;
+        }
+        
+        @media (max-width: 768px) {
+            .table-wrapper {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- PAGE 1 - LIST -->
+        <div id="page1" class="page active-page">
+            <div class="soft-card">
+                <div class="card-header">
+                    <h2>🚛 Yash Transport · Fleet Manager</h2>
+                    
+                    <!-- Desktop Buttons -->
+                    <div class="desktop-buttons">
+                        <button id="refreshBtnP1" class="btn btn-outline">
+                            <span>⟳</span> Refresh
+                        </button>
+                        <button id="addNewBtn" class="btn btn-primary">
+                            <span>+</span> Add New Entry
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Search Section -->
+                <div class="search-section">
+                    <div class="search-wrapper">
+                        <input type="text" id="searchInput" placeholder="🔍 Search by LR No, Vendor Name, Vehicle No...">
+                    </div>
+                    
+                    <!-- Mobile Buttons -->
+                    <div class="mobile-buttons">
+                        <button id="mobileRefreshBtn" class="btn btn-outline">
+                            <span>⟳</span> Refresh
+                        </button>
+                        <button id="mobileAddBtn" class="btn btn-primary">
+                            <span>+</span> Add Entry
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Sr. No</th>
+                                <th>Date</th>
+                                <th>Vendor Name (Source)</th>
+                                <th>Amount</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td colspan="5" style="text-align:center;">
+                                    <div class="spinner"></div> Loading entries...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2 - DETAIL -->
+        <div id="page2" class="page">
+            <div class="soft-card">
+                <div class="card-header">
+                    <h2>📋 Entry Details</h2>
+                    <button id="backToPage1Btn" class="btn btn-outline">← Back</button>
+                </div>
+                <div id="detailsContainer" class="details-grid">
+                    <div class="loading-skeleton" style="height: 200px;"></div>
+                </div>
+                <div class="action-row">
+                    <button id="editFromDetailBtn" class="btn btn-primary">✏️ Edit</button>
+                    <button id="deleteFromDetailBtn" class="btn btn-danger">🗑 Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Modal Alert -->
+    <div id="globalModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 id="modalTitle">Notice</h3>
+                <button class="close-modal" id="closeGlobalModal">×</button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMsg" style="font-size: 1rem; line-height: 1.5;"></p>
+                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button id="confirmModalBtn" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Modal -->
+    <div id="formModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="formModalTitle">Add New Entry</h3>
+                <button class="close-modal" id="closeFormModalBtn">×</button>
+            </div>
+            <div class="modal-body" id="formModalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        /* ======================== DARK MODE SYNC ======================== */
+        function syncThemeWithParent() {
+            const localTheme = localStorage.getItem('user-theme-preference');
+            if (localTheme) {
+                document.body.setAttribute('data-theme', localTheme);
+                document.documentElement.setAttribute('data-theme', localTheme);
+            } else {
+                try {
+                    if (window.parent && window.parent.document.body) {
+                        const parentTheme = window.parent.document.body.getAttribute('data-theme');
+                        if (parentTheme) {
+                            document.body.setAttribute('data-theme', parentTheme);
+                            document.documentElement.setAttribute('data-theme', parentTheme);
+                        }
+                    }
+                } catch(e) { }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', syncThemeWithParent);
+        window.addEventListener('storage', syncThemeWithParent);
+        setInterval(syncThemeWithParent, 1000);
+        
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'themeChange') {
+                const newTheme = event.data.theme;
+                if (newTheme) {
+                    document.body.setAttribute('data-theme', newTheme);
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                }
+            }
+        });
+        
+        /* ======================== CONFIGURATION ======================== */
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoDds81u8M5N8micA_hoIBgCS7aCFm0NUmwW6XLH4m_fRJ8R9pGqjgFGMeBxBd2dSL/exec";
+        const SPREADSHEET_ID = "1ufYQniJ_0ke7O0Bd5zNGAimdNKBSvi4dGMeQp3CQjwY";
+        const SHEET_NAME = "Practice";
+        const SOURCE_SHEET = "Source";
+        const DESTINATION_SHEET = "Destination";
+        
+        const CACHE_KEY = "yash_transport_cache";
+        const SOURCE_CACHE_KEY = "yash_transport_source_cache";
+        const DEST_CACHE_KEY = "yash_transport_dest_cache";
+        const CACHE_TTL = 15 * 60 * 1000;
+        
+        let allEntries = [];
+        let currentViewEntry = null;
+        let sourceOptions = [];
+        let vehicleOptions = [];
+        let pickupOptions = [];
+        let destinationOptions = [];
+        let preloadInProgress = false;
+        let searchDebounceTimer = null;
+        let saveInProgress = false;
+        
+        const dom = {};
+        
+        function cacheDomElements() {
+            dom.page1 = document.getElementById('page1');
+            dom.page2 = document.getElementById('page2');
+            dom.tableBody = document.getElementById('tableBody');
+            dom.searchInput = document.getElementById('searchInput');
+            dom.refreshBtn = document.getElementById('refreshBtnP1');
+            dom.addNewBtn = document.getElementById('addNewBtn');
+            dom.mobileRefreshBtn = document.getElementById('mobileRefreshBtn');
+            dom.mobileAddBtn = document.getElementById('mobileAddBtn');
+            dom.backBtn = document.getElementById('backToPage1Btn');
+            dom.editBtn = document.getElementById('editFromDetailBtn');
+            dom.deleteBtn = document.getElementById('deleteFromDetailBtn');
+            dom.detailsContainer = document.getElementById('detailsContainer');
+            dom.globalModal = document.getElementById('globalModal');
+            dom.formModal = document.getElementById('formModal');
+            dom.modalTitle = document.getElementById('modalTitle');
+            dom.modalMsg = document.getElementById('modalMsg');
+            dom.formModalTitle = document.getElementById('formModalTitle');
+            dom.formModalBody = document.getElementById('formModalBody');
+        }
+        
+        /* ======================== DATE FORMATTING FUNCTIONS ======================== */
+        function formatToDDMMYYYY(dateInput) {
+            if (!dateInput || dateInput === '') return '—';
+            
+            try {
+                if (typeof dateInput === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
+                    const [year, month, day] = dateInput.split('-');
+                    return `${day}/${month}/${year}`;
+                }
+                
+                if (typeof dateInput === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(dateInput)) {
+                    return dateInput;
+                }
+                
+                const dateObj = new Date(dateInput);
+                if (!isNaN(dateObj.getTime())) {
+                    const year = dateObj.getFullYear();
+                    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                    const day = String(dateObj.getDate()).padStart(2, '0');
+                    return `${day}/${month}/${year}`;
+                }
+                
+                return '—';
+            } catch (error) {
+                console.error('Date display formatting error:', error);
+                return '—';
+            }
+        }
+        
+        function formatToYYYYMMDD(dateString) {
+            if (!dateString || dateString === '') return '';
+            
+            try {
+                if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+                    return dateString;
+                }
+                
+                if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+                    const [day, month, year] = dateString.split('/');
+                    return `${year}-${month}-${day}`;
+                }
+                
+                return '';
+            } catch (error) {
+                console.error('Date conversion error:', error);
+                return '';
+            }
+        }
+        
+        function formatDisplayDate(dateInput) {
+            if (!dateInput) return '—';
+            const formatted = formatToDDMMYYYY(dateInput);
+            return formatted || '—';
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+        }
+        
+        function showModal(msg, title = "Message", isConfirm = false, onConfirm = null, autoClose = 0) {
+            if (!dom.globalModal) return;
+            dom.modalTitle.innerText = title;
+            dom.modalMsg.innerHTML = msg;
+            const confirmBtn = document.getElementById('confirmModalBtn');
+            if (confirmBtn) {
+                confirmBtn.onclick = () => {
+                    dom.globalModal.classList.remove('active');
+                    if (isConfirm && onConfirm) onConfirm();
+                };
+            }
+            dom.globalModal.classList.add('active');
+            if (autoClose > 0) setTimeout(() => dom.globalModal.classList.remove('active'), autoClose);
+        }
+        
+        function showSpinner(element, show, customHtml = null) {
+            if (!element) return;
+            if (show) {
+                element.disabled = true;
+                const originalText = element.innerHTML;
+                element.setAttribute('data-original-text', originalText);
+                element.innerHTML = customHtml || '<span class="spinner"></span> Loading...';
+            } else {
+                element.disabled = false;
+                const original = element.getAttribute('data-original-text');
+                if (original) element.innerHTML = original;
+            }
+        }
+        
+        async function fetchWithBackgroundCache(url, cacheKey, ttl) {
+            const cached = localStorage.getItem(cacheKey);
+            let cachedData = null;
+            
+            if (cached) {
+                try {
+                    const { data, timestamp } = JSON.parse(cached);
+                    if (Date.now() - timestamp < ttl) {
+                        cachedData = data;
+                    }
+                } catch (e) { }
+            }
+            
+            if (cachedData && !preloadInProgress) {
+                fetchFreshDataInBackground(url, cacheKey);
+                return cachedData;
+            }
+            
+            try {
+                const response = await fetch(url);
+                const result = await response.json();
+                if (result.status === "success" && Array.isArray(result.data)) {
+                    localStorage.setItem(cacheKey, JSON.stringify({
+                        data: result.data,
+                        timestamp: Date.now()
+                    }));
+                    return result.data;
+                }
+                return [];
+            } catch (err) {
+                console.error("Fetch error:", err);
+                return cachedData || [];
+            }
+        }
+        
+        async function fetchFreshDataInBackground(url, cacheKey) {
+            preloadInProgress = true;
+            try {
+                const response = await fetch(url);
+                const result = await response.json();
+                if (result.status === "success" && Array.isArray(result.data)) {
+                    localStorage.setItem(cacheKey, JSON.stringify({
+                        data: result.data,
+                        timestamp: Date.now()
+                    }));
+                    
+                    if (cacheKey === CACHE_KEY && result.data.length !== allEntries.length) {
+                        allEntries = result.data;
+                        renderTablePage1(dom.searchInput?.value || "");
+                    }
+                    if (cacheKey === SOURCE_CACHE_KEY) {
+                        updateSourceOptionsFromData(result.data);
+                    }
+                    if (cacheKey === DEST_CACHE_KEY) {
+                        updateDestinationOptionsFromData(result.data);
+                    }
+                }
+            } catch (err) {
+                console.warn("Background fetch failed:", err);
+            } finally {
+                preloadInProgress = false;
+            }
+        }
+        
+        async function loadEntriesFast() {
+            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}&_=${Date.now()}`;
+            const data = await fetchWithBackgroundCache(url, CACHE_KEY, CACHE_TTL);
+            allEntries = data;
+            return allEntries;
+        }
+        
+        async function loadSourceFast() {
+            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SOURCE_SHEET}&_=${Date.now()}`;
+            const data = await fetchWithBackgroundCache(url, SOURCE_CACHE_KEY, CACHE_TTL);
+            updateSourceOptionsFromData(data);
+            return data;
+        }
+        
+        async function loadDestinationFast() {
+            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${DESTINATION_SHEET}&_=${Date.now()}`;
+            const data = await fetchWithBackgroundCache(url, DEST_CACHE_KEY, CACHE_TTL);
+            updateDestinationOptionsFromData(data);
+            return data;
+        }
+        
+        function updateSourceOptionsFromData(data) {
+            const sources = new Set();
+            const vehicles = new Set();
+            data.forEach(row => {
+                if (row["Vendor Name"] && row["Vendor Name"].trim()) sources.add(row["Vendor Name"].trim());
+                if (row["Vehicle No"] && row["Vehicle No"].trim()) vehicles.add(row["Vehicle No"].trim());
+            });
+            sourceOptions = Array.from(sources);
+            vehicleOptions = Array.from(vehicles);
+        }
+        
+        function updateDestinationOptionsFromData(data) {
+            const pickups = new Set();
+            const destinations = new Set();
+            data.forEach(row => {
+                if (row["Pickup Name"] && row["Pickup Name"].trim()) pickups.add(row["Pickup Name"].trim());
+                if (row["Destination"] && row["Destination"].trim()) destinations.add(row["Destination"].trim());
+            });
+            pickupOptions = Array.from(pickups);
+            destinationOptions = Array.from(destinations);
+        }
+        
+        async function fetchExistingSourceData(forceRefresh = false) {
+            if (forceRefresh) localStorage.removeItem(SOURCE_CACHE_KEY);
+            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SOURCE_SHEET}&_=${Date.now()}`;
+            const response = await fetch(url);
+            const result = await response.json();
+            if (result.status === "success" && Array.isArray(result.data)) {
+                localStorage.setItem(SOURCE_CACHE_KEY, JSON.stringify({
+                    data: result.data,
+                    timestamp: Date.now()
+                }));
+                return result.data;
+            }
+            return [];
+        }
+        
+        async function fetchExistingDestinationData(forceRefresh = false) {
+            if (forceRefresh) localStorage.removeItem(DEST_CACHE_KEY);
+            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${DESTINATION_SHEET}&_=${Date.now()}`;
+            const response = await fetch(url);
+            const result = await response.json();
+            if (result.status === "success" && Array.isArray(result.data)) {
+                localStorage.setItem(DEST_CACHE_KEY, JSON.stringify({
+                    data: result.data,
+                    timestamp: Date.now()
+                }));
+                return result.data;
+            }
+            return [];
+        }
+        
+        // ================================================================
+        // FIXED: SOURCE SHEET OPERATIONS - Properly saves to first empty row
+        // ================================================================
+        
+        async function addRowToSourceSheet(srNo, vendorName, vehicleNo) {
+            try {
+                const params = new URLSearchParams();
+                params.append("action", "insert");
+                params.append("spreadsheetId", SPREADSHEET_ID);
+                params.append("sheetName", SOURCE_SHEET);
+                params.append("Sr. No", srNo.toString());
+                params.append("Vendor Name", vendorName || "");
+                params.append("Vehicle No", vehicleNo || "");
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: params.toString()
+                });
+                const result = await response.json();
+                return result.status === "success";
+            } catch (err) {
+                console.error("Add row to Source error:", err);
+                return false;
+            }
+        }
+        
+        async function updateSourceRow(rowIndex, srNo, vendorName, vehicleNo) {
+            try {
+                const params = new URLSearchParams();
+                params.append("action", "update");
+                params.append("spreadsheetId", SPREADSHEET_ID);
+                params.append("sheetName", SOURCE_SHEET);
+                params.append("rowIndex", rowIndex.toString());
+                params.append("Sr. No", srNo.toString());
+                params.append("Vendor Name", vendorName || "");
+                params.append("Vehicle No", vehicleNo || "");
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: params.toString()
+                });
+                const result = await response.json();
+                return result.status === "success";
+            } catch (err) {
+                console.error("Update Source row error:", err);
+                return false;
+            }
+        }
+        
+        // ================================================================
+        // FIXED: DESTINATION SHEET OPERATIONS - Properly saves to first empty row
+        // ================================================================
+        
+        async function addRowToDestinationSheet(srNo, pickupName, destination) {
+            try {
+                const params = new URLSearchParams();
+                params.append("action", "insert");
+                params.append("spreadsheetId", SPREADSHEET_ID);
+                params.append("sheetName", DESTINATION_SHEET);
+                params.append("Sr. No", srNo.toString());
+                params.append("Pickup Name", pickupName || "");
+                params.append("Destination", destination || "");
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: params.toString()
+                });
+                const result = await response.json();
+                return result.status === "success";
+            } catch (err) {
+                console.error("Add row to Destination error:", err);
+                return false;
+            }
+        }
+        
+        async function updateDestinationRow(rowIndex, srNo, pickupName, destination) {
+            try {
+                const params = new URLSearchParams();
+                params.append("action", "update");
+                params.append("spreadsheetId", SPREADSHEET_ID);
+                params.append("sheetName", DESTINATION_SHEET);
+                params.append("rowIndex", rowIndex.toString());
+                params.append("Sr. No", srNo.toString());
+                params.append("Pickup Name", pickupName || "");
+                params.append("Destination", destination || "");
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: params.toString()
+                });
+                const result = await response.json();
+                return result.status === "success";
+            } catch (err) {
+                console.error("Update Destination row error:", err);
+                return false;
+            }
+        }
+        
+        // ================================================================
+        // FIXED: SMART SAVE - Properly finds first empty row
+        // ================================================================
+        
+        async function smartSaveToSourceSheet(vendorName, vehicleNo, existingData) {
+            const addedItems = [];
+            let dataModified = false;
+            
+            if ((!vendorName || vendorName.trim() === "") && (!vehicleNo || vehicleNo.trim() === "")) {
+                return { addedItems, dataModified: false };
+            }
+            
+            let currentData = JSON.parse(JSON.stringify(existingData));
+            const normalizedVendor = vendorName ? vendorName.trim() : "";
+            const normalizedVehicle = vehicleNo ? vehicleNo.trim() : "";
+            
+            // Check if vendor name already exists
+            const vendorExists = normalizedVendor && currentData.some(row => row["Vendor Name"] === normalizedVendor);
+            // Check if vehicle number already exists
+            const vehicleExists = normalizedVehicle && currentData.some(row => row["Vehicle No"] === normalizedVehicle);
+            
+            // Case 1: Both Vendor Name and Vehicle No are new
+            if (normalizedVendor && normalizedVehicle && !vendorExists && !vehicleExists) {
+                // Find first empty row (both columns empty)
+                let emptyRowIndex = currentData.findIndex(row => 
+                    (!row["Vendor Name"] || row["Vendor Name"] === "") && 
+                    (!row["Vehicle No"] || row["Vehicle No"] === "")
+                );
+                
+                if (emptyRowIndex !== -1) {
+                    // Update existing empty row
+                    const srNo = currentData[emptyRowIndex]["Sr. No"];
+                    const rowIndex = parseInt(srNo) + 1;
+                    const success = await updateSourceRow(rowIndex, srNo, normalizedVendor, normalizedVehicle);
+                    if (success) {
+                        addedItems.push(`Added "${normalizedVendor}" + "${normalizedVehicle}" to existing empty row (Sr. No ${srNo})`);
+                        currentData[emptyRowIndex]["Vendor Name"] = normalizedVendor;
+                        currentData[emptyRowIndex]["Vehicle No"] = normalizedVehicle;
+                        dataModified = true;
+                    }
+                } else {
+                    // No empty row found, create new row at the end
+                    const maxSrNo = currentData.reduce((max, row) => Math.max(max, parseInt(row["Sr. No"]) || 0), 0);
+                    const newSrNo = maxSrNo + 1;
+                    const success = await addRowToSourceSheet(newSrNo, normalizedVendor, normalizedVehicle);
+                    if (success) {
+                        addedItems.push(`Created new entry: "${normalizedVendor}" + "${normalizedVehicle}" (Sr. No ${newSrNo})`);
+                        currentData.push({ "Sr. No": newSrNo.toString(), "Vendor Name": normalizedVendor, "Vehicle No": normalizedVehicle });
+                        dataModified = true;
+                    }
+                }
+            }
+            // Case 2: Only Vendor Name is new, Vehicle No exists or is empty
+            else if (normalizedVendor && !vendorExists) {
+                // Try to find row with matching Vehicle No first
+                let targetRowIndex = -1;
+                if (normalizedVehicle) {
+                    targetRowIndex = currentData.findIndex(row => 
+                        (!row["Vendor Name"] || row["Vendor Name"] === "") && 
+                        row["Vehicle No"] === normalizedVehicle
+                    );
+                }
+                // If not found, find any empty Vendor Name row
+                if (targetRowIndex === -1) {
+                    targetRowIndex = currentData.findIndex(row => 
+                        (!row["Vendor Name"] || row["Vendor Name"] === "")
+                    );
+                }
+                
+                if (targetRowIndex !== -1) {
+                    const srNo = currentData[targetRowIndex]["Sr. No"];
+                    const rowIndex = parseInt(srNo) + 1;
+                    const existingVehicle = currentData[targetRowIndex]["Vehicle No"] || "";
+                    const success = await updateSourceRow(rowIndex, srNo, normalizedVendor, existingVehicle);
+                    if (success) {
+                        addedItems.push(`Added Vendor "${normalizedVendor}" to existing row (Sr. No ${srNo})`);
+                        currentData[targetRowIndex]["Vendor Name"] = normalizedVendor;
+                        dataModified = true;
+                    }
+                } else {
+                    // No empty row found, create new row at the end
+                    const maxSrNo = currentData.reduce((max, row) => Math.max(max, parseInt(row["Sr. No"]) || 0), 0);
+                    const newSrNo = maxSrNo + 1;
+                    const success = await addRowToSourceSheet(newSrNo, normalizedVendor, normalizedVehicle || "");
+                    if (success) {
+                        addedItems.push(`Created new Vendor entry: "${normalizedVendor}" (Sr. No ${newSrNo})`);
+                        currentData.push({ "Sr. No": newSrNo.toString(), "Vendor Name": normalizedVendor, "Vehicle No": normalizedVehicle || "" });
+                        dataModified = true;
+                    }
+                }
+            }
+            // Case 3: Only Vehicle No is new, Vendor Name exists or is empty
+            else if (normalizedVehicle && !vehicleExists) {
+                // Try to find row with matching Vendor Name first
+                let targetRowIndex = -1;
+                if (normalizedVendor) {
+                    targetRowIndex = currentData.findIndex(row => 
+                        (!row["Vehicle No"] || row["Vehicle No"] === "") && 
+                        row["Vendor Name"] === normalizedVendor
+                    );
+                }
+                // If not found, find any empty Vehicle No row
+                if (targetRowIndex === -1) {
+                    targetRowIndex = currentData.findIndex(row => 
+                        (!row["Vehicle No"] || row["Vehicle No"] === "")
+                    );
+                }
+                
+                if (targetRowIndex !== -1) {
+                    const srNo = currentData[targetRowIndex]["Sr. No"];
+                    const rowIndex = parseInt(srNo) + 1;
+                    const existingVendor = currentData[targetRowIndex]["Vendor Name"] || "";
+                    const success = await updateSourceRow(rowIndex, srNo, existingVendor, normalizedVehicle);
+                    if (success) {
+                        addedItems.push(`Added Vehicle "${normalizedVehicle}" to existing row (Sr. No ${srNo})`);
+                        currentData[targetRowIndex]["Vehicle No"] = normalizedVehicle;
+                        dataModified = true;
+                    }
+                } else {
+                    // No empty row found, create new row at the end
+                    const maxSrNo = currentData.reduce((max, row) => Math.max(max, parseInt(row["Sr. No"]) || 0), 0);
+                    const newSrNo = maxSrNo + 1;
+                    const success = await addRowToSourceSheet(newSrNo, normalizedVendor || "", normalizedVehicle);
+                    if (success) {
+                        addedItems.push(`Created new Vehicle entry: "${normalizedVehicle}" (Sr. No ${newSrNo})`);
+                        currentData.push({ "Sr. No": newSrNo.toString(), "Vendor Name": normalizedVendor || "", "Vehicle No": normalizedVehicle });
+                        dataModified = true;
+                    }
+                }
+            }
+            
+            if (dataModified) {
+                localStorage.setItem(SOURCE_CACHE_KEY, JSON.stringify({
+                    data: currentData,
+                    timestamp: Date.now()
+                }));
+                updateSourceOptionsFromData(currentData);
+            }
+            return { addedItems, dataModified };
+        }
+        
+        // ================================================================
+        // FIXED: SMART SAVE FOR DESTINATION - Properly finds first empty row
+        // ================================================================
+        
+        async function smartSaveToDestinationSheet(pickupName, destination, existingData) {
+            const addedItems = [];
+            let dataModified = false;
+            
+            if ((!pickupName || pickupName.trim() === "") && (!destination || destination.trim() === "")) {
+                return { addedItems, dataModified: false };
+            }
+            
+            let currentData = JSON.parse(JSON.stringify(existingData));
+            const normalizedPickup = pickupName ? pickupName.trim() : "";
+            const normalizedDest = destination ? destination.trim() : "";
+            
+            // Check if pickup name already exists
+            const pickupExists = normalizedPickup && currentData.some(row => row["Pickup Name"] === normalizedPickup);
+            // Check if destination already exists
+            const destExists = normalizedDest && currentData.some(row => row["Destination"] === normalizedDest);
+            
+            // Case 1: Both Pickup Name and Destination are new
+            if (normalizedPickup && normalizedDest && !pickupExists && !destExists) {
+                // Find first empty row (both columns empty)
+                let emptyRowIndex = currentData.findIndex(row => 
+                    (!row["Pickup Name"] || row["Pickup Name"] === "") && 
+                    (!row["Destination"] || row["Destination"] === "")
+                );
+                
+                if (emptyRowIndex !== -1) {
+                    // Update existing empty row
+                    const srNo = currentData[emptyRowIndex]["Sr. No"];
+                    const rowIndex = parseInt(srNo) + 1;
+                    const success = await updateDestinationRow(rowIndex, srNo, normalizedPickup, normalizedDest);
+                    if (success) {
+                        addedItems.push(`Added "${normalizedPickup}" + "${normalizedDest}" to existing empty row (Sr. No ${srNo})`);
+                        currentData[emptyRowIndex]["Pickup Name"] = normalizedPickup;
+                        currentData[emptyRowIndex]["Destination"] = normalizedDest;
+                        dataModified = true;
+                    }
+                } else {
+                    // No empty row found, create new row at the end
+                    const maxSrNo = currentData.reduce((max, row) => Math.max(max, parseInt(row["Sr. No"]) || 0), 0);
+                    const newSrNo = maxSrNo + 1;
+                    const success = await addRowToDestinationSheet(newSrNo, normalizedPickup, normalizedDest);
+                    if (success) {
+                        addedItems.push(`Created new entry: "${normalizedPickup}" + "${normalizedDest}" (Sr. No ${newSrNo})`);
+                        currentData.push({ "Sr. No": newSrNo.toString(), "Pickup Name": normalizedPickup, "Destination": normalizedDest });
+                        dataModified = true;
+                    }
+                }
+            }
+            // Case 2: Only Pickup Name is new, Destination exists or is empty
+            else if (normalizedPickup && !pickupExists) {
+                // Try to find row with matching Destination first
+                let targetRowIndex = -1;
+                if (normalizedDest) {
+                    targetRowIndex = currentData.findIndex(row => 
+                        (!row["Pickup Name"] || row["Pickup Name"] === "") && 
+                        row["Destination"] === normalizedDest
+                    );
+                }
+                // If not found, find any empty Pickup Name row
+                if (targetRowIndex === -1) {
+                    targetRowIndex = currentData.findIndex(row => 
+                        (!row["Pickup Name"] || row["Pickup Name"] === "")
+                    );
+                }
+                
+                if (targetRowIndex !== -1) {
+                    const srNo = currentData[targetRowIndex]["Sr. No"];
+                    const rowIndex = parseInt(srNo) + 1;
+                    const existingDest = currentData[targetRowIndex]["Destination"] || "";
+                    const success = await updateDestinationRow(rowIndex, srNo, normalizedPickup, existingDest);
+                    if (success) {
+                        addedItems.push(`Added Pickup Name "${normalizedPickup}" to existing row (Sr. No ${srNo})`);
+                        currentData[targetRowIndex]["Pickup Name"] = normalizedPickup;
+                        dataModified = true;
+                    }
+                } else {
+                    // No empty row found, create new row at the end
+                    const maxSrNo = currentData.reduce((max, row) => Math.max(max, parseInt(row["Sr. No"]) || 0), 0);
+                    const newSrNo = maxSrNo + 1;
+                    const success = await addRowToDestinationSheet(newSrNo, normalizedPickup, normalizedDest || "");
+                    if (success) {
+                        addedItems.push(`Created new Pickup Name entry: "${normalizedPickup}" (Sr. No ${newSrNo})`);
+                        currentData.push({ "Sr. No": newSrNo.toString(), "Pickup Name": normalizedPickup, "Destination": normalizedDest || "" });
+                        dataModified = true;
+                    }
+                }
+            }
+            // Case 3: Only Destination is new, Pickup Name exists or is empty
+            else if (normalizedDest && !destExists) {
+                // Try to find row with matching Pickup Name first
+                let targetRowIndex = -1;
+                if (normalizedPickup) {
+                    targetRowIndex = currentData.findIndex(row => 
+                        (!row["Destination"] || row["Destination"] === "") && 
+                        row["Pickup Name"] === normalizedPickup
+                    );
+                }
+                // If not found, find any empty Destination row
+                if (targetRowIndex === -1) {
+                    targetRowIndex = currentData.findIndex(row => 
+                        (!row["Destination"] || row["Destination"] === "")
+                    );
+                }
+                
+                if (targetRowIndex !== -1) {
+                    const srNo = currentData[targetRowIndex]["Sr. No"];
+                    const rowIndex = parseInt(srNo) + 1;
+                    const existingPickup = currentData[targetRowIndex]["Pickup Name"] || "";
+                    const success = await updateDestinationRow(rowIndex, srNo, existingPickup, normalizedDest);
+                    if (success) {
+                        addedItems.push(`Added Destination "${normalizedDest}" to existing row (Sr. No ${srNo})`);
+                        currentData[targetRowIndex]["Destination"] = normalizedDest;
+                        dataModified = true;
+                    }
+                } else {
+                    // No empty row found, create new row at the end
+                    const maxSrNo = currentData.reduce((max, row) => Math.max(max, parseInt(row["Sr. No"]) || 0), 0);
+                    const newSrNo = maxSrNo + 1;
+                    const success = await addRowToDestinationSheet(newSrNo, normalizedPickup || "", normalizedDest);
+                    if (success) {
+                        addedItems.push(`Created new Destination entry: "${normalizedDest}" (Sr. No ${newSrNo})`);
+                        currentData.push({ "Sr. No": newSrNo.toString(), "Pickup Name": normalizedPickup || "", "Destination": normalizedDest });
+                        dataModified = true;
+                    }
+                }
+            }
+            
+            if (dataModified) {
+                localStorage.setItem(DEST_CACHE_KEY, JSON.stringify({
+                    data: currentData,
+                    timestamp: Date.now()
+                }));
+                updateDestinationOptionsFromData(currentData);
+            }
+            return { addedItems, dataModified };
+        }
+        
+        function renderTablePage1(filter = "") {
+            if (!dom.tableBody) return;
+            const searchLower = filter.toLowerCase();
+            let filtered = allEntries.filter(t => {
+                const lr = (t["LR No"] || "").toString().toLowerCase();
+                const vendor = (t["Vendor Name (Source)"] || "").toString().toLowerCase();
+                const vehicle = (t["Vehicle No"] || "").toString().toLowerCase();
+                const sr = (t["Sr. No"] || "").toString().toLowerCase();
+                return lr.includes(searchLower) || vendor.includes(searchLower) || vehicle.includes(searchLower) || sr.includes(searchLower);
+            });
+            
+            if (!filtered.length) {
+                dom.tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">✨ No entries found</td></tr>';
+                return;
+            }
+            
+            const fragment = document.createDocumentFragment();
+            filtered.forEach(t => {
+                const row = document.createElement('tr');
+                const amount = parseFloat(t["Amount"] || 0).toLocaleString();
+                const displayDate = formatDisplayDate(t["Date"]);
+                row.innerHTML = `
+                    <td><strong>${escapeHtml(t["Sr. No"] || "")}</strong></td>
+                    <td>${escapeHtml(displayDate)}</td>
+                    <td>${escapeHtml(t["Vendor Name (Source)"] || "")}</td>
+                    <td><span class="total-badge">₹ ${amount}</span></td>
+                    <td><button class="view-action-btn" data-sr="${escapeHtml(t["Sr. No"] || "")}">👁️ View</button></td>
+                `;
+                fragment.appendChild(row);
+            });
+            dom.tableBody.innerHTML = '';
+            dom.tableBody.appendChild(fragment);
+            dom.tableBody.querySelectorAll('.view-action-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const srVal = btn.getAttribute('data-sr');
+                    const found = allEntries.find(tr => String(tr["Sr. No"]) === String(srVal));
+                    if (found) {
+                        currentViewEntry = found;
+                        showPage2(found);
+                    }
+                });
+            });
+        }
+        
+        function showPage2(entry) {
+            if (!dom.detailsContainer) return;
+            const fields = [
+                "Sr. No", "Date", "Vendor Name (Source)", "Vehicle No", 
+                "Pickup Location", "Destination (Draft) Location", 
+                "Weight (KG)", "LR No", "Package Name", "Amount", "Note"
+            ];
+            const fragment = document.createDocumentFragment();
+            fields.forEach(f => {
+                let val = entry[f] !== undefined ? entry[f] : '';
+                if (f === 'Date') val = formatDisplayDate(val);
+                const card = document.createElement('div');
+                card.className = 'detail-card';
+                card.innerHTML = `<div class="detail-label">${f}</div><div class="detail-value">${escapeHtml(String(val)) || '—'}</div>`;
+                fragment.appendChild(card);
+            });
+            dom.detailsContainer.innerHTML = '';
+            dom.detailsContainer.appendChild(fragment);
+            dom.page1?.classList.remove('active-page');
+            dom.page2?.classList.add('active-page');
+        }
+        
+        function goToPage1() {
+            dom.page2?.classList.remove('active-page');
+            dom.page1?.classList.add('active-page');
+            refreshInBackground();
+        }
+        
+        async function refreshInBackground() {
+            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}&_=${Date.now()}`;
+            const response = await fetch(url);
+            const result = await response.json();
+            if (result.status === "success" && Array.isArray(result.data)) {
+                allEntries = result.data;
+                localStorage.setItem(CACHE_KEY, JSON.stringify({ data: result.data, timestamp: Date.now() }));
+                renderTablePage1(dom.searchInput?.value || "");
+            }
+        }
+        
+        async function refreshAllData() {
+            if (dom.refreshBtn) showSpinner(dom.refreshBtn, true);
+            try {
+                localStorage.removeItem(CACHE_KEY);
+                localStorage.removeItem(SOURCE_CACHE_KEY);
+                localStorage.removeItem(DEST_CACHE_KEY);
+                allEntries = await loadEntriesFast();
+                await loadSourceFast();
+                await loadDestinationFast();
+                renderTablePage1(dom.searchInput?.value || "");
+            } catch (err) {
+                console.error("Refresh error:", err);
+            } finally {
+                if (dom.refreshBtn) showSpinner(dom.refreshBtn, false);
+            }
+        }
+        
+        function findRowIndexBySrNo(sr) {
+            const idx = allEntries.findIndex(t => String(t["Sr. No"]) === String(sr));
+            return idx !== -1 ? idx + 2 : null;
+        }
+        
+        async function deleteCurrentEntry() {
+            if (!currentViewEntry) return;
+            const sr = currentViewEntry["Sr. No"];
+            const rowIdx = findRowIndexBySrNo(sr);
+            if (!rowIdx) { showModal("Row error", "Error"); return; }
+            showModal(`⚠️ Do you want to delete Entry No ${sr}?`, "Confirm Delete", true, async () => {
+                if (dom.deleteBtn) showSpinner(dom.deleteBtn, true);
+                try {
+                    const params = new URLSearchParams();
+                    params.append("action", "delete");
+                    params.append("spreadsheetId", SPREADSHEET_ID);
+                    params.append("sheetName", SHEET_NAME);
+                    params.append("rowIndex", rowIdx);
+                    const response = await fetch(SCRIPT_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: params
+                    });
+                    const result = await response.json();
+                    if (result.status === "success") {
+                        showModal("✅ Deleted successfully!", "Success", false, null, 1200);
+                        await refreshAllData();
+                        goToPage1();
+                    } else {
+                        showModal("Delete failed", "Error");
+                    }
+                } catch (err) {
+                    showModal("Error: " + err.message, "Error");
+                } finally {
+                    if (dom.deleteBtn) showSpinner(dom.deleteBtn, false);
+                }
+            });
+        }
+        
+        function buildFormHtml(entry = null, isEdit = false) {
+            const def = {
+                "Date": "", "Vendor Name (Source)": "", "Vehicle No": "",
+                "Pickup Location": "", "Destination (Draft) Location": "",
+                "Weight (KG)": "0", "LR No": "", "Package Name": "", "Amount": "0", "Note": ""
+            };
+            if (entry) {
+                Object.keys(def).forEach(k => { if (entry[k] !== undefined) def[k] = entry[k]; });
+            }
+            const dateValue = def["Date"] ? formatToYYYYMMDD(def["Date"]) : "";
+            
+            return `
+                <form id="dynamicEntryForm">
+                    <div class="form-grid">
+                        <div class="field"><label>Date *</label><input type="date" id="editDate" value="${dateValue}" required></div>
+                        <div class="field autocomplete-wrap"><label>Vendor Name (Source)</label>
+                            <input type="text" id="editVendorName" value="${escapeHtml(def["Vendor Name (Source)"])}" autocomplete="off">
+                            <div id="vendorAutoList" class="autocomplete-list"></div>
+                        </div>
+                        <div class="field autocomplete-wrap"><label>Vehicle No</label>
+                            <input type="text" id="editVehicleNo" value="${escapeHtml(def["Vehicle No"])}" autocomplete="off">
+                            <div id="vehicleAutoList" class="autocomplete-list"></div>
+                        </div>
+                        <div class="field autocomplete-wrap"><label>Pickup Location</label>
+                            <input type="text" id="editPickupLocation" value="${escapeHtml(def["Pickup Location"])}" autocomplete="off">
+                            <div id="pickupAutoList" class="autocomplete-list"></div>
+                        </div>
+                        <div class="field autocomplete-wrap"><label>Destination (Draft) Location</label>
+                            <input type="text" id="editDestination" value="${escapeHtml(def["Destination (Draft) Location"])}" autocomplete="off">
+                            <div id="destAutoList" class="autocomplete-list"></div>
+                        </div>
+                        <div class="field"><label>Weight (KG)</label><input type="number" id="editWeight" value="${escapeHtml(def["Weight (KG)"])}"></div>
+                        <div class="field"><label>LR No</label><input type="number" id="editLrNo" value="${escapeHtml(def["LR No"])}"></div>
+                        <div class="field"><label>Package Name</label><input type="text" id="editPackageName" value="${escapeHtml(def["Package Name"])}"></div>
+                        <div class="field"><label>Amount</label><input type="number" id="editAmount" value="${escapeHtml(def["Amount"])}"></div>
+                        <div class="field fullwidth"><label>Note</label><textarea id="editNote" rows="3">${escapeHtml(def["Note"])}</textarea></div>
+                    </div>
+                    <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 1.5rem;">
+                        <button type="button" id="cancelFormBtn" class="btn btn-outline">Cancel</button>
+                        <button type="submit" id="saveUpdateBtn" class="btn btn-primary">${isEdit ? "💾 Update Entry" : "💾 Save Entry"}</button>
+                    </div>
+                </form>
+            `;
+        }
+        
+        function setupAutocomplete(inputId, listId, optionsArray) {
+            const input = document.getElementById(inputId);
+            const listEl = document.getElementById(listId);
+            if (!input || !listEl) return;
+            function showOptions(filterVal = '') {
+                const term = filterVal.toLowerCase();
+                const filtered = optionsArray.filter(opt => opt.toLowerCase().includes(term));
+                if (filtered.length > 0) {
+                    listEl.innerHTML = filtered.map(opt => `<div class="autocomplete-item" data-value="${escapeHtml(opt)}">${escapeHtml(opt)}</div>`).join('');
+                    listEl.style.display = 'block';
+                    listEl.querySelectorAll('.autocomplete-item').forEach(item => {
+                        item.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            input.value = item.getAttribute('data-value');
+                            listEl.style.display = 'none';
+                            input.dispatchEvent(new Event('input', { bubbles: true }));
+                        });
+                    });
+                } else {
+                    listEl.style.display = 'none';
+                }
+            }
+            input.addEventListener('input', (e) => showOptions(e.target.value));
+            input.addEventListener('focus', () => showOptions(input.value));
+            input.addEventListener('blur', () => setTimeout(() => listEl.style.display = 'none', 200));
+            document.addEventListener('click', (e) => {
+                if (!listEl.contains(e.target) && e.target !== input) listEl.style.display = 'none';
+            });
+        }
+        
+        function attachFormEvents(isEdit, rowIdx) {
+            const form = document.getElementById('dynamicEntryForm');
+            if (form) {
+                form.onsubmit = (e) => {
+                    handleFormSubmit(e, isEdit, rowIdx);
+                };
+            }
+            
+            document.getElementById('cancelFormBtn')?.addEventListener('click', () => dom.formModal?.classList.remove('active'));
+        }
+        
+        async function handleFormSubmit(e, isEdit, rowIdx) {
+            e.preventDefault();
+            
+            if (saveInProgress) {
+                console.log('Save already in progress, ignoring duplicate submission');
+                return;
+            }
+            saveInProgress = true;
+            
+            const dateInput = document.getElementById('editDate');
+            if (dateInput) dateInput.blur();
+            
+            const saveBtn = document.getElementById('saveUpdateBtn');
+            showSpinner(saveBtn, true);
+            
+            const dateValue = dateInput?.value || "";
+            
+            if (!dateValue) {
+                showModal('❌ Date is required. Please select a date.', 'Validation Error');
+                saveInProgress = false;
+                showSpinner(saveBtn, false);
+                return;
+            }
+            
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
+                showModal('❌ Invalid Date format. Please select a valid date.', 'Validation Error');
+                saveInProgress = false;
+                showSpinner(saveBtn, false);
+                return;
+            }
+            
+            const [year, month, day] = dateValue.split('-');
+            const testDate = new Date(year, month - 1, day);
+            if (isNaN(testDate.getTime()) || 
+                testDate.getFullYear() != year || 
+                testDate.getMonth() + 1 != month || 
+                testDate.getDate() != day) {
+                showModal('❌ Invalid date. Please select a valid date.', 'Validation Error');
+                saveInProgress = false;
+                showSpinner(saveBtn, false);
+                return;
+            }
+            
+            const formData = {
+                vendorName: document.getElementById('editVendorName')?.value || "",
+                vehicleNo: document.getElementById('editVehicleNo')?.value || "",
+                pickupLocation: document.getElementById('editPickupLocation')?.value || "",
+                destination: document.getElementById('editDestination')?.value || "",
+                weight: document.getElementById('editWeight')?.value || "0",
+                lrNo: document.getElementById('editLrNo')?.value || "",
+                packageName: document.getElementById('editPackageName')?.value || "",
+                amount: document.getElementById('editAmount')?.value || "0",
+                note: document.getElementById('editNote')?.value || ""
+            };
+            
+            const params = new URLSearchParams();
+            params.append("action", isEdit ? "update" : "insert");
+            params.append("spreadsheetId", SPREADSHEET_ID);
+            params.append("sheetName", SHEET_NAME);
+            if (isEdit && rowIdx) params.append("rowIndex", rowIdx);
+            params.append("Date", dateValue);
+            params.append("Vendor Name (Source)", formData.vendorName);
+            params.append("Vehicle No", formData.vehicleNo);
+            params.append("Pickup Location", formData.pickupLocation);
+            params.append("Destination (Draft) Location", formData.destination);
+            params.append("Weight (KG)", formData.weight);
+            params.append("LR No", formData.lrNo);
+            params.append("Package Name", formData.packageName);
+            params.append("Amount", formData.amount);
+            params.append("Note", formData.note);
+            
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+                
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: params.toString(),
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    let sourceMsg = "";
+                    let destMsg = "";
+                    
+                    if (formData.vendorName || formData.vehicleNo) {
+                        try {
+                            const existingSourceData = await fetchExistingSourceData(true);
+                            const sourceResult = await smartSaveToSourceSheet(formData.vendorName, formData.vehicleNo, existingSourceData);
+                            if (sourceResult.addedItems.length > 0) sourceMsg = `<br><br>📌 Source: ${sourceResult.addedItems.join('<br>')}`;
+                            await loadSourceFast();
+                        } catch (err) { 
+                            console.error('Source save error:', err);
+                            sourceMsg = `<br><br>⚠️ Note: Entry saved, but Source sheet update failed.`; 
+                        }
+                    }
+                    
+                    if (formData.pickupLocation || formData.destination) {
+                        try {
+                            const existingDestData = await fetchExistingDestinationData(true);
+                            const destResult = await smartSaveToDestinationSheet(formData.pickupLocation, formData.destination, existingDestData);
+                            if (destResult.addedItems.length > 0) destMsg = `<br><br>📌 Destination: ${destResult.addedItems.join('<br>')}`;
+                            await loadDestinationFast();
+                        } catch (err) { 
+                            console.error('Destination save error:', err);
+                            destMsg = `<br><br>⚠️ Note: Entry saved, but Destination sheet update failed.`; 
+                        }
+                    }
+                    
+                    showModal(`${isEdit ? "✅ Entry updated" : "✅ Entry saved"} successfully!${sourceMsg}${destMsg}`, "Success", false, null, 3000);
+                    
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    dom.formModal?.classList.remove('active');
+                    await refreshAllData();
+                    goToPage1();
+                } else { 
+                    showModal("❌ Error: " + (result.message || "Unknown error"), "Error"); 
+                }
+            } catch (err) {
+                console.error('Save error:', err);
+                if (err.name === 'AbortError') {
+                    showModal("❌ Request timeout. Please check your internet connection and try again.", "Error");
+                } else {
+                    showModal("❌ Error: " + err.message, "Error");
+                }
+            } finally { 
+                saveInProgress = false;
+                showSpinner(saveBtn, false);
+            }
+        }
+        
+        async function openAddModal() {
+            if (!dom.formModalBody) return;
+            dom.formModalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="spinner"></div><p style="margin-top: 12px;">Loading form...</p></div>';
+            dom.formModal.classList.add('active');
+            dom.formModalTitle.innerHTML = "➕ Add New Entry";
+            dom.formModalBody.innerHTML = buildFormHtml(null, false);
+            setTimeout(() => {
+                setupAutocomplete('editVendorName', 'vendorAutoList', sourceOptions);
+                setupAutocomplete('editVehicleNo', 'vehicleAutoList', vehicleOptions);
+                setupAutocomplete('editPickupLocation', 'pickupAutoList', pickupOptions);
+                setupAutocomplete('editDestination', 'destAutoList', destinationOptions);
+                attachFormEvents(false, null);
+            }, 20);
+        }
+        
+        async function openEditModal() {
+            if (!currentViewEntry || !dom.formModalBody) return;
+            const rowIdx = findRowIndexBySrNo(currentViewEntry["Sr. No"]);
+            if (!rowIdx) { showModal("Row error", "Error"); return; }
+            dom.formModalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="spinner"></div><p style="margin-top: 12px;">Loading edit form...</p></div>';
+            dom.formModal.classList.add('active');
+            dom.formModalTitle.innerHTML = "✏️ Edit Entry";
+            dom.formModalBody.innerHTML = buildFormHtml(currentViewEntry, true);
+            setTimeout(() => {
+                setupAutocomplete('editVendorName', 'vendorAutoList', sourceOptions);
+                setupAutocomplete('editVehicleNo', 'vehicleAutoList', vehicleOptions);
+                setupAutocomplete('editPickupLocation', 'pickupAutoList', pickupOptions);
+                setupAutocomplete('editDestination', 'destAutoList', destinationOptions);
+                attachFormEvents(true, rowIdx);
+            }, 20);
+        }
+        
+        async function fastInit() {
+            cacheDomElements();
+            if (dom.tableBody) dom.tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;"><div class="spinner"></div> Loading entries...</td></tr>';
+            const [tripsData] = await Promise.all([loadEntriesFast(), loadSourceFast(), loadDestinationFast()]);
+            renderTablePage1("");
+            setTimeout(() => { refreshInBackground(); loadSourceFast(); loadDestinationFast(); }, 3000);
+            dom.refreshBtn?.addEventListener('click', async () => { if (dom.refreshBtn) showSpinner(dom.refreshBtn, true); try { localStorage.removeItem(CACHE_KEY); localStorage.removeItem(SOURCE_CACHE_KEY); localStorage.removeItem(DEST_CACHE_KEY); allEntries = await loadEntriesFast(); await loadSourceFast(); await loadDestinationFast(); renderTablePage1(dom.searchInput?.value || ""); } catch (err) { showModal("❌ Refresh failed: " + err.message, "Error"); } finally { if (dom.refreshBtn) showSpinner(dom.refreshBtn, false); } });
+            if (dom.mobileRefreshBtn) dom.mobileRefreshBtn.addEventListener('click', async () => { if (dom.mobileRefreshBtn) showSpinner(dom.mobileRefreshBtn, true); try { localStorage.removeItem(CACHE_KEY); localStorage.removeItem(SOURCE_CACHE_KEY); localStorage.removeItem(DEST_CACHE_KEY); allEntries = await loadEntriesFast(); await loadSourceFast(); await loadDestinationFast(); renderTablePage1(dom.searchInput?.value || ""); } catch (err) { showModal("❌ Refresh failed: " + err.message, "Error"); } finally { if (dom.mobileRefreshBtn) showSpinner(dom.mobileRefreshBtn, false); } });
+            dom.addNewBtn?.addEventListener('click', openAddModal);
+            if (dom.mobileAddBtn) dom.mobileAddBtn.addEventListener('click', () => dom.addNewBtn?.click());
+            dom.backBtn?.addEventListener('click', goToPage1);
+            dom.editBtn?.addEventListener('click', openEditModal);
+            dom.deleteBtn?.addEventListener('click', deleteCurrentEntry);
+            dom.searchInput?.addEventListener('input', (e) => { if (searchDebounceTimer) clearTimeout(searchDebounceTimer); searchDebounceTimer = setTimeout(() => renderTablePage1(e.target.value), 300); });
+            document.getElementById('closeGlobalModal')?.addEventListener('click', () => dom.globalModal?.classList.remove('active'));
+            document.getElementById('closeFormModalBtn')?.addEventListener('click', () => dom.formModal?.classList.remove('active'));
+            window.onclick = (e) => { if (e.target.classList?.contains('modal-overlay')) e.target.classList.remove('active'); };
+        }
+        fastInit();
+    </script>
+</body>
+</html>
