@@ -3,17 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <meta name="theme-color" content="#667eea">
     <title>Yash Transport | Fleet Manager</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        /* ======================== CSS VARIABLES FOR THEMING ======================== */
+    <!-- ============================================================
+         OPTIMIZATION #3: INLINE CRITICAL CSS
+         All above-the-fold styles inlined — first paint without
+         waiting for external stylesheets.
+         ============================================================ -->
+    <style>
+        /* ---------- Reset (critical) ---------- */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ---------- Theme tokens (critical) ---------- */
         :root {
-            /* Light Mode Colors */
             --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --bg-secondary: #ffffff;
             --card-bg: rgba(255, 255, 255, 0.98);
@@ -25,36 +28,18 @@
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
             --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-            
-            /* Brand Colors */
             --primary: #3b82f6;
             --primary-dark: #2563eb;
             --primary-light: #60a5fa;
             --secondary: #f59e0b;
-            --secondary-dark: #d97706;
             --success: #10b981;
             --danger: #ef4444;
-            --warning: #fbbf24;
-            --info: #06b6d4;
-            
-            /* Gradients */
-            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --gradient-warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            
-            /* Table Colors */
             --table-header-bg: #f8fafc;
             --table-row-hover: #f1f5f9;
             --table-border: #e2e8f0;
-            
-            /* Animation */
             --transition-fast: 150ms ease;
             --transition-normal: 300ms ease;
-            --transition-slow: 500ms ease;
         }
-
-        /* Dark Mode Variables */
         [data-theme="dark"] {
             --bg-primary: linear-gradient(135deg, #1e1e2e 0%, #2d1b4e 100%);
             --bg-secondary: #1e1e2e;
@@ -67,83 +52,53 @@
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
             --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4);
-            
-            /* Table Colors Dark */
             --table-header-bg: #1e293b;
             --table-row-hover: #334155;
             --table-border: #334155;
         }
 
+        /* ---------- Base body (critical) ---------- */
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
             background: var(--bg-primary);
             min-height: 100vh;
             padding: 20px 16px;
             color: var(--text-primary);
-            transition: background var(--transition-normal), color var(--transition-normal);
-            position: relative;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* App Container */
-        .app-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            animation: fadeIn 0.5s ease-out;
-        }
+        .app-container { max-width: 1400px; margin: 0 auto; }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Page animations */
-        .page {
-            display: none;
-            animation: fadeSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
+        /* ---------- Page transitions ---------- */
+        /* OPTIMIZATION #10: transform + opacity only (GPU accelerated) */
+        .page { display: none; }
         .page.active-page {
             display: block;
+            animation: fadeSlide 0.32s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
         @keyframes fadeSlide {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(0.98);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            from { opacity: 0; transform: translate3d(0, 16px, 0) scale(0.985); }
+            to   { opacity: 1; transform: translate3d(0, 0, 0)     scale(1); }
         }
 
-        /* Cards */
+        /* ---------- Card shell (critical) ---------- */
         .soft-card {
             background: var(--card-bg);
             border-radius: 2rem;
             box-shadow: var(--shadow-xl);
             overflow: hidden;
             backdrop-filter: blur(10px);
-            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            will-change: transform;
         }
 
-        .soft-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-xl);
-        }
-
-        /* Headers */
+        /* ---------- Card header (critical) ---------- */
         .card-header {
             padding: 1.5rem 2rem;
             background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-            backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
@@ -151,11 +106,9 @@
             flex-wrap: wrap;
             gap: 14px;
         }
-
         [data-theme="dark"] .card-header {
             background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
         }
-
         .card-header h2 {
             font-size: 1.8rem;
             font-weight: 800;
@@ -166,14 +119,8 @@
             letter-spacing: -0.02em;
         }
 
-        /* Search Section */
-        .search-section {
-            padding: 1.5rem 2rem;
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        /* Buttons */
+        /* ---------- Buttons (critical) ---------- */
+        /* OPTIMIZATION #10: no ::before ripple (layout trigger), no filter:brightness transition */
         .btn {
             border: none;
             padding: 10px 24px;
@@ -181,94 +128,32 @@
             font-weight: 600;
             font-size: 0.875rem;
             cursor: pointer;
-            transition: all var(--transition-fast);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            position: relative;
-            overflow: hidden;
+            will-change: transform;
         }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; box-shadow: var(--shadow-sm); }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-danger  { background: linear-gradient(135deg, var(--danger), #dc2626); color: #fff; }
+        .btn-sm      { padding: 6px 16px; font-size: 0.75rem; }
 
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn:active::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-            filter: brightness(1.05);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-        }
-
-        .btn-outline:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger), #dc2626);
-            color: white;
-        }
-
+        .btn-primary:hover,
+        .btn-outline:hover,
         .btn-danger:hover {
-            transform: translateY(-2px);
+            transform: translate3d(0, -2px, 0);
             box-shadow: var(--shadow-md);
         }
+        .btn-outline:hover { background: var(--primary); color: #fff; }
 
-        .btn-sm {
-            padding: 6px 16px;
-            font-size: 0.75rem;
+        /* ---------- Search (critical) ---------- */
+        .search-section {
+            padding: 1.5rem 2rem;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
         }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Desktop Buttons */
-        .desktop-buttons {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        /* Mobile Buttons Grid */
-        .mobile-buttons {
-            display: none;
-        }
-
-        /* Search Input */
-        .search-wrapper {
-            width: 100%;
-        }
-
         .search-wrapper input {
             width: 100%;
             padding: 14px 20px;
@@ -278,38 +163,24 @@
             color: var(--text-primary);
             font-size: 0.95rem;
             font-family: inherit;
-            transition: all var(--transition-fast);
-            box-shadow: var(--shadow-sm);
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
         }
-
-        .search-wrapper input::placeholder {
-            color: var(--text-light);
-        }
-
+        .search-wrapper input::placeholder { color: var(--text-light); }
         .search-wrapper input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(26, 71, 42, 0.1);
-            transform: translateY(-1px);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
         }
 
-        /* Table Styles */
+        /* ---------- Table (critical) ---------- */
         .table-wrapper {
             overflow-x: auto;
             overflow-y: visible;
-            scrollbar-width: thin;
-            padding: 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
-
-        .table-wrapper::-webkit-scrollbar {
-            height: 6px;
-            background: transparent;
-        }
-
-        .table-wrapper::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
+        .table-wrapper::-webkit-scrollbar { display: none; }
 
         .data-table {
             width: 100%;
@@ -317,7 +188,6 @@
             border-spacing: 0;
             font-size: 0.875rem;
         }
-
         .data-table th {
             text-align: left;
             padding: 16px 20px;
@@ -328,17 +198,9 @@
             text-transform: uppercase;
             letter-spacing: 0.8px;
             border-bottom: 3px solid var(--primary);
-            position: relative;
         }
-
-        .data-table th:first-child {
-            border-top-left-radius: 12px;
-        }
-
-        .data-table th:last-child {
-            border-top-right-radius: 12px;
-        }
-
+        .data-table th:first-child { border-top-left-radius: 12px; }
+        .data-table th:last-child  { border-top-right-radius: 12px; }
         .data-table td {
             padding: 16px 20px;
             border-bottom: 1px solid var(--table-border);
@@ -346,15 +208,12 @@
             transition: background var(--transition-fast);
             font-size: 0.9rem;
         }
+        .data-table tr:hover td { background: var(--table-row-hover); }
 
-        .data-table tr:hover td {
-            background: var(--table-row-hover);
-        }
-
-        /* Total Badge styling */
+        /* Total badge */
         .total-badge {
             background: linear-gradient(135deg, var(--primary-light), var(--primary));
-            color: white;
+            color: #fff;
             font-weight: 700;
             padding: 6px 14px;
             border-radius: 40px;
@@ -365,36 +224,31 @@
             text-align: center;
         }
 
-        /* Action button in table */
+        /* View button */
         .view-action-btn {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
+            color: #fff;
             border: none;
             padding: 6px 16px;
             border-radius: 30px;
             font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all var(--transition-fast);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            will-change: transform;
         }
+        .view-action-btn:hover { transform: translate3d(0, -2px, 0); box-shadow: var(--shadow-sm); }
 
-        .view-action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-sm);
-            filter: brightness(1.05);
-        }
-
-        /* Details Grid */
+        /* ---------- Details grid ---------- */
         .details-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1rem;
             padding: 2rem;
         }
-
         @media (max-width: 640px) {
             .details-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -402,22 +256,20 @@
                 padding: 1rem;
             }
         }
-
         .detail-card {
             background: linear-gradient(135deg, var(--card-bg), rgba(255,255,255,0.05));
             border-radius: 1.2rem;
             padding: 1rem 1.2rem;
-            transition: all var(--transition-fast);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
             border: 1px solid var(--border-color);
             cursor: pointer;
+            will-change: transform;
         }
-
         .detail-card:hover {
-            transform: translateY(-2px);
+            transform: translate3d(0, -2px, 0);
             box-shadow: var(--shadow-md);
             border-color: var(--primary);
         }
-
         .detail-label {
             font-size: 0.65rem;
             text-transform: uppercase;
@@ -425,7 +277,6 @@
             color: var(--secondary);
             font-weight: 700;
         }
-
         .detail-value {
             font-weight: 700;
             font-size: 0.95rem;
@@ -434,7 +285,7 @@
             word-break: break-word;
         }
 
-        /* Action Row */
+        /* ---------- Action row ---------- */
         .action-row {
             padding: 1rem 2rem 2rem;
             display: flex;
@@ -443,28 +294,23 @@
             flex-wrap: wrap;
         }
 
-        /* Modal Styles */
+        /* ---------- Modals ---------- */
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 2000;
             visibility: hidden;
             opacity: 0;
-            transition: all var(--transition-normal);
+            transition: opacity var(--transition-normal), visibility var(--transition-normal);
+            will-change: opacity;
         }
-
-        .modal-overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
 
         .modal-box {
             background: var(--card-bg);
@@ -474,19 +320,15 @@
             border-radius: 2rem;
             overflow-y: auto;
             box-shadow: var(--shadow-xl);
-            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
         }
-
+        .modal-box::-webkit-scrollbar { display: none; }
+        .modal-overlay.active .modal-box { animation: modalPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1); }
         @keyframes modalPop {
-            from {
-                transform: scale(0.9);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
+            from { transform: scale(0.94); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
         }
 
         .modal-header {
@@ -498,45 +340,35 @@
             position: sticky;
             top: 0;
             z-index: 10;
-            color: white;
+            color: #fff;
         }
-
-        .modal-header h3 {
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-
+        .modal-header h3 { font-size: 1.3rem; font-weight: 700; }
         .close-modal {
             background: none;
             border: none;
             font-size: 2rem;
             cursor: pointer;
-            color: white;
-            transition: transform var(--transition-fast);
+            color: #fff;
             line-height: 1;
+            transition: transform var(--transition-fast);
         }
-
-        .close-modal:hover {
-            transform: rotate(90deg);
-        }
+        .close-modal:hover { transform: rotate(90deg); }
 
         .modal-body {
             padding: 1.5rem;
+            overflow-y: auto;
+            max-height: calc(85vh - 70px);
+            scrollbar-width: none;
         }
+        .modal-body::-webkit-scrollbar { display: none; }
 
-        /* Form Styles */
+        /* ---------- Forms ---------- */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.2rem;
         }
-
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
+        .field { display: flex; flex-direction: column; gap: 6px; }
         .field label {
             font-size: 0.7rem;
             font-weight: 800;
@@ -544,9 +376,8 @@
             letter-spacing: 0.5px;
             color: var(--secondary);
         }
-
-        .field input, 
-        .field select, 
+        .field input,
+        .field select,
         .field textarea {
             padding: 12px 16px;
             border-radius: 16px;
@@ -554,32 +385,20 @@
             background: var(--bg-secondary);
             color: var(--text-primary);
             font-size: 0.9rem;
-            transition: all var(--transition-fast);
             font-family: inherit;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
         }
-
-        .field input:focus, 
-        .field select:focus, 
+        .field input:focus,
+        .field select:focus,
         .field textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(26, 71, 42, 0.1);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
         }
+        .field input:disabled { background: var(--text-light); cursor: not-allowed; }
 
-        .field input:disabled {
-            background: var(--text-light);
-            cursor: not-allowed;
-        }
-
-        .fullwidth {
-            grid-column: 1 / -1;
-        }
-
-        /* Autocomplete Styles */
-        .autocomplete-wrap {
-            position: relative;
-        }
-
+        /* ---------- Autocomplete ---------- */
+        .autocomplete-wrap { position: relative; }
         .autocomplete-list {
             position: absolute;
             top: 100%;
@@ -594,22 +413,19 @@
             box-shadow: var(--shadow-lg);
             margin-top: 6px;
             border: 1px solid var(--border-color);
+            scrollbar-width: none;
         }
-
+        .autocomplete-list::-webkit-scrollbar { display: none; }
         .autocomplete-item {
             padding: 12px 16px;
             cursor: pointer;
             font-size: 0.85rem;
-            transition: all var(--transition-fast);
             color: var(--text-primary);
+            transition: background var(--transition-fast), color var(--transition-fast);
         }
+        .autocomplete-item:hover { background: var(--primary); color: #fff; }
 
-        .autocomplete-item:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* Spinner */
+        /* ---------- Spinner ---------- */
         .spinner {
             display: inline-block;
             width: 18px;
@@ -618,34 +434,38 @@
             border-top: 3px solid var(--primary);
             border-radius: 50%;
             animation: spin 0.6s linear infinite;
+            will-change: transform;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        /* ---------- Skeleton loader (used in initial HTML) ---------- */
+        .skeleton-bar {
+            height: 14px;
+            border-radius: 8px;
+            background: linear-gradient(90deg,
+                var(--table-header-bg) 0%,
+                var(--table-row-hover) 50%,
+                var(--table-header-bg) 100%);
+            background-size: 200% 100%;
+            animation: skeletonShimmer 1.4s ease-in-out infinite;
+            will-change: background-position;
         }
+        @keyframes skeletonShimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .skeleton-row td { padding: 16px 20px; border-bottom: 1px solid var(--table-border); }
 
-        /* Responsive Design */
+        /* ---------- Responsive ---------- */
+        .desktop-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+        .mobile-buttons  { display: none; }
+
         @media (max-width: 768px) {
-            body {
-                padding: 12px;
-            }
-
-            .card-header {
-                padding: 1rem 1.2rem;
-            }
-
-            .card-header h2 {
-                font-size: 1.3rem;
-            }
-
-            .search-section {
-                padding: 1rem 1.2rem;
-            }
-
-            .desktop-buttons {
-                display: none;
-            }
-
+            body { padding: 12px; }
+            .card-header { padding: 1rem 1.2rem; }
+            .card-header h2 { font-size: 1.3rem; }
+            .search-section { padding: 1rem 1.2rem; }
+            .desktop-buttons { display: none; }
             .mobile-buttons {
                 display: grid !important;
                 grid-template-columns: 1fr 1fr;
@@ -653,156 +473,46 @@
                 margin-top: 16px;
                 width: 100%;
             }
-
-            .mobile-buttons .btn {
-                width: 100%;
-                justify-content: center;
-                padding: 12px 16px;
-                font-size: 0.85rem;
-            }
-
-            .data-table th,
-            .data-table td {
-                padding: 12px 12px;
-                font-size: 0.7rem;
-            }
-
-            .total-badge {
-                padding: 4px 8px;
-                font-size: 0.7rem;
-                min-width: 65px;
-            }
-
-            .view-action-btn {
-                padding: 4px 10px;
-                font-size: 0.65rem;
-            }
-
-            .btn {
-                padding: 8px 18px;
-                font-size: 0.8rem;
-            }
-
-            .modal-box {
-                width: 95%;
-                border-radius: 1.5rem;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
+            .mobile-buttons .btn { width: 100%; justify-content: center; padding: 12px 16px; font-size: 0.85rem; }
+            .data-table th, .data-table td { padding: 12px; font-size: 0.7rem; }
+            .total-badge { padding: 4px 8px; font-size: 0.7rem; min-width: 65px; }
+            .view-action-btn { padding: 4px 10px; font-size: 0.65rem; }
+            .btn { padding: 8px 18px; font-size: 0.8rem; }
+            .modal-box { width: 95%; border-radius: 1.5rem; }
+            .form-grid { grid-template-columns: 1fr; gap: 1rem; }
         }
 
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--table-header-bg);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
-        }
-
-        /* Loading States */
-        .loading-skeleton {
-            background: linear-gradient(90deg, var(--border-color) 25%, var(--table-header-bg) 50%, var(--border-color) 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        
-        /* Hide scrollbars but keep scrolling */
-        .table-wrapper::-webkit-scrollbar,
-        .modal-box::-webkit-scrollbar,
-        .autocomplete-list::-webkit-scrollbar,
-        .details-grid::-webkit-scrollbar,
-        body::-webkit-scrollbar {
-            width: 0px;
-            height: 0px;
-            background: transparent;
-            display: none;
-        }
-        
-        .table-wrapper,
-        .modal-box,
-        .autocomplete-list,
-        .details-grid,
-        body {
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-        
-        .table-wrapper {
-            overflow-x: auto;
-            overflow-y: visible;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        .modal-body {
-            overflow-y: auto;
-            max-height: calc(85vh - 70px);
-            scrollbar-width: none;
-        }
-        
-        @media (max-width: 768px) {
-            .table-wrapper {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
+        /* ---------- Accessibility ---------- */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- PAGE 1 - LIST -->
+        <!-- PAGE 1 – LIST -->
         <div id="page1" class="page active-page">
             <div class="soft-card">
                 <div class="card-header">
                     <h2>🚛 Yash Transport · Fleet Manager</h2>
-                    
-                    <!-- Desktop Buttons -->
                     <div class="desktop-buttons">
-                        <button id="refreshBtnP1" class="btn btn-outline">
-                            <span>⟳</span> Refresh
-                        </button>
-                        <button id="addNewBtn" class="btn btn-primary">
-                            <span>+</span> Add New Entry
-                        </button>
+                        <button id="refreshBtnP1" class="btn btn-outline"><span>⟳</span> Refresh</button>
+                        <button id="addNewBtn" class="btn btn-primary"><span>+</span> Add New Entry</button>
                     </div>
                 </div>
-                
-                <!-- Search Section -->
                 <div class="search-section">
                     <div class="search-wrapper">
-                        <input type="text" id="searchInput" placeholder="🔍 Search by LR No, Vendor Name, Vehicle No...">
+                        <input type="text" id="searchInput" placeholder="🔍 Search by LR No, Vendor Name, Vehicle No..." autocomplete="off" inputmode="search">
                     </div>
-                    
-                    <!-- Mobile Buttons -->
                     <div class="mobile-buttons">
-                        <button id="mobileRefreshBtn" class="btn btn-outline">
-                            <span>⟳</span> Refresh
-                        </button>
-                        <button id="mobileAddBtn" class="btn btn-primary">
-                            <span>+</span> Add Entry
-                        </button>
+                        <button id="mobileRefreshBtn" class="btn btn-outline"><span>⟳</span> Refresh</button>
+                        <button id="mobileAddBtn" class="btn btn-primary"><span>+</span> Add Entry</button>
                     </div>
                 </div>
-                
                 <div class="table-wrapper">
                     <table class="data-table">
                         <thead>
@@ -814,28 +524,25 @@
                                 <th>Action</th>
                             </tr>
                         </thead>
+                        <!-- OPTIMIZATION #9: Skeleton rows inline — visible immediately -->
                         <tbody id="tableBody">
-                            <tr>
-                                <td colspan="5" style="text-align:center;">
-                                    <div class="spinner"></div> Loading entries...
-                                </td>
-                            </tr>
+                            <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:55%"></div></td><td><div class="skeleton-bar" style="width:60%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td></tr>
+                            <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:35%"></div></td><td><div class="skeleton-bar" style="width:65%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:55%"></div></td><td><div class="skeleton-bar" style="width:45%"></div></td></tr>
+                            <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:75%"></div></td><td><div class="skeleton-bar" style="width:60%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:55%"></div></td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- PAGE 2 - DETAIL -->
+        <!-- PAGE 2 – DETAIL -->
         <div id="page2" class="page">
             <div class="soft-card">
                 <div class="card-header">
                     <h2>📋 Entry Details</h2>
                     <button id="backToPage1Btn" class="btn btn-outline">← Back</button>
                 </div>
-                <div id="detailsContainer" class="details-grid">
-                    <div class="loading-skeleton" style="height: 200px;"></div>
-                </div>
+                <div id="detailsContainer" class="details-grid"></div>
                 <div class="action-row">
                     <button id="editFromDetailBtn" class="btn btn-primary">✏️ Edit</button>
                     <button id="deleteFromDetailBtn" class="btn btn-danger">🗑 Delete</button>
@@ -844,12 +551,12 @@
         </div>
     </div>
 
-    <!-- Global Modal Alert -->
+    <!-- Global modal -->
     <div id="globalModal" class="modal-overlay">
         <div class="modal-box" style="max-width: 450px;">
             <div class="modal-header">
                 <h3 id="modalTitle">Notice</h3>
-                <button class="close-modal" id="closeGlobalModal">×</button>
+                <button class="close-modal" id="closeGlobalModal" aria-label="Close">×</button>
             </div>
             <div class="modal-body">
                 <p id="modalMsg" style="font-size: 1rem; line-height: 1.5;"></p>
@@ -860,19 +567,25 @@
         </div>
     </div>
 
-    <!-- Form Modal -->
+    <!-- Form modal -->
     <div id="formModal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
                 <h3 id="formModalTitle">Add New Entry</h3>
-                <button class="close-modal" id="closeFormModalBtn">×</button>
+                <button class="close-modal" id="closeFormModalBtn" aria-label="Close">×</button>
             </div>
             <div class="modal-body" id="formModalBody"></div>
         </div>
     </div>
 
-    <script>
-        /* ======================== DARK MODE SYNC ======================== */
+    <!-- ============================================================
+         OPTIMIZATION #2: DEFER JS
+         Parser is not blocked; DOM is guaranteed ready when script runs.
+         ============================================================ -->
+    <script defer>
+        /* =========================================================
+           DARK MODE SYNC (interval 1000 → 2000 ms; cleared on unload)
+           ========================================================= */
         function syncThemeWithParent() {
             const localTheme = localStorage.getItem('user-theme-preference');
             if (localTheme) {
@@ -881,138 +594,123 @@
             } else {
                 try {
                     if (window.parent && window.parent.document.body) {
-                        const parentTheme = window.parent.document.body.getAttribute('data-theme');
-                        if (parentTheme) {
-                            document.body.setAttribute('data-theme', parentTheme);
-                            document.documentElement.setAttribute('data-theme', parentTheme);
+                        const pt = window.parent.document.body.getAttribute('data-theme');
+                        if (pt) {
+                            document.body.setAttribute('data-theme', pt);
+                            document.documentElement.setAttribute('data-theme', pt);
                         }
                     }
-                } catch(e) { }
+                } catch (e) { /* cross-origin */ }
             }
         }
 
         window.addEventListener('DOMContentLoaded', syncThemeWithParent);
         window.addEventListener('storage', syncThemeWithParent);
-        setInterval(syncThemeWithParent, 1000);
-        
-        window.addEventListener('message', function(event) {
+
+        const themeInterval = setInterval(syncThemeWithParent, 2000);
+        window.addEventListener('beforeunload', () => clearInterval(themeInterval));
+
+        window.addEventListener('message', (event) => {
             if (event.data && event.data.type === 'themeChange') {
-                const newTheme = event.data.theme;
-                if (newTheme) {
-                    document.body.setAttribute('data-theme', newTheme);
-                    document.documentElement.setAttribute('data-theme', newTheme);
+                const t = event.data.theme;
+                if (t) {
+                    document.body.setAttribute('data-theme', t);
+                    document.documentElement.setAttribute('data-theme', t);
                 }
             }
         });
-        
+
         /* ======================== CONFIGURATION ======================== */
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoDds81u8M5N8micA_hoIBgCS7aCFm0NUmwW6XLH4m_fRJ8R9pGqjgFGMeBxBd2dSL/exec";
-        const SPREADSHEET_ID = "1ufYQniJ_0ke7O0Bd5zNGAimdNKBSvi4dGMeQp3CQjwY";
-        const SHEET_NAME = "Yash Transport";
-        const SOURCE_SHEET = "Source";
-        const DESTINATION_SHEET = "Destination";
-        
-        const CACHE_KEY = "yash_transport_cache";
-        const SOURCE_CACHE_KEY = "yash_transport_source_cache";
-        const DEST_CACHE_KEY = "yash_transport_dest_cache";
-        const CACHE_TTL = 15 * 60 * 1000;
-        
-        let allEntries = [];
-        let currentViewEntry = null;
-        let sourceOptions = [];
-        let vehicleOptions = [];
-        let pickupOptions = [];
-        let destinationOptions = [];
-        let preloadInProgress = false;
+        const SCRIPT_URL         = "https://script.google.com/macros/s/AKfycbzoDds81u8M5N8micA_hoIBgCS7aCFm0NUmwW6XLH4m_fRJ8R9pGqjgFGMeBxBd2dSL/exec";
+        const SPREADSHEET_ID     = "1ufYQniJ_0ke7O0Bd5zNGAimdNKBSvi4dGMeQp3CQjwY";
+        const SHEET_NAME         = "Yash Transport";
+        const SOURCE_SHEET       = "Source";
+        const DESTINATION_SHEET  = "Destination";
+
+        // OPTIMIZATION #7: cache TTL reduced to 5 minutes
+        const CACHE_TTL = 5 * 60 * 1000;
+
+        const CACHE_KEY       = "yash_transport_cache_v2";
+        const SOURCE_CACHE_KEY= "yash_transport_source_cache_v2";
+        const DEST_CACHE_KEY  = "yash_transport_dest_cache_v2";
+
+        /* ---------- Shared state ---------- */
+        let allEntries          = [];
+        let currentViewEntry    = null;
+        let sourceOptions       = [];
+        let vehicleOptions      = [];
+        let pickupOptions       = [];
+        let destinationOptions  = [];
+        let preloadInProgress   = false;
         let searchDebounceTimer = null;
-        let saveInProgress = false;
-        
+        let saveInProgress      = false;
+
         const dom = {};
-        
+
         function cacheDomElements() {
-            dom.page1 = document.getElementById('page1');
-            dom.page2 = document.getElementById('page2');
-            dom.tableBody = document.getElementById('tableBody');
-            dom.searchInput = document.getElementById('searchInput');
-            dom.refreshBtn = document.getElementById('refreshBtnP1');
-            dom.addNewBtn = document.getElementById('addNewBtn');
-            dom.mobileRefreshBtn = document.getElementById('mobileRefreshBtn');
-            dom.mobileAddBtn = document.getElementById('mobileAddBtn');
-            dom.backBtn = document.getElementById('backToPage1Btn');
-            dom.editBtn = document.getElementById('editFromDetailBtn');
-            dom.deleteBtn = document.getElementById('deleteFromDetailBtn');
-            dom.detailsContainer = document.getElementById('detailsContainer');
-            dom.globalModal = document.getElementById('globalModal');
-            dom.formModal = document.getElementById('formModal');
-            dom.modalTitle = document.getElementById('modalTitle');
-            dom.modalMsg = document.getElementById('modalMsg');
-            dom.formModalTitle = document.getElementById('formModalTitle');
-            dom.formModalBody = document.getElementById('formModalBody');
+            dom.page1             = document.getElementById('page1');
+            dom.page2             = document.getElementById('page2');
+            dom.tableBody         = document.getElementById('tableBody');
+            dom.searchInput       = document.getElementById('searchInput');
+            dom.refreshBtn        = document.getElementById('refreshBtnP1');
+            dom.addNewBtn         = document.getElementById('addNewBtn');
+            dom.mobileRefreshBtn  = document.getElementById('mobileRefreshBtn');
+            dom.mobileAddBtn      = document.getElementById('mobileAddBtn');
+            dom.backBtn           = document.getElementById('backToPage1Btn');
+            dom.editBtn           = document.getElementById('editFromDetailBtn');
+            dom.deleteBtn         = document.getElementById('deleteFromDetailBtn');
+            dom.detailsContainer  = document.getElementById('detailsContainer');
+            dom.globalModal       = document.getElementById('globalModal');
+            dom.formModal         = document.getElementById('formModal');
+            dom.modalTitle        = document.getElementById('modalTitle');
+            dom.modalMsg          = document.getElementById('modalMsg');
+            dom.formModalTitle    = document.getElementById('formModalTitle');
+            dom.formModalBody     = document.getElementById('formModalBody');
         }
-        
-        /* ======================== DATE FORMATTING FUNCTIONS ======================== */
+
+        /* ======================== UTILITIES ======================== */
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str).replace(/[&<>"']/g, m => ({
+                '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+            }[m]));
+        }
+
         function formatToDDMMYYYY(dateInput) {
             if (!dateInput || dateInput === '') return '—';
-            
             try {
                 if (typeof dateInput === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
-                    const [year, month, day] = dateInput.split('-');
-                    return `${day}/${month}/${year}`;
+                    const [y, m, d] = dateInput.split('-');
+                    return `${d}/${m}/${y}`;
                 }
-                
-                if (typeof dateInput === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(dateInput)) {
-                    return dateInput;
-                }
-                
-                const dateObj = new Date(dateInput);
-                if (!isNaN(dateObj.getTime())) {
-                    const year = dateObj.getFullYear();
-                    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                    const day = String(dateObj.getDate()).padStart(2, '0');
-                    return `${day}/${month}/${year}`;
-                }
-                
-                return '—';
-            } catch (error) {
-                console.error('Date display formatting error:', error);
-                return '—';
-            }
+                if (typeof dateInput === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(dateInput)) return dateInput;
+                const d = new Date(dateInput);
+                if (isNaN(d.getTime())) return '—';
+                const dd = String(d.getDate()).padStart(2, '0');
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                return `${dd}/${mm}/${d.getFullYear()}`;
+            } catch { return '—'; }
         }
-        
+
         function formatToYYYYMMDD(dateString) {
-            if (!dateString || dateString === '') return '';
-            
+            if (!dateString) return '';
             try {
-                if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-                    return dateString;
-                }
-                
+                if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
                 if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
-                    const [day, month, year] = dateString.split('/');
-                    return `${year}-${month}-${day}`;
+                    const [d, m, y] = dateString.split('/');
+                    return `${y}-${m}-${d}`;
                 }
-                
                 return '';
-            } catch (error) {
-                console.error('Date conversion error:', error);
-                return '';
-            }
+            } catch { return ''; }
         }
-        
-        function formatDisplayDate(dateInput) {
-            if (!dateInput) return '—';
-            const formatted = formatToDDMMYYYY(dateInput);
-            return formatted || '—';
+
+        function formatDisplayDate(d) {
+            return d ? (formatToDDMMYYYY(d) || '—') : '—';
         }
-        
-        function escapeHtml(str) {
-            if (!str) return '';
-            return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
-        }
-        
+
         function showModal(msg, title = "Message", isConfirm = false, onConfirm = null, autoClose = 0) {
             if (!dom.globalModal) return;
-            dom.modalTitle.innerText = title;
+            dom.modalTitle.textContent = title;
             dom.modalMsg.innerHTML = msg;
             const confirmBtn = document.getElementById('confirmModalBtn');
             if (confirmBtn) {
@@ -1024,48 +722,48 @@
             dom.globalModal.classList.add('active');
             if (autoClose > 0) setTimeout(() => dom.globalModal.classList.remove('active'), autoClose);
         }
-        
-        function showSpinner(element, show, customHtml = null) {
-            if (!element) return;
+
+        function showSpinner(el, show, customHtml = null) {
+            if (!el) return;
             if (show) {
-                element.disabled = true;
-                const originalText = element.innerHTML;
-                element.setAttribute('data-original-text', originalText);
-                element.innerHTML = customHtml || '<span class="spinner"></span> Loading...';
+                el.disabled = true;
+                el.setAttribute('data-original-text', el.innerHTML);
+                el.innerHTML = customHtml || '<span class="spinner"></span> Loading...';
             } else {
-                element.disabled = false;
-                const original = element.getAttribute('data-original-text');
-                if (original) element.innerHTML = original;
+                el.disabled = false;
+                const o = el.getAttribute('data-original-text');
+                if (o) el.innerHTML = o;
             }
         }
-        
-        async function fetchWithBackgroundCache(url, cacheKey, ttl) {
-            const cached = localStorage.getItem(cacheKey);
+
+        /* ======================== CACHE / FETCH ======================== */
+        // OPTIMIZATION #1: cold-start skips cache and always fetches fresh.
+        async function fetchWithBackgroundCache(url, cacheKey, { skipCache = false } = {}) {
             let cachedData = null;
-            
-            if (cached) {
-                try {
-                    const { data, timestamp } = JSON.parse(cached);
-                    if (Date.now() - timestamp < ttl) {
-                        cachedData = data;
-                    }
-                } catch (e) { }
+
+            if (!skipCache) {
+                const raw = localStorage.getItem(cacheKey);
+                if (raw) {
+                    try {
+                        const { data, timestamp } = JSON.parse(raw);
+                        if (Date.now() - timestamp < CACHE_TTL) cachedData = data;
+                    } catch { /* corrupt cache */ }
+                }
             }
-            
+
             if (cachedData && !preloadInProgress) {
                 fetchFreshDataInBackground(url, cacheKey);
                 return cachedData;
             }
-            
+
             try {
-                const response = await fetch(url);
-                const result = await response.json();
-                if (result.status === "success" && Array.isArray(result.data)) {
-                    localStorage.setItem(cacheKey, JSON.stringify({
-                        data: result.data,
-                        timestamp: Date.now()
-                    }));
-                    return result.data;
+                const res  = await fetch(url);
+                const json = await res.json();
+                if (json.status === "success" && Array.isArray(json.data)) {
+                    try {
+                        localStorage.setItem(cacheKey, JSON.stringify({ data: json.data, timestamp: Date.now() }));
+                    } catch { /* quota */ }
+                    return json.data;
                 }
                 return [];
             } catch (err) {
@@ -1073,28 +771,23 @@
                 return cachedData || [];
             }
         }
-        
+
         async function fetchFreshDataInBackground(url, cacheKey) {
             preloadInProgress = true;
             try {
-                const response = await fetch(url);
-                const result = await response.json();
-                if (result.status === "success" && Array.isArray(result.data)) {
-                    localStorage.setItem(cacheKey, JSON.stringify({
-                        data: result.data,
-                        timestamp: Date.now()
-                    }));
-                    
-                    if (cacheKey === CACHE_KEY && result.data.length !== allEntries.length) {
-                        allEntries = result.data;
+                const res  = await fetch(url);
+                const json = await res.json();
+                if (json.status === "success" && Array.isArray(json.data)) {
+                    try {
+                        localStorage.setItem(cacheKey, JSON.stringify({ data: json.data, timestamp: Date.now() }));
+                    } catch { /* quota */ }
+
+                    if (cacheKey === CACHE_KEY && json.data.length !== allEntries.length) {
+                        allEntries = json.data;
                         renderTablePage1(dom.searchInput?.value || "");
                     }
-                    if (cacheKey === SOURCE_CACHE_KEY) {
-                        updateSourceOptionsFromData(result.data);
-                    }
-                    if (cacheKey === DEST_CACHE_KEY) {
-                        updateDestinationOptionsFromData(result.data);
-                    }
+                    if (cacheKey === SOURCE_CACHE_KEY) updateSourceOptionsFromData(json.data);
+                    if (cacheKey === DEST_CACHE_KEY)   updateDestinationOptionsFromData(json.data);
                 }
             } catch (err) {
                 console.warn("Background fetch failed:", err);
@@ -1102,590 +795,452 @@
                 preloadInProgress = false;
             }
         }
-        
-        async function loadEntriesFast() {
-            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}&_=${Date.now()}`;
-            const data = await fetchWithBackgroundCache(url, CACHE_KEY, CACHE_TTL);
-            allEntries = data;
-            return allEntries;
+
+        // OPTIMIZATION #6: batch all three sheet fetches with Promise.all.
+        async function fetchAllSources({ skipCache = false } = {}) {
+            const entriesUrl = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}&_=${Date.now()}`;
+            const sourceUrl  = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SOURCE_SHEET}&_=${Date.now()}`;
+            const destUrl    = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${DESTINATION_SHEET}&_=${Date.now()}`;
+
+            const [entries, source, dest] = await Promise.all([
+                fetchWithBackgroundCache(entriesUrl, CACHE_KEY,        { skipCache }),
+                fetchWithBackgroundCache(sourceUrl,  SOURCE_CACHE_KEY, { skipCache }),
+                fetchWithBackgroundCache(destUrl,    DEST_CACHE_KEY,   { skipCache })
+            ]);
+
+            allEntries = entries;
+            updateSourceOptionsFromData(source);
+            updateDestinationOptionsFromData(dest);
+            return { entries, source, dest };
         }
-        
-        async function loadSourceFast() {
-            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SOURCE_SHEET}&_=${Date.now()}`;
-            const data = await fetchWithBackgroundCache(url, SOURCE_CACHE_KEY, CACHE_TTL);
-            updateSourceOptionsFromData(data);
-            return data;
-        }
-        
-        async function loadDestinationFast() {
-            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${DESTINATION_SHEET}&_=${Date.now()}`;
-            const data = await fetchWithBackgroundCache(url, DEST_CACHE_KEY, CACHE_TTL);
-            updateDestinationOptionsFromData(data);
-            return data;
-        }
-        
+
         function updateSourceOptionsFromData(data) {
             const sources = new Set();
             const vehicles = new Set();
-            data.forEach(row => {
-                if (row["Vendor Name"] && row["Vendor Name"].trim()) sources.add(row["Vendor Name"].trim());
-                if (row["Vehicle No"] && row["Vehicle No"].trim()) vehicles.add(row["Vehicle No"].trim());
+            (data || []).forEach(row => {
+                if (row["Vendor Name"] && String(row["Vendor Name"]).trim()) sources.add(String(row["Vendor Name"]).trim());
+                if (row["Vehicle No"]  && String(row["Vehicle No"]).trim())  vehicles.add(String(row["Vehicle No"]).trim());
             });
-            sourceOptions = Array.from(sources);
+            sourceOptions  = Array.from(sources);
             vehicleOptions = Array.from(vehicles);
         }
-        
+
         function updateDestinationOptionsFromData(data) {
             const pickups = new Set();
-            const destinations = new Set();
-            data.forEach(row => {
-                if (row["Pickup Name"] && row["Pickup Name"].trim()) pickups.add(row["Pickup Name"].trim());
-                if (row["Destination"] && row["Destination"].trim()) destinations.add(row["Destination"].trim());
+            const dests   = new Set();
+            (data || []).forEach(row => {
+                if (row["Pickup Name"]  && String(row["Pickup Name"]).trim())  pickups.add(String(row["Pickup Name"]).trim());
+                if (row["Destination"]  && String(row["Destination"]).trim())  dests.add(String(row["Destination"]).trim());
             });
-            pickupOptions = Array.from(pickups);
-            destinationOptions = Array.from(destinations);
+            pickupOptions      = Array.from(pickups);
+            destinationOptions = Array.from(dests);
         }
-        
-        async function fetchExistingSourceData(forceRefresh = false) {
-            if (forceRefresh) localStorage.removeItem(SOURCE_CACHE_KEY);
-            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SOURCE_SHEET}&_=${Date.now()}`;
-            const response = await fetch(url);
-            const result = await response.json();
-            if (result.status === "success" && Array.isArray(result.data)) {
-                localStorage.setItem(SOURCE_CACHE_KEY, JSON.stringify({
-                    data: result.data,
-                    timestamp: Date.now()
-                }));
-                return result.data;
+
+        /* ======================== SHEET WRITE HELPERS ======================== */
+        // OPTIMIZATION: helper to DRY-up the 4 near-identical POST calls below.
+        async function postToSheet(params) {
+            try {
+                const res  = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: new URLSearchParams(params).toString()
+                });
+                const json = await res.json();
+                return json.status === "success";
+            } catch (err) {
+                console.error("POST error:", err);
+                return false;
             }
-            return [];
         }
-        
-        async function fetchExistingDestinationData(forceRefresh = false) {
-            if (forceRefresh) localStorage.removeItem(DEST_CACHE_KEY);
-            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${DESTINATION_SHEET}&_=${Date.now()}`;
-            const response = await fetch(url);
-            const result = await response.json();
-            if (result.status === "success" && Array.isArray(result.data)) {
-                localStorage.setItem(DEST_CACHE_KEY, JSON.stringify({
-                    data: result.data,
-                    timestamp: Date.now()
-                }));
-                return result.data;
-            }
-            return [];
-        }
-        
-        // ================================================================
-        // FIXED: SOURCE SHEET OPERATIONS - Properly saves to first empty row
-        // ================================================================
-        
+
         async function addRowToSourceSheet(srNo, vendorName, vehicleNo) {
-            try {
-                const params = new URLSearchParams();
-                params.append("action", "insert");
-                params.append("spreadsheetId", SPREADSHEET_ID);
-                params.append("sheetName", SOURCE_SHEET);
-                params.append("Sr. No", srNo.toString());
-                params.append("Vendor Name", vendorName || "");
-                params.append("Vehicle No", vehicleNo || "");
-
-                const response = await fetch(SCRIPT_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: params.toString()
-                });
-                const result = await response.json();
-                return result.status === "success";
-            } catch (err) {
-                console.error("Add row to Source error:", err);
-                return false;
-            }
+            return postToSheet({
+                action: "insert",
+                spreadsheetId: SPREADSHEET_ID,
+                sheetName: SOURCE_SHEET,
+                "Sr. No": String(srNo),
+                "Vendor Name": vendorName || "",
+                "Vehicle No": vehicleNo || ""
+            });
         }
-        
+
         async function updateSourceRow(rowIndex, srNo, vendorName, vehicleNo) {
-            try {
-                const params = new URLSearchParams();
-                params.append("action", "update");
-                params.append("spreadsheetId", SPREADSHEET_ID);
-                params.append("sheetName", SOURCE_SHEET);
-                params.append("rowIndex", rowIndex.toString());
-                params.append("Sr. No", srNo.toString());
-                params.append("Vendor Name", vendorName || "");
-                params.append("Vehicle No", vehicleNo || "");
-
-                const response = await fetch(SCRIPT_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: params.toString()
-                });
-                const result = await response.json();
-                return result.status === "success";
-            } catch (err) {
-                console.error("Update Source row error:", err);
-                return false;
-            }
+            return postToSheet({
+                action: "update",
+                spreadsheetId: SPREADSHEET_ID,
+                sheetName: SOURCE_SHEET,
+                rowIndex: String(rowIndex),
+                "Sr. No": String(srNo),
+                "Vendor Name": vendorName || "",
+                "Vehicle No": vehicleNo || ""
+            });
         }
-        
-        // ================================================================
-        // FIXED: DESTINATION SHEET OPERATIONS - Properly saves to first empty row
-        // ================================================================
-        
+
         async function addRowToDestinationSheet(srNo, pickupName, destination) {
-            try {
-                const params = new URLSearchParams();
-                params.append("action", "insert");
-                params.append("spreadsheetId", SPREADSHEET_ID);
-                params.append("sheetName", DESTINATION_SHEET);
-                params.append("Sr. No", srNo.toString());
-                params.append("Pickup Name", pickupName || "");
-                params.append("Destination", destination || "");
-
-                const response = await fetch(SCRIPT_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: params.toString()
-                });
-                const result = await response.json();
-                return result.status === "success";
-            } catch (err) {
-                console.error("Add row to Destination error:", err);
-                return false;
-            }
+            return postToSheet({
+                action: "insert",
+                spreadsheetId: SPREADSHEET_ID,
+                sheetName: DESTINATION_SHEET,
+                "Sr. No": String(srNo),
+                "Pickup Name": pickupName || "",
+                "Destination": destination || ""
+            });
         }
-        
+
         async function updateDestinationRow(rowIndex, srNo, pickupName, destination) {
-            try {
-                const params = new URLSearchParams();
-                params.append("action", "update");
-                params.append("spreadsheetId", SPREADSHEET_ID);
-                params.append("sheetName", DESTINATION_SHEET);
-                params.append("rowIndex", rowIndex.toString());
-                params.append("Sr. No", srNo.toString());
-                params.append("Pickup Name", pickupName || "");
-                params.append("Destination", destination || "");
-
-                const response = await fetch(SCRIPT_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: params.toString()
-                });
-                const result = await response.json();
-                return result.status === "success";
-            } catch (err) {
-                console.error("Update Destination row error:", err);
-                return false;
-            }
+            return postToSheet({
+                action: "update",
+                spreadsheetId: SPREADSHEET_ID,
+                sheetName: DESTINATION_SHEET,
+                rowIndex: String(rowIndex),
+                "Sr. No": String(srNo),
+                "Pickup Name": pickupName || "",
+                "Destination": destination || ""
+            });
         }
-        
-        // ================================================================
-        // FIXED: SMART SAVE - Properly finds first empty row
-        // ================================================================
-        
+
+        /* ======================== SMART SAVE: SOURCE ======================== */
         async function smartSaveToSourceSheet(vendorName, vehicleNo, existingData) {
             const addedItems = [];
             let dataModified = false;
-            
-            if ((!vendorName || vendorName.trim() === "") && (!vehicleNo || vehicleNo.trim() === "")) {
-                return { addedItems, dataModified: false };
-            }
-            
-            let currentData = JSON.parse(JSON.stringify(existingData));
-            const normalizedVendor = vendorName ? vendorName.trim() : "";
-            const normalizedVehicle = vehicleNo ? vehicleNo.trim() : "";
-            
-            // Check if vendor name already exists
-            const vendorExists = normalizedVendor && currentData.some(row => row["Vendor Name"] === normalizedVendor);
-            // Check if vehicle number already exists
-            const vehicleExists = normalizedVehicle && currentData.some(row => row["Vehicle No"] === normalizedVehicle);
-            
-            // Case 1: Both Vendor Name and Vehicle No are new
-            if (normalizedVendor && normalizedVehicle && !vendorExists && !vehicleExists) {
-                // Find first empty row (both columns empty)
-                let emptyRowIndex = currentData.findIndex(row => 
-                    (!row["Vendor Name"] || row["Vendor Name"] === "") && 
-                    (!row["Vehicle No"] || row["Vehicle No"] === "")
-                );
-                
-                if (emptyRowIndex !== -1) {
-                    // Update existing empty row
-                    const srNo = currentData[emptyRowIndex]["Sr. No"];
+
+            const normVendor  = vendorName ? String(vendorName).trim() : "";
+            const normVehicle = vehicleNo  ? String(vehicleNo).trim()  : "";
+
+            if (!normVendor && !normVehicle) return { addedItems, dataModified };
+
+            const data = JSON.parse(JSON.stringify(existingData));
+            const vendorExists  = normVendor  && data.some(r => r["Vendor Name"] === normVendor);
+            const vehicleExists = normVehicle && data.some(r => r["Vehicle No"]  === normVehicle);
+
+            const isEmptyBoth = r => (!r["Vendor Name"] || r["Vendor Name"] === "") &&
+                                     (!r["Vehicle No"]  || r["Vehicle No"]  === "");
+            const isEmptyVendor  = r => (!r["Vendor Name"] || r["Vendor Name"] === "");
+            const isEmptyVehicle = r => (!r["Vehicle No"]  || r["Vehicle No"]  === "");
+
+            const maxSr = () => data.reduce((m, r) => Math.max(m, parseInt(r["Sr. No"]) || 0), 0);
+
+            // Case 1: both new
+            if (normVendor && normVehicle && !vendorExists && !vehicleExists) {
+                const idx = data.findIndex(isEmptyBoth);
+                if (idx !== -1) {
+                    const srNo = data[idx]["Sr. No"];
                     const rowIndex = parseInt(srNo) + 1;
-                    const success = await updateSourceRow(rowIndex, srNo, normalizedVendor, normalizedVehicle);
-                    if (success) {
-                        addedItems.push(`Added "${normalizedVendor}" + "${normalizedVehicle}" to existing empty row (Sr. No ${srNo})`);
-                        currentData[emptyRowIndex]["Vendor Name"] = normalizedVendor;
-                        currentData[emptyRowIndex]["Vehicle No"] = normalizedVehicle;
+                    const ok = await updateSourceRow(rowIndex, srNo, normVendor, normVehicle);
+                    if (ok) {
+                        addedItems.push(`Added "${normVendor}" + "${normVehicle}" to existing empty row (Sr. No ${srNo})`);
+                        data[idx]["Vendor Name"] = normVendor;
+                        data[idx]["Vehicle No"]  = normVehicle;
                         dataModified = true;
                     }
                 } else {
-                    // No empty row found, create new row at the end
-                    const maxSrNo = currentData.reduce((max, row) => Math.max(max, parseInt(row["Sr. No"]) || 0), 0);
-                    const newSrNo = maxSrNo + 1;
-                    const success = await addRowToSourceSheet(newSrNo, normalizedVendor, normalizedVehicle);
-                    if (success) {
-                        addedItems.push(`Created new entry: "${normalizedVendor}" + "${normalizedVehicle}" (Sr. No ${newSrNo})`);
-                        currentData.push({ "Sr. No": newSrNo.toString(), "Vendor Name": normalizedVendor, "Vehicle No": normalizedVehicle });
+                    const newSr = maxSr() + 1;
+                    const ok = await addRowToSourceSheet(newSr, normVendor, normVehicle);
+                    if (ok) {
+                        addedItems.push(`Created new entry: "${normVendor}" + "${normVehicle}" (Sr. No ${newSr})`);
+                        data.push({ "Sr. No": String(newSr), "Vendor Name": normVendor, "Vehicle No": normVehicle });
                         dataModified = true;
                     }
                 }
             }
-            // Case 2: Only Vendor Name is new, Vehicle No exists or is empty
-            else if (normalizedVendor && !vendorExists) {
-                // Try to find row with matching Vehicle No first
-                let targetRowIndex = -1;
-                if (normalizedVehicle) {
-                    targetRowIndex = currentData.findIndex(row => 
-                        (!row["Vendor Name"] || row["Vendor Name"] === "") && 
-                        row["Vehicle No"] === normalizedVehicle
-                    );
-                }
-                // If not found, find any empty Vendor Name row
-                if (targetRowIndex === -1) {
-                    targetRowIndex = currentData.findIndex(row => 
-                        (!row["Vendor Name"] || row["Vendor Name"] === "")
-                    );
-                }
-                
-                if (targetRowIndex !== -1) {
-                    const srNo = currentData[targetRowIndex]["Sr. No"];
+            // Case 2: only vendor new
+            else if (normVendor && !vendorExists) {
+                let idx = -1;
+                if (normVehicle) idx = data.findIndex(r => isEmptyVendor(r) && r["Vehicle No"] === normVehicle);
+                if (idx === -1)  idx = data.findIndex(isEmptyVendor);
+                if (idx !== -1) {
+                    const srNo = data[idx]["Sr. No"];
                     const rowIndex = parseInt(srNo) + 1;
-                    const existingVehicle = currentData[targetRowIndex]["Vehicle No"] || "";
-                    const success = await updateSourceRow(rowIndex, srNo, normalizedVendor, existingVehicle);
-                    if (success) {
-                        addedItems.push(`Added Vendor "${normalizedVendor}" to existing row (Sr. No ${srNo})`);
-                        currentData[targetRowIndex]["Vendor Name"] = normalizedVendor;
+                    const exVeh = data[idx]["Vehicle No"] || "";
+                    const ok = await updateSourceRow(rowIndex, srNo, normVendor, exVeh);
+                    if (ok) {
+                        addedItems.push(`Added Vendor "${normVendor}" to existing row (Sr. No ${srNo})`);
+                        data[idx]["Vendor Name"] = normVendor;
                         dataModified = true;
                     }
                 } else {
-                    // No empty row found, create new row at the end
-                    const maxSrNo = currentData.reduce((max, row) => Math.max(max, parseInt(row["Sr. No"]) || 0), 0);
-                    const newSrNo = maxSrNo + 1;
-                    const success = await addRowToSourceSheet(newSrNo, normalizedVendor, normalizedVehicle || "");
-                    if (success) {
-                        addedItems.push(`Created new Vendor entry: "${normalizedVendor}" (Sr. No ${newSrNo})`);
-                        currentData.push({ "Sr. No": newSrNo.toString(), "Vendor Name": normalizedVendor, "Vehicle No": normalizedVehicle || "" });
+                    const newSr = maxSr() + 1;
+                    const ok = await addRowToSourceSheet(newSr, normVendor, normVehicle || "");
+                    if (ok) {
+                        addedItems.push(`Created new Vendor entry: "${normVendor}" (Sr. No ${newSr})`);
+                        data.push({ "Sr. No": String(newSr), "Vendor Name": normVendor, "Vehicle No": normVehicle || "" });
                         dataModified = true;
                     }
                 }
             }
-            // Case 3: Only Vehicle No is new, Vendor Name exists or is empty
-            else if (normalizedVehicle && !vehicleExists) {
-                // Try to find row with matching Vendor Name first
-                let targetRowIndex = -1;
-                if (normalizedVendor) {
-                    targetRowIndex = currentData.findIndex(row => 
-                        (!row["Vehicle No"] || row["Vehicle No"] === "") && 
-                        row["Vendor Name"] === normalizedVendor
-                    );
-                }
-                // If not found, find any empty Vehicle No row
-                if (targetRowIndex === -1) {
-                    targetRowIndex = currentData.findIndex(row => 
-                        (!row["Vehicle No"] || row["Vehicle No"] === "")
-                    );
-                }
-                
-                if (targetRowIndex !== -1) {
-                    const srNo = currentData[targetRowIndex]["Sr. No"];
+            // Case 3: only vehicle new
+            else if (normVehicle && !vehicleExists) {
+                let idx = -1;
+                if (normVendor) idx = data.findIndex(r => isEmptyVehicle(r) && r["Vendor Name"] === normVendor);
+                if (idx === -1)  idx = data.findIndex(isEmptyVehicle);
+                if (idx !== -1) {
+                    const srNo = data[idx]["Sr. No"];
                     const rowIndex = parseInt(srNo) + 1;
-                    const existingVendor = currentData[targetRowIndex]["Vendor Name"] || "";
-                    const success = await updateSourceRow(rowIndex, srNo, existingVendor, normalizedVehicle);
-                    if (success) {
-                        addedItems.push(`Added Vehicle "${normalizedVehicle}" to existing row (Sr. No ${srNo})`);
-                        currentData[targetRowIndex]["Vehicle No"] = normalizedVehicle;
+                    const exVen = data[idx]["Vendor Name"] || "";
+                    const ok = await updateSourceRow(rowIndex, srNo, exVen, normVehicle);
+                    if (ok) {
+                        addedItems.push(`Added Vehicle "${normVehicle}" to existing row (Sr. No ${srNo})`);
+                        data[idx]["Vehicle No"] = normVehicle;
                         dataModified = true;
                     }
                 } else {
-                    // No empty row found, create new row at the end
-                    const maxSrNo = currentData.reduce((max, row) => Math.max(max, parseInt(row["Sr. No"]) || 0), 0);
-                    const newSrNo = maxSrNo + 1;
-                    const success = await addRowToSourceSheet(newSrNo, normalizedVendor || "", normalizedVehicle);
-                    if (success) {
-                        addedItems.push(`Created new Vehicle entry: "${normalizedVehicle}" (Sr. No ${newSrNo})`);
-                        currentData.push({ "Sr. No": newSrNo.toString(), "Vendor Name": normalizedVendor || "", "Vehicle No": normalizedVehicle });
+                    const newSr = maxSr() + 1;
+                    const ok = await addRowToSourceSheet(newSr, normVendor || "", normVehicle);
+                    if (ok) {
+                        addedItems.push(`Created new Vehicle entry: "${normVehicle}" (Sr. No ${newSr})`);
+                        data.push({ "Sr. No": String(newSr), "Vendor Name": normVendor || "", "Vehicle No": normVehicle });
                         dataModified = true;
                     }
                 }
             }
-            
+
             if (dataModified) {
-                localStorage.setItem(SOURCE_CACHE_KEY, JSON.stringify({
-                    data: currentData,
-                    timestamp: Date.now()
-                }));
-                updateSourceOptionsFromData(currentData);
+                try {
+                    localStorage.setItem(SOURCE_CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
+                } catch { /* quota */ }
+                updateSourceOptionsFromData(data);
             }
             return { addedItems, dataModified };
         }
-        
-        // ================================================================
-        // FIXED: SMART SAVE FOR DESTINATION - Properly finds first empty row
-        // ================================================================
-        
+
+        /* ======================== SMART SAVE: DESTINATION ======================== */
         async function smartSaveToDestinationSheet(pickupName, destination, existingData) {
             const addedItems = [];
             let dataModified = false;
-            
-            if ((!pickupName || pickupName.trim() === "") && (!destination || destination.trim() === "")) {
-                return { addedItems, dataModified: false };
-            }
-            
-            let currentData = JSON.parse(JSON.stringify(existingData));
-            const normalizedPickup = pickupName ? pickupName.trim() : "";
-            const normalizedDest = destination ? destination.trim() : "";
-            
-            // Check if pickup name already exists
-            const pickupExists = normalizedPickup && currentData.some(row => row["Pickup Name"] === normalizedPickup);
-            // Check if destination already exists
-            const destExists = normalizedDest && currentData.some(row => row["Destination"] === normalizedDest);
-            
-            // Case 1: Both Pickup Name and Destination are new
-            if (normalizedPickup && normalizedDest && !pickupExists && !destExists) {
-                // Find first empty row (both columns empty)
-                let emptyRowIndex = currentData.findIndex(row => 
-                    (!row["Pickup Name"] || row["Pickup Name"] === "") && 
-                    (!row["Destination"] || row["Destination"] === "")
-                );
-                
-                if (emptyRowIndex !== -1) {
-                    // Update existing empty row
-                    const srNo = currentData[emptyRowIndex]["Sr. No"];
+
+            const normPickup = pickupName  ? String(pickupName).trim()  : "";
+            const normDest   = destination ? String(destination).trim() : "";
+
+            if (!normPickup && !normDest) return { addedItems, dataModified };
+
+            const data = JSON.parse(JSON.stringify(existingData));
+            const pickupExists = normPickup && data.some(r => r["Pickup Name"] === normPickup);
+            const destExists   = normDest   && data.some(r => r["Destination"] === normDest);
+
+            const isEmptyBoth     = r => (!r["Pickup Name"] || r["Pickup Name"] === "") && (!r["Destination"] || r["Destination"] === "");
+            const isEmptyPickup   = r => (!r["Pickup Name"] || r["Pickup Name"] === "");
+            const isEmptyDest     = r => (!r["Destination"] || r["Destination"] === "");
+
+            const maxSr = () => data.reduce((m, r) => Math.max(m, parseInt(r["Sr. No"]) || 0), 0);
+
+            // Case 1: both new
+            if (normPickup && normDest && !pickupExists && !destExists) {
+                const idx = data.findIndex(isEmptyBoth);
+                if (idx !== -1) {
+                    const srNo = data[idx]["Sr. No"];
                     const rowIndex = parseInt(srNo) + 1;
-                    const success = await updateDestinationRow(rowIndex, srNo, normalizedPickup, normalizedDest);
-                    if (success) {
-                        addedItems.push(`Added "${normalizedPickup}" + "${normalizedDest}" to existing empty row (Sr. No ${srNo})`);
-                        currentData[emptyRowIndex]["Pickup Name"] = normalizedPickup;
-                        currentData[emptyRowIndex]["Destination"] = normalizedDest;
+                    const ok = await updateDestinationRow(rowIndex, srNo, normPickup, normDest);
+                    if (ok) {
+                        addedItems.push(`Added "${normPickup}" + "${normDest}" to existing empty row (Sr. No ${srNo})`);
+                        data[idx]["Pickup Name"] = normPickup;
+                        data[idx]["Destination"] = normDest;
                         dataModified = true;
                     }
                 } else {
-                    // No empty row found, create new row at the end
-                    const maxSrNo = currentData.reduce((max, row) => Math.max(max, parseInt(row["Sr. No"]) || 0), 0);
-                    const newSrNo = maxSrNo + 1;
-                    const success = await addRowToDestinationSheet(newSrNo, normalizedPickup, normalizedDest);
-                    if (success) {
-                        addedItems.push(`Created new entry: "${normalizedPickup}" + "${normalizedDest}" (Sr. No ${newSrNo})`);
-                        currentData.push({ "Sr. No": newSrNo.toString(), "Pickup Name": normalizedPickup, "Destination": normalizedDest });
+                    const newSr = maxSr() + 1;
+                    const ok = await addRowToDestinationSheet(newSr, normPickup, normDest);
+                    if (ok) {
+                        addedItems.push(`Created new entry: "${normPickup}" + "${normDest}" (Sr. No ${newSr})`);
+                        data.push({ "Sr. No": String(newSr), "Pickup Name": normPickup, "Destination": normDest });
                         dataModified = true;
                     }
                 }
             }
-            // Case 2: Only Pickup Name is new, Destination exists or is empty
-            else if (normalizedPickup && !pickupExists) {
-                // Try to find row with matching Destination first
-                let targetRowIndex = -1;
-                if (normalizedDest) {
-                    targetRowIndex = currentData.findIndex(row => 
-                        (!row["Pickup Name"] || row["Pickup Name"] === "") && 
-                        row["Destination"] === normalizedDest
-                    );
-                }
-                // If not found, find any empty Pickup Name row
-                if (targetRowIndex === -1) {
-                    targetRowIndex = currentData.findIndex(row => 
-                        (!row["Pickup Name"] || row["Pickup Name"] === "")
-                    );
-                }
-                
-                if (targetRowIndex !== -1) {
-                    const srNo = currentData[targetRowIndex]["Sr. No"];
+            // Case 2: only pickup new
+            else if (normPickup && !pickupExists) {
+                let idx = -1;
+                if (normDest) idx = data.findIndex(r => isEmptyPickup(r) && r["Destination"] === normDest);
+                if (idx === -1) idx = data.findIndex(isEmptyPickup);
+                if (idx !== -1) {
+                    const srNo = data[idx]["Sr. No"];
                     const rowIndex = parseInt(srNo) + 1;
-                    const existingDest = currentData[targetRowIndex]["Destination"] || "";
-                    const success = await updateDestinationRow(rowIndex, srNo, normalizedPickup, existingDest);
-                    if (success) {
-                        addedItems.push(`Added Pickup Name "${normalizedPickup}" to existing row (Sr. No ${srNo})`);
-                        currentData[targetRowIndex]["Pickup Name"] = normalizedPickup;
+                    const exDest = data[idx]["Destination"] || "";
+                    const ok = await updateDestinationRow(rowIndex, srNo, normPickup, exDest);
+                    if (ok) {
+                        addedItems.push(`Added Pickup Name "${normPickup}" to existing row (Sr. No ${srNo})`);
+                        data[idx]["Pickup Name"] = normPickup;
                         dataModified = true;
                     }
                 } else {
-                    // No empty row found, create new row at the end
-                    const maxSrNo = currentData.reduce((max, row) => Math.max(max, parseInt(row["Sr. No"]) || 0), 0);
-                    const newSrNo = maxSrNo + 1;
-                    const success = await addRowToDestinationSheet(newSrNo, normalizedPickup, normalizedDest || "");
-                    if (success) {
-                        addedItems.push(`Created new Pickup Name entry: "${normalizedPickup}" (Sr. No ${newSrNo})`);
-                        currentData.push({ "Sr. No": newSrNo.toString(), "Pickup Name": normalizedPickup, "Destination": normalizedDest || "" });
+                    const newSr = maxSr() + 1;
+                    const ok = await addRowToDestinationSheet(newSr, normPickup, normDest || "");
+                    if (ok) {
+                        addedItems.push(`Created new Pickup Name entry: "${normPickup}" (Sr. No ${newSr})`);
+                        data.push({ "Sr. No": String(newSr), "Pickup Name": normPickup, "Destination": normDest || "" });
                         dataModified = true;
                     }
                 }
             }
-            // Case 3: Only Destination is new, Pickup Name exists or is empty
-            else if (normalizedDest && !destExists) {
-                // Try to find row with matching Pickup Name first
-                let targetRowIndex = -1;
-                if (normalizedPickup) {
-                    targetRowIndex = currentData.findIndex(row => 
-                        (!row["Destination"] || row["Destination"] === "") && 
-                        row["Pickup Name"] === normalizedPickup
-                    );
-                }
-                // If not found, find any empty Destination row
-                if (targetRowIndex === -1) {
-                    targetRowIndex = currentData.findIndex(row => 
-                        (!row["Destination"] || row["Destination"] === "")
-                    );
-                }
-                
-                if (targetRowIndex !== -1) {
-                    const srNo = currentData[targetRowIndex]["Sr. No"];
+            // Case 3: only destination new
+            else if (normDest && !destExists) {
+                let idx = -1;
+                if (normPickup) idx = data.findIndex(r => isEmptyDest(r) && r["Pickup Name"] === normPickup);
+                if (idx === -1) idx = data.findIndex(isEmptyDest);
+                if (idx !== -1) {
+                    const srNo = data[idx]["Sr. No"];
                     const rowIndex = parseInt(srNo) + 1;
-                    const existingPickup = currentData[targetRowIndex]["Pickup Name"] || "";
-                    const success = await updateDestinationRow(rowIndex, srNo, existingPickup, normalizedDest);
-                    if (success) {
-                        addedItems.push(`Added Destination "${normalizedDest}" to existing row (Sr. No ${srNo})`);
-                        currentData[targetRowIndex]["Destination"] = normalizedDest;
+                    const exPickup = data[idx]["Pickup Name"] || "";
+                    const ok = await updateDestinationRow(rowIndex, srNo, exPickup, normDest);
+                    if (ok) {
+                        addedItems.push(`Added Destination "${normDest}" to existing row (Sr. No ${srNo})`);
+                        data[idx]["Destination"] = normDest;
                         dataModified = true;
                     }
                 } else {
-                    // No empty row found, create new row at the end
-                    const maxSrNo = currentData.reduce((max, row) => Math.max(max, parseInt(row["Sr. No"]) || 0), 0);
-                    const newSrNo = maxSrNo + 1;
-                    const success = await addRowToDestinationSheet(newSrNo, normalizedPickup || "", normalizedDest);
-                    if (success) {
-                        addedItems.push(`Created new Destination entry: "${normalizedDest}" (Sr. No ${newSrNo})`);
-                        currentData.push({ "Sr. No": newSrNo.toString(), "Pickup Name": normalizedPickup || "", "Destination": normalizedDest });
+                    const newSr = maxSr() + 1;
+                    const ok = await addRowToDestinationSheet(newSr, normPickup || "", normDest);
+                    if (ok) {
+                        addedItems.push(`Created new Destination entry: "${normDest}" (Sr. No ${newSr})`);
+                        data.push({ "Sr. No": String(newSr), "Pickup Name": normPickup || "", "Destination": normDest });
                         dataModified = true;
                     }
                 }
             }
-            
+
             if (dataModified) {
-                localStorage.setItem(DEST_CACHE_KEY, JSON.stringify({
-                    data: currentData,
-                    timestamp: Date.now()
-                }));
-                updateDestinationOptionsFromData(currentData);
+                try {
+                    localStorage.setItem(DEST_CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
+                } catch { /* quota */ }
+                updateDestinationOptionsFromData(data);
             }
             return { addedItems, dataModified };
         }
-        
+
+        /* ======================== FORCE REFRESH HELPERS ======================== */
+        // OPTIMIZATION: single helper for both Source & Destination fresh fetches.
+        async function forceFetchSheet(sheetName, cacheKey) {
+            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${sheetName}&_=${Date.now()}`;
+            try {
+                const res  = await fetch(url);
+                const json = await res.json();
+                if (json.status === "success" && Array.isArray(json.data)) {
+                    try {
+                        localStorage.setItem(cacheKey, JSON.stringify({ data: json.data, timestamp: Date.now() }));
+                    } catch { /* quota */ }
+                    return json.data;
+                }
+            } catch (err) {
+                console.error(`Force fetch ${sheetName} failed:`, err);
+            }
+            return [];
+        }
+        const fetchExistingSourceData      = (force = false) => {
+            if (force) localStorage.removeItem(SOURCE_CACHE_KEY);
+            return forceFetchSheet(SOURCE_SHEET, SOURCE_CACHE_KEY);
+        };
+        const fetchExistingDestinationData = (force = false) => {
+            if (force) localStorage.removeItem(DEST_CACHE_KEY);
+            return forceFetchSheet(DESTINATION_SHEET, DEST_CACHE_KEY);
+        };
+
+        /* ======================== RENDER (STRING-BUILT DOM) ======================== */
+        // OPTIMIZATION #8: build HTML as a single string, write once, delegate clicks.
         function renderTablePage1(filter = "") {
             if (!dom.tableBody) return;
-            const searchLower = filter.toLowerCase();
-            let filtered = allEntries.filter(t => {
-                const lr = (t["LR No"] || "").toString().toLowerCase();
-                const vendor = (t["Vendor Name (Source)"] || "").toString().toLowerCase();
+            const q = filter.toLowerCase();
+
+            const filtered = allEntries.filter(t => {
+                const lr      = (t["LR No"] || "").toString().toLowerCase();
+                const vendor  = (t["Vendor Name (Source)"] || "").toString().toLowerCase();
                 const vehicle = (t["Vehicle No"] || "").toString().toLowerCase();
-                const sr = (t["Sr. No"] || "").toString().toLowerCase();
-                return lr.includes(searchLower) || vendor.includes(searchLower) || vehicle.includes(searchLower) || sr.includes(searchLower);
+                const sr      = (t["Sr. No"] || "").toString().toLowerCase();
+                return lr.includes(q) || vendor.includes(q) || vehicle.includes(q) || sr.includes(q);
             });
-            
+
             if (!filtered.length) {
                 dom.tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">✨ No entries found</td></tr>';
                 return;
             }
-            
-            const fragment = document.createDocumentFragment();
-            filtered.forEach(t => {
-                const row = document.createElement('tr');
+
+            const rowsHtml = filtered.map(t => {
                 const amount = parseFloat(t["Amount"] || 0).toLocaleString();
-                const displayDate = formatDisplayDate(t["Date"]);
-                row.innerHTML = `
+                const date   = formatDisplayDate(t["Date"]);
+                return `<tr>
                     <td><strong>${escapeHtml(t["Sr. No"] || "")}</strong></td>
-                    <td>${escapeHtml(displayDate)}</td>
+                    <td>${escapeHtml(date)}</td>
                     <td>${escapeHtml(t["Vendor Name (Source)"] || "")}</td>
                     <td><span class="total-badge">₹ ${amount}</span></td>
                     <td><button class="view-action-btn" data-sr="${escapeHtml(t["Sr. No"] || "")}">👁️ View</button></td>
-                `;
-                fragment.appendChild(row);
-            });
-            dom.tableBody.innerHTML = '';
-            dom.tableBody.appendChild(fragment);
-            dom.tableBody.querySelectorAll('.view-action-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const srVal = btn.getAttribute('data-sr');
-                    const found = allEntries.find(tr => String(tr["Sr. No"]) === String(srVal));
-                    if (found) {
-                        currentViewEntry = found;
-                        showPage2(found);
-                    }
-                });
+                </tr>`;
+            }).join('');
+
+            dom.tableBody.innerHTML = rowsHtml;
+        }
+
+        function attachTableDelegation() {
+            if (!dom.tableBody) return;
+            dom.tableBody.addEventListener('click', (e) => {
+                const btn = e.target.closest('.view-action-btn');
+                if (!btn) return;
+                e.stopPropagation();
+                const srVal = btn.getAttribute('data-sr');
+                const found = allEntries.find(tr => String(tr["Sr. No"]) === String(srVal));
+                if (found) {
+                    currentViewEntry = found;
+                    showPage2(found);
+                }
             });
         }
-        
+
         function showPage2(entry) {
             if (!dom.detailsContainer) return;
             const fields = [
-                "Sr. No", "Date", "Vendor Name (Source)", "Vehicle No", 
-                "Pickup Location", "Destination (Draft) Location", 
+                "Sr. No", "Date", "Vendor Name (Source)", "Vehicle No",
+                "Pickup Location", "Destination (Draft) Location",
                 "Weight (KG)", "LR No", "Package Name", "Amount", "Note"
             ];
-            const fragment = document.createDocumentFragment();
-            fields.forEach(f => {
+
+            const html = fields.map(f => {
                 let val = entry[f] !== undefined ? entry[f] : '';
                 if (f === 'Date') val = formatDisplayDate(val);
-                const card = document.createElement('div');
-                card.className = 'detail-card';
-                card.innerHTML = `<div class="detail-label">${f}</div><div class="detail-value">${escapeHtml(String(val)) || '—'}</div>`;
-                fragment.appendChild(card);
-            });
-            dom.detailsContainer.innerHTML = '';
-            dom.detailsContainer.appendChild(fragment);
+                return `<div class="detail-card">
+                    <div class="detail-label">${escapeHtml(f)}</div>
+                    <div class="detail-value">${escapeHtml(String(val)) || '—'}</div>
+                </div>`;
+            }).join('');
+
+            dom.detailsContainer.innerHTML = html;
             dom.page1?.classList.remove('active-page');
             dom.page2?.classList.add('active-page');
         }
-        
+
         function goToPage1() {
             dom.page2?.classList.remove('active-page');
             dom.page1?.classList.add('active-page');
-            refreshInBackground();
         }
-        
-        async function refreshInBackground() {
-            const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}&_=${Date.now()}`;
-            const response = await fetch(url);
-            const result = await response.json();
-            if (result.status === "success" && Array.isArray(result.data)) {
-                allEntries = result.data;
-                localStorage.setItem(CACHE_KEY, JSON.stringify({ data: result.data, timestamp: Date.now() }));
-                renderTablePage1(dom.searchInput?.value || "");
-            }
-        }
-        
+
+        /* ======================== REFRESH ======================== */
+        // OPTIMIZATION #1: on cold start and manual refresh, wipe cache + fetch fresh.
         async function refreshAllData() {
-            if (dom.refreshBtn) showSpinner(dom.refreshBtn, true);
-            try {
-                localStorage.removeItem(CACHE_KEY);
-                localStorage.removeItem(SOURCE_CACHE_KEY);
-                localStorage.removeItem(DEST_CACHE_KEY);
-                allEntries = await loadEntriesFast();
-                await loadSourceFast();
-                await loadDestinationFast();
-                renderTablePage1(dom.searchInput?.value || "");
-            } catch (err) {
-                console.error("Refresh error:", err);
-            } finally {
-                if (dom.refreshBtn) showSpinner(dom.refreshBtn, false);
-            }
+            localStorage.removeItem(CACHE_KEY);
+            localStorage.removeItem(SOURCE_CACHE_KEY);
+            localStorage.removeItem(DEST_CACHE_KEY);
+            await fetchAllSources({ skipCache: true });
+            renderTablePage1(dom.searchInput?.value || "");
         }
-        
+
         function findRowIndexBySrNo(sr) {
             const idx = allEntries.findIndex(t => String(t["Sr. No"]) === String(sr));
             return idx !== -1 ? idx + 2 : null;
         }
-        
+
+        /* ======================== DELETE ======================== */
         async function deleteCurrentEntry() {
             if (!currentViewEntry) return;
             const sr = currentViewEntry["Sr. No"];
             const rowIdx = findRowIndexBySrNo(sr);
             if (!rowIdx) { showModal("Row error", "Error"); return; }
+
             showModal(`⚠️ Do you want to delete Entry No ${sr}?`, "Confirm Delete", true, async () => {
-                if (dom.deleteBtn) showSpinner(dom.deleteBtn, true);
+                showSpinner(dom.deleteBtn, true);
                 try {
-                    const params = new URLSearchParams();
-                    params.append("action", "delete");
-                    params.append("spreadsheetId", SPREADSHEET_ID);
-                    params.append("sheetName", SHEET_NAME);
-                    params.append("rowIndex", rowIdx);
-                    const response = await fetch(SCRIPT_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                        body: params
+                    const ok = await postToSheet({
+                        action: "delete",
+                        spreadsheetId: SPREADSHEET_ID,
+                        sheetName: SHEET_NAME,
+                        rowIndex: String(rowIdx)
                     });
-                    const result = await response.json();
-                    if (result.status === "success") {
+                    if (ok) {
                         showModal("✅ Deleted successfully!", "Success", false, null, 1200);
                         await refreshAllData();
                         goToPage1();
@@ -1695,11 +1250,12 @@
                 } catch (err) {
                     showModal("Error: " + err.message, "Error");
                 } finally {
-                    if (dom.deleteBtn) showSpinner(dom.deleteBtn, false);
+                    showSpinner(dom.deleteBtn, false);
                 }
             });
         }
-        
+
+        /* ======================== FORM ======================== */
         function buildFormHtml(entry = null, isEdit = false) {
             const def = {
                 "Date": "", "Vendor Name (Source)": "", "Vehicle No": "",
@@ -1710,7 +1266,7 @@
                 Object.keys(def).forEach(k => { if (entry[k] !== undefined) def[k] = entry[k]; });
             }
             const dateValue = def["Date"] ? formatToYYYYMMDD(def["Date"]) : "";
-            
+
             return `
                 <form id="dynamicEntryForm">
                     <div class="form-grid">
@@ -1744,103 +1300,100 @@
                 </form>
             `;
         }
-        
+
+        /* ======================== AUTOCOMPLETE ======================== */
+        // OPTIMIZATION #5: debounce the input handler (180 ms) + single delegated click.
         function setupAutocomplete(inputId, listId, optionsArray) {
-            const input = document.getElementById(inputId);
+            const input  = document.getElementById(inputId);
             const listEl = document.getElementById(listId);
             if (!input || !listEl) return;
-            function showOptions(filterVal = '') {
+
+            let debounceId = null;
+
+            function render(filterVal = '') {
                 const term = filterVal.toLowerCase();
-                const filtered = optionsArray.filter(opt => opt.toLowerCase().includes(term));
-                if (filtered.length > 0) {
-                    listEl.innerHTML = filtered.map(opt => `<div class="autocomplete-item" data-value="${escapeHtml(opt)}">${escapeHtml(opt)}</div>`).join('');
-                    listEl.style.display = 'block';
-                    listEl.querySelectorAll('.autocomplete-item').forEach(item => {
-                        item.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            input.value = item.getAttribute('data-value');
-                            listEl.style.display = 'none';
-                            input.dispatchEvent(new Event('input', { bubbles: true }));
-                        });
-                    });
-                } else {
-                    listEl.style.display = 'none';
-                }
+                const filtered = term
+                    ? optionsArray.filter(o => o.toLowerCase().includes(term))
+                    : optionsArray;
+
+                if (!filtered.length) { listEl.style.display = 'none'; return; }
+
+                listEl.innerHTML = filtered.map(opt =>
+                    `<div class="autocomplete-item" data-value="${escapeHtml(opt)}">${escapeHtml(opt)}</div>`
+                ).join('');
+                listEl.style.display = 'block';
             }
-            input.addEventListener('input', (e) => showOptions(e.target.value));
-            input.addEventListener('focus', () => showOptions(input.value));
-            input.addEventListener('blur', () => setTimeout(() => listEl.style.display = 'none', 200));
+
+            input.addEventListener('input', (e) => {
+                if (debounceId) clearTimeout(debounceId);
+                debounceId = setTimeout(() => render(e.target.value), 180);
+            });
+            input.addEventListener('focus', () => render(input.value));
+            input.addEventListener('blur',  () => setTimeout(() => listEl.style.display = 'none', 180));
+
+            listEl.addEventListener('click', (e) => {
+                const item = e.target.closest('.autocomplete-item');
+                if (!item) return;
+                input.value = item.getAttribute('data-value');
+                listEl.style.display = 'none';
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+
             document.addEventListener('click', (e) => {
                 if (!listEl.contains(e.target) && e.target !== input) listEl.style.display = 'none';
             });
         }
-        
+
         function attachFormEvents(isEdit, rowIdx) {
             const form = document.getElementById('dynamicEntryForm');
-            if (form) {
-                form.onsubmit = (e) => {
-                    handleFormSubmit(e, isEdit, rowIdx);
-                };
-            }
-            
-            document.getElementById('cancelFormBtn')?.addEventListener('click', () => dom.formModal?.classList.remove('active'));
+            if (form) form.onsubmit = (e) => handleFormSubmit(e, isEdit, rowIdx);
+            document.getElementById('cancelFormBtn')?.addEventListener('click', () =>
+                dom.formModal?.classList.remove('active'));
         }
-        
+
+        /* ======================== FORM SUBMIT ======================== */
         async function handleFormSubmit(e, isEdit, rowIdx) {
             e.preventDefault();
-            
-            if (saveInProgress) {
-                console.log('Save already in progress, ignoring duplicate submission');
-                return;
-            }
+            if (saveInProgress) return;
             saveInProgress = true;
-            
+
             const dateInput = document.getElementById('editDate');
             if (dateInput) dateInput.blur();
-            
+
             const saveBtn = document.getElementById('saveUpdateBtn');
             showSpinner(saveBtn, true);
-            
+
             const dateValue = dateInput?.value || "";
-            
-            if (!dateValue) {
-                showModal('❌ Date is required. Please select a date.', 'Validation Error');
+            if (!dateValue || !/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
+                showModal('❌ Date is required and must be valid.', 'Validation Error');
                 saveInProgress = false;
                 showSpinner(saveBtn, false);
                 return;
             }
-            
-            if (!/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
-                showModal('❌ Invalid Date format. Please select a valid date.', 'Validation Error');
-                saveInProgress = false;
-                showSpinner(saveBtn, false);
-                return;
-            }
-            
             const [year, month, day] = dateValue.split('-');
             const testDate = new Date(year, month - 1, day);
-            if (isNaN(testDate.getTime()) || 
-                testDate.getFullYear() != year || 
-                testDate.getMonth() + 1 != month || 
+            if (isNaN(testDate.getTime()) ||
+                testDate.getFullYear() != year ||
+                testDate.getMonth() + 1 != month ||
                 testDate.getDate() != day) {
                 showModal('❌ Invalid date. Please select a valid date.', 'Validation Error');
                 saveInProgress = false;
                 showSpinner(saveBtn, false);
                 return;
             }
-            
+
             const formData = {
-                vendorName: document.getElementById('editVendorName')?.value || "",
-                vehicleNo: document.getElementById('editVehicleNo')?.value || "",
-                pickupLocation: document.getElementById('editPickupLocation')?.value || "",
-                destination: document.getElementById('editDestination')?.value || "",
-                weight: document.getElementById('editWeight')?.value || "0",
-                lrNo: document.getElementById('editLrNo')?.value || "",
-                packageName: document.getElementById('editPackageName')?.value || "",
-                amount: document.getElementById('editAmount')?.value || "0",
-                note: document.getElementById('editNote')?.value || ""
+                vendorName:      document.getElementById('editVendorName')?.value || "",
+                vehicleNo:       document.getElementById('editVehicleNo')?.value || "",
+                pickupLocation:  document.getElementById('editPickupLocation')?.value || "",
+                destination:     document.getElementById('editDestination')?.value || "",
+                weight:          document.getElementById('editWeight')?.value || "0",
+                lrNo:            document.getElementById('editLrNo')?.value || "",
+                packageName:     document.getElementById('editPackageName')?.value || "",
+                amount:          document.getElementById('editAmount')?.value || "0",
+                note:            document.getElementById('editNote')?.value || ""
             };
-            
+
             const params = new URLSearchParams();
             params.append("action", isEdit ? "update" : "insert");
             params.append("spreadsheetId", SPREADSHEET_ID);
@@ -1856,57 +1409,64 @@
             params.append("Package Name", formData.packageName);
             params.append("Amount", formData.amount);
             params.append("Note", formData.note);
-            
+
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 30000);
-                
+                const timeoutId  = setTimeout(() => controller.abort(), 30000);
+
                 const response = await fetch(SCRIPT_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: params.toString(),
                     signal: controller.signal
                 });
-                
                 clearTimeout(timeoutId);
+
                 const result = await response.json();
-                
+
                 if (result.status === "success") {
+                    // OPTIMIZATION #6: run Source & Destination smart-saves in PARALLEL.
                     let sourceMsg = "";
-                    let destMsg = "";
-                    
+                    let destMsg   = "";
+
+                    const tasks = [];
+
                     if (formData.vendorName || formData.vehicleNo) {
-                        try {
-                            const existingSourceData = await fetchExistingSourceData(true);
-                            const sourceResult = await smartSaveToSourceSheet(formData.vendorName, formData.vehicleNo, existingSourceData);
-                            if (sourceResult.addedItems.length > 0) sourceMsg = `<br><br>📌 Source: ${sourceResult.addedItems.join('<br>')}`;
-                            await loadSourceFast();
-                        } catch (err) { 
-                            console.error('Source save error:', err);
-                            sourceMsg = `<br><br>⚠️ Note: Entry saved, but Source sheet update failed.`; 
-                        }
+                        tasks.push((async () => {
+                            try {
+                                const existing = await fetchExistingSourceData(true);
+                                const r = await smartSaveToSourceSheet(formData.vendorName, formData.vehicleNo, existing);
+                                if (r.addedItems.length > 0) sourceMsg = `<br><br>📌 Source: ${r.addedItems.join('<br>')}`;
+                            } catch (err) {
+                                console.error('Source save error:', err);
+                                sourceMsg = `<br><br>⚠️ Note: Entry saved, but Source sheet update failed.`;
+                            }
+                        })());
                     }
-                    
+
                     if (formData.pickupLocation || formData.destination) {
-                        try {
-                            const existingDestData = await fetchExistingDestinationData(true);
-                            const destResult = await smartSaveToDestinationSheet(formData.pickupLocation, formData.destination, existingDestData);
-                            if (destResult.addedItems.length > 0) destMsg = `<br><br>📌 Destination: ${destResult.addedItems.join('<br>')}`;
-                            await loadDestinationFast();
-                        } catch (err) { 
-                            console.error('Destination save error:', err);
-                            destMsg = `<br><br>⚠️ Note: Entry saved, but Destination sheet update failed.`; 
-                        }
+                        tasks.push((async () => {
+                            try {
+                                const existing = await fetchExistingDestinationData(true);
+                                const r = await smartSaveToDestinationSheet(formData.pickupLocation, formData.destination, existing);
+                                if (r.addedItems.length > 0) destMsg = `<br><br>📌 Destination: ${r.addedItems.join('<br>')}`;
+                            } catch (err) {
+                                console.error('Destination save error:', err);
+                                destMsg = `<br><br>⚠️ Note: Entry saved, but Destination sheet update failed.`;
+                            }
+                        })());
                     }
-                    
+
+                    await Promise.all(tasks);
+
                     showModal(`${isEdit ? "✅ Entry updated" : "✅ Entry saved"} successfully!${sourceMsg}${destMsg}`, "Success", false, null, 3000);
-                    
-                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    // OPTIMIZATION: skip the 500 ms delay — modal close + refresh can happen immediately.
                     dom.formModal?.classList.remove('active');
                     await refreshAllData();
                     goToPage1();
-                } else { 
-                    showModal("❌ Error: " + (result.message || "Unknown error"), "Error"); 
+                } else {
+                    showModal("❌ Error: " + (result.message || "Unknown error"), "Error");
                 }
             } catch (err) {
                 console.error('Save error:', err);
@@ -1915,62 +1475,96 @@
                 } else {
                     showModal("❌ Error: " + err.message, "Error");
                 }
-            } finally { 
+            } finally {
                 saveInProgress = false;
                 showSpinner(saveBtn, false);
             }
         }
-        
+
+        /* ======================== MODAL OPENERS ======================== */
         async function openAddModal() {
             if (!dom.formModalBody) return;
-            dom.formModalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="spinner"></div><p style="margin-top: 12px;">Loading form...</p></div>';
+            dom.formModalBody.innerHTML = '<div style="text-align:center;padding:40px;"><div class="spinner"></div><p style="margin-top:12px;">Loading form...</p></div>';
             dom.formModal.classList.add('active');
-            dom.formModalTitle.innerHTML = "➕ Add New Entry";
+            dom.formModalTitle.textContent = "➕ Add New Entry";
             dom.formModalBody.innerHTML = buildFormHtml(null, false);
-            setTimeout(() => {
-                setupAutocomplete('editVendorName', 'vendorAutoList', sourceOptions);
-                setupAutocomplete('editVehicleNo', 'vehicleAutoList', vehicleOptions);
-                setupAutocomplete('editPickupLocation', 'pickupAutoList', pickupOptions);
-                setupAutocomplete('editDestination', 'destAutoList', destinationOptions);
+            // OPTIMIZATION: rAF instead of setTimeout — runs after paint, no artificial 20 ms delay.
+            requestAnimationFrame(() => {
+                setupAutocomplete('editVendorName',     'vendorAutoList',  sourceOptions);
+                setupAutocomplete('editVehicleNo',      'vehicleAutoList', vehicleOptions);
+                setupAutocomplete('editPickupLocation', 'pickupAutoList',  pickupOptions);
+                setupAutocomplete('editDestination',    'destAutoList',    destinationOptions);
                 attachFormEvents(false, null);
-            }, 20);
+            });
         }
-        
+
         async function openEditModal() {
             if (!currentViewEntry || !dom.formModalBody) return;
             const rowIdx = findRowIndexBySrNo(currentViewEntry["Sr. No"]);
             if (!rowIdx) { showModal("Row error", "Error"); return; }
-            dom.formModalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="spinner"></div><p style="margin-top: 12px;">Loading edit form...</p></div>';
+            dom.formModalBody.innerHTML = '<div style="text-align:center;padding:40px;"><div class="spinner"></div><p style="margin-top:12px;">Loading edit form...</p></div>';
             dom.formModal.classList.add('active');
-            dom.formModalTitle.innerHTML = "✏️ Edit Entry";
+            dom.formModalTitle.textContent = "✏️ Edit Entry";
             dom.formModalBody.innerHTML = buildFormHtml(currentViewEntry, true);
-            setTimeout(() => {
-                setupAutocomplete('editVendorName', 'vendorAutoList', sourceOptions);
-                setupAutocomplete('editVehicleNo', 'vehicleAutoList', vehicleOptions);
-                setupAutocomplete('editPickupLocation', 'pickupAutoList', pickupOptions);
-                setupAutocomplete('editDestination', 'destAutoList', destinationOptions);
+            requestAnimationFrame(() => {
+                setupAutocomplete('editVendorName',     'vendorAutoList',  sourceOptions);
+                setupAutocomplete('editVehicleNo',      'vehicleAutoList', vehicleOptions);
+                setupAutocomplete('editPickupLocation', 'pickupAutoList',  pickupOptions);
+                setupAutocomplete('editDestination',    'destAutoList',    destinationOptions);
                 attachFormEvents(true, rowIdx);
-            }, 20);
+            });
         }
-        
+
+        /* ======================== INIT ======================== */
         async function fastInit() {
             cacheDomElements();
-            if (dom.tableBody) dom.tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;"><div class="spinner"></div> Loading entries...</td></tr>';
-            const [tripsData] = await Promise.all([loadEntriesFast(), loadSourceFast(), loadDestinationFast()]);
+            attachTableDelegation();
+
+            // OPTIMIZATION #1: cold start always fetches fresh (skip cache).
+            // OPTIMIZATION #6: parallel fetch of entries + source + destination.
+            try {
+                await fetchAllSources({ skipCache: true });
+            } catch (err) {
+                console.error("Initial load failed:", err);
+                if (dom.tableBody) {
+                    dom.tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--danger);">⚠️ Failed to load data. Tap Refresh.</td></tr>';
+                }
+            }
             renderTablePage1("");
-            setTimeout(() => { refreshInBackground(); loadSourceFast(); loadDestinationFast(); }, 3000);
-            dom.refreshBtn?.addEventListener('click', async () => { if (dom.refreshBtn) showSpinner(dom.refreshBtn, true); try { localStorage.removeItem(CACHE_KEY); localStorage.removeItem(SOURCE_CACHE_KEY); localStorage.removeItem(DEST_CACHE_KEY); allEntries = await loadEntriesFast(); await loadSourceFast(); await loadDestinationFast(); renderTablePage1(dom.searchInput?.value || ""); } catch (err) { showModal("❌ Refresh failed: " + err.message, "Error"); } finally { if (dom.refreshBtn) showSpinner(dom.refreshBtn, false); } });
-            if (dom.mobileRefreshBtn) dom.mobileRefreshBtn.addEventListener('click', async () => { if (dom.mobileRefreshBtn) showSpinner(dom.mobileRefreshBtn, true); try { localStorage.removeItem(CACHE_KEY); localStorage.removeItem(SOURCE_CACHE_KEY); localStorage.removeItem(DEST_CACHE_KEY); allEntries = await loadEntriesFast(); await loadSourceFast(); await loadDestinationFast(); renderTablePage1(dom.searchInput?.value || ""); } catch (err) { showModal("❌ Refresh failed: " + err.message, "Error"); } finally { if (dom.mobileRefreshBtn) showSpinner(dom.mobileRefreshBtn, false); } });
+
+            // Consolidated refresh handler for desktop + mobile buttons.
+            // OPTIMIZATION: single async function, no duplicate logic.
+            const doRefresh = async (btn) => {
+                showSpinner(btn, true);
+                try { await refreshAllData(); }
+                catch (err) { showModal("❌ Refresh failed: " + err.message, "Error"); }
+                finally { showSpinner(btn, false); }
+            };
+            dom.refreshBtn?.addEventListener('click',       () => doRefresh(dom.refreshBtn));
+            dom.mobileRefreshBtn?.addEventListener('click', () => doRefresh(dom.mobileRefreshBtn));
+
             dom.addNewBtn?.addEventListener('click', openAddModal);
-            if (dom.mobileAddBtn) dom.mobileAddBtn.addEventListener('click', () => dom.addNewBtn?.click());
+            dom.mobileAddBtn?.addEventListener('click', () => dom.addNewBtn?.click());
+
             dom.backBtn?.addEventListener('click', goToPage1);
             dom.editBtn?.addEventListener('click', openEditModal);
             dom.deleteBtn?.addEventListener('click', deleteCurrentEntry);
-            dom.searchInput?.addEventListener('input', (e) => { if (searchDebounceTimer) clearTimeout(searchDebounceTimer); searchDebounceTimer = setTimeout(() => renderTablePage1(e.target.value), 300); });
+
+            // OPTIMIZATION #5: debounce search input (250 ms).
+            dom.searchInput?.addEventListener('input', (e) => {
+                if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+                searchDebounceTimer = setTimeout(() => renderTablePage1(e.target.value), 250);
+            });
+
             document.getElementById('closeGlobalModal')?.addEventListener('click', () => dom.globalModal?.classList.remove('active'));
             document.getElementById('closeFormModalBtn')?.addEventListener('click', () => dom.formModal?.classList.remove('active'));
-            window.onclick = (e) => { if (e.target.classList?.contains('modal-overlay')) e.target.classList.remove('active'); };
+
+            window.addEventListener('click', (e) => {
+                if (e.target.classList?.contains('modal-overlay')) e.target.classList.remove('active');
+            });
         }
+
+        // `defer` guarantees DOM is ready before this runs.
         fastInit();
     </script>
 </body>
