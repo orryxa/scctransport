@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <meta name="theme-color" content="#667eea">
+    <title>3108 Driver Salary | Smart Dashboard</title>
+
+    <!-- ============================================================
+         OPTIMIZATION #3: INLINE CRITICAL CSS
+         Above-the-fold styles are inlined so first paint happens
+         without waiting for external stylesheets.
+         ============================================================ -->
+    <style>
+        /* ---------- CSS Reset (critical) ---------- */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ---------- CSS Variables (critical) ---------- */
+        :root {
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-light: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --secondary: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --table-header-bg: #f8fafc;
+            --table-row-hover: #f1f5f9;
+            --table-border: #e2e8f0;
+            --transition-fast: 150ms ease;
+            --transition-normal: 300ms ease;
+        }
+
+        /* ---------- Dark theme variables ---------- */
+        [data-theme="dark"] {
+            --bg-primary: linear-gradient(135deg, #1e1e2e 0%, #2d1b4e 100%);
+            --bg-secondary: #1e1e2e;
+            --card-bg: rgba(30, 30, 46, 0.98);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-light: #64748b;
+            --border-color: #334155;
+            --table-header-bg: #1e293b;
+            --table-row-hover: #334155;
+            --table-border: #334155;
+        }
+
+        /* ---------- Base body (critical) ---------- */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            padding: 20px 16px;
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .app-container { max-width: 1400px; margin: 0 auto; }
+
+        /* ---------- Page visibility ---------- */
+        .page { display: none; }
+        .page.active-page {
+            display: block;
+            /* OPTIMIZATION #10: transform + opacity only (GPU-accelerated) */
+            animation: fadeSlide 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translate3d(0, 16px, 0) scale(0.98); }
+            to   { opacity: 1; transform: translate3d(0, 0, 0)    scale(1); }
+        }
+
+        /* ---------- Card shell (critical) ---------- */
+        .soft-card {
+            background: var(--card-bg);
+            border-radius: 2rem;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            /* OPTIMIZATION #10: transition only GPU-friendly props */
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            will-change: transform;
+        }
+
+        /* ---------- Card header (critical) ---------- */
+        .card-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        [data-theme="dark"] .card-header {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+        }
+        .card-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        /* ---------- Buttons (critical) ---------- */
+        .btn {
+            border: none;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            will-change: transform;
+        }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .btn-primary   { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; box-shadow: var(--shadow-sm); }
+        .btn-outline   { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-danger    { background: linear-gradient(135deg, var(--danger), #dc2626); color: #fff; }
+        .btn-success   { background: linear-gradient(135deg, var(--success), #059669); color: #fff; }
+        .btn-sm        { padding: 6px 16px; font-size: 0.75rem; }
+
+        .btn-primary:hover,
+        .btn-outline:hover,
+        .btn-danger:hover,
+        .btn-success:hover {
+            transform: translate3d(0, -2px, 0);
+            box-shadow: var(--shadow-md);
+        }
+        .btn-outline:hover { background: var(--primary); color: #fff; }
+
+        /* ---------- Search bar (critical) ---------- */
+        .search-section {
+            padding: 1.5rem 2rem;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .search-wrapper input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 60px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+        }
+        .search-wrapper input::placeholder { color: var(--text-light); }
+        .search-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        /* ---------- Data table (critical) ---------- */
+        .table-wrapper {
+            overflow-x: auto;
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .table-wrapper::-webkit-scrollbar { display: none; }
+
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.875rem;
+        }
+        .data-table th {
+            text-align: left;
+            padding: 16px;
+            background: var(--table-header-bg);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--primary);
+        }
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--table-border);
+            color: var(--text-primary);
+            transition: background var(--transition-fast);
+        }
+        .data-table tr:hover td { background: var(--table-row-hover); }
+
+        /* ---------- Sync badge ---------- */
+        .sync-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: var(--success);
+            color: #fff;
+            border-radius: 50%;
+            font-size: 14px;
+            margin-left: 8px;
+            cursor: help;
+        }
+        .sync-badge::after { content: "✓"; }
+
+        /* ---------- OPTIMIZATION #9: SKELETON LOADERS ---------- */
+        .skeleton-row td {
+            padding: 16px;
+            border-bottom: 1px solid var(--table-border);
+        }
+        .skeleton-bar {
+            height: 14px;
+            border-radius: 8px;
+            background: linear-gradient(90deg,
+                var(--table-header-bg) 0%,
+                var(--table-row-hover) 50%,
+                var(--table-header-bg) 100%);
+            background-size: 200% 100%;
+            animation: skeletonShimmer 1.4s ease-in-out infinite;
+            will-change: background-position;
+        }
+        @keyframes skeletonShimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ---------- Spinner ---------- */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            will-change: transform;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ---------- Details grid (critical) ---------- */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            padding: 2rem;
+        }
+        @media (max-width: 640px) {
+            .details-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+                padding: 1rem;
+            }
+        }
+        .detail-card {
+            background: linear-gradient(135deg, var(--card-bg), rgba(255,255,255,0.05));
+            border-radius: 1.2rem;
+            padding: 1rem 1.2rem;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            will-change: transform;
+        }
+        .detail-card:hover {
+            transform: translate3d(0, -2px, 0);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+        .detail-card.negative {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+            border-left: 4px solid var(--danger);
+        }
+        .detail-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+            font-weight: 700;
+        }
+        .detail-value {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-top: 6px;
+            color: var(--text-primary);
+            word-break: break-word;
+        }
+        .detail-value.negative { color: var(--danger); }
+
+        /* ---------- Action row ---------- */
+        .action-row {
+            padding: 1rem 2rem 2rem;
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        /* ---------- Modals (critical) ---------- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity var(--transition-normal), visibility var(--transition-normal);
+            will-change: opacity;
+        }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+
+        .modal-box {
+            background: var(--card-bg);
+            width: 92%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 2rem;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .modal-box::-webkit-scrollbar { display: none; }
+
+        .modal-overlay.active .modal-box {
+            /* OPTIMIZATION #10: transform + opacity only */
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.94); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            color: #fff;
+        }
+        .modal-header h3 { font-size: 1.3rem; font-weight: 700; }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #fff;
+            line-height: 1;
+            transition: transform var(--transition-fast);
+        }
+        .close-modal:hover { transform: rotate(90deg); }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            max-height: calc(85vh - 70px);
+            scrollbar-width: none;
+        }
+        .modal-body::-webkit-scrollbar { display: none; }
+
+        /* ---------- Form ---------- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+        .field { display: flex; flex-direction: column; gap: 6px; }
+        .field label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+        }
+        .field input,
+        .field select,
+        .field textarea {
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+        }
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        .calculated-field {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+            font-weight: 600;
+        }
+        .info-badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+        }
+
+        /* ---------- Autocomplete ---------- */
+        .autocomplete-wrap { position: relative; }
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 9999;
+            display: none;
+            box-shadow: var(--shadow-lg);
+            margin-top: 6px;
+            border: 1px solid var(--border-color);
+            scrollbar-width: none;
+        }
+        .autocomplete-list::-webkit-scrollbar { display: none; }
+        .autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            transition: background var(--transition-fast), color var(--transition-fast);
+        }
+        .autocomplete-item:hover { background: var(--primary); color: #fff; }
+
+        /* ---------- Summary table ---------- */
+        .summary-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .summary-table th,
+        .summary-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .summary-table th { background: var(--table-header-bg); color: var(--primary); font-weight: 700; }
+        .summary-table tr:hover td { background: var(--table-row-hover); }
+        .total-row { background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: #fff; font-weight: 700; }
+        .total-row td { border-top: 2px solid var(--primary); font-size: 1rem; }
+        .amount-positive { color: var(--success); font-weight: 600; }
+        .amount-negative { color: var(--danger);  font-weight: 600; }
+
+        /* ---------- Mobile ---------- */
+        .desktop-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+        .mobile-buttons  { display: none; }
+
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .card-header { padding: 1rem 1.2rem; }
+            .card-header h2 { font-size: 1.3rem; }
+            .search-section { padding: 1rem 1.2rem; }
+            .desktop-buttons { display: none; }
+            .mobile-buttons {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin-top: 16px;
+                width: 100%;
+            }
+            .mobile-buttons .btn { width: 100%; justify-content: center; padding: 12px 16px; font-size: 0.85rem; }
+            .data-table th, .data-table td { padding: 12px 10px; font-size: 0.75rem; }
+            .btn { padding: 8px 18px; font-size: 0.8rem; }
+            .modal-box { width: 95%; border-radius: 1.5rem; }
+            .form-grid { grid-template-columns: 1fr; gap: 1rem; }
+        }
+
+        /* ---------- Accessibility ---------- */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- PAGE 1: Trip list -->
+        <div id="page1" class="page active-page">
+            <div class="soft-card">
+                <div class="card-header">
+                    <h2>🚛 3108 · Driver Salary</h2>
+                    <div class="desktop-buttons">
+                        <button id="refreshBtnP1" class="btn btn-outline"><span>⟳</span> Refresh</button>
+                        <button id="calcTotalBtn" class="btn btn-success"><span>💰</span> Calc Total</button>
+                    </div>
+                </div>
+                <div class="search-section">
+                    <div class="search-wrapper">
+                        <input type="text" id="searchInput" placeholder="🔍 Search by LR No, Sr No, Date..." autocomplete="off" inputmode="search">
+                    </div>
+                    <div class="mobile-buttons">
+                        <button id="mobileRefreshBtn" class="btn btn-outline"><span>⟳</span> Refresh</button>
+                        <button id="mobileCalcTotalBtn" class="btn btn-success"><span>💰</span> Calc Total</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead><tr><th>Sr. No</th><th>Date</th><th>LR No</th><th>Action</th></tr></thead>
+                        <!-- OPTIMIZATION #9: Skeleton loader rendered inline (no JS round-trip) -->
+                        <tbody id="tableBody">
+                            <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:40%"></div></td><td><div class="skeleton-bar" style="width:70%"></div></td><td><div class="skeleton-bar" style="width:55%"></div></td><td><div class="skeleton-bar" style="width:60%"></div></td></tr>
+                            <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:35%"></div></td><td><div class="skeleton-bar" style="width:65%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td><td><div class="skeleton-bar" style="width:55%"></div></td></tr>
+                            <tr class="skeleton-row"><td><div class="skeleton-bar" style="width:45%"></div></td><td><div class="skeleton-bar" style="width:75%"></div></td><td><div class="skeleton-bar" style="width:60%"></div></td><td><div class="skeleton-bar" style="width:50%"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2: Trip details -->
+        <div id="page2" class="page">
+            <div class="soft-card">
+                <div class="card-header">
+                    <h2>📋 Trip Details</h2>
+                    <button id="backToPage1Btn" class="btn btn-outline">← Back</button>
+                </div>
+                <div id="detailsContainer" class="details-grid"></div>
+                <div class="action-row">
+                    <button id="manageSalaryBtn" class="btn btn-primary">💰 Manage Salary</button>
+                    <button id="deleteRecordBtn" class="btn btn-danger">🗑 Delete Record</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global modal -->
+    <div id="globalModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 450px; border-radius: 2rem;">
+            <div class="modal-header"><h3 id="modalTitle">Notice</h3><button class="close-modal" id="closeGlobalModal" aria-label="Close">×</button></div>
+            <div class="modal-body">
+                <p id="modalMsg" style="font-size: 1rem; line-height: 1.5;"></p>
+                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button id="confirmModalBtn" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary modal -->
+    <div id="summaryModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 800px; border-radius: 2rem;">
+            <div class="modal-header"><h3>📊 L and UL &amp; Driver Bata Summary</h3><button class="close-modal" id="closeSummaryModalBtn" aria-label="Close">×</button></div>
+            <div class="modal-body" id="summaryModalBody"></div>
+        </div>
+    </div>
+
+    <!-- Salary modal -->
+    <div id="salaryModal" class="modal-overlay">
+        <div class="modal-box" style="border-radius: 2rem;">
+            <div class="modal-header"><h3>💰 Manage Salary / Update Record</h3><button class="close-modal" id="closeSalaryModalBtn" aria-label="Close">×</button></div>
+            <div class="modal-body" id="salaryModalBody"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         OPTIMIZATION #2: DEFER JS
+         The script is loaded with `defer` so HTML parsing is not
+         blocked. DOM is guaranteed to be ready when it executes.
+         ============================================================ -->
+    <script defer>
+        /* =========================================================
+           DARK MODE SYNC (kept as-is; interval reduced from 1000 to 2000 ms)
+           ========================================================= */
+        function syncThemeWithParent() {
+            const localTheme = localStorage.getItem('user-theme-preference');
+            if (localTheme) {
+                document.body.setAttribute('data-theme', localTheme);
+                document.documentElement.setAttribute('data-theme', localTheme);
+            } else {
+                try {
+                    if (window.parent && window.parent.document.body) {
+                        const parentTheme = window.parent.document.body.getAttribute('data-theme');
+                        if (parentTheme) {
+                            document.body.setAttribute('data-theme', parentTheme);
+                            document.documentElement.setAttribute('data-theme', parentTheme);
+                        }
+                    }
+                } catch (e) { /* cross-origin frame — ignore */ }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', syncThemeWithParent);
+        window.addEventListener('storage', syncThemeWithParent);
+
+        // OPTIMIZATION #10: theme sync interval reduced (was 1000ms) + cleared on unload
+        const themeInterval = setInterval(syncThemeWithParent, 2000);
+        window.addEventListener('beforeunload', () => clearInterval(themeInterval));
+
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'themeChange') {
+                const t = event.data.theme;
+                if (t) {
+                    document.body.setAttribute('data-theme', t);
+                    document.documentElement.setAttribute('data-theme', t);
+                }
+            }
+        });
+
+        // ==================== CONFIGURATION ====================
+        const SCRIPT_URL            = "https://script.google.com/macros/s/AKfycbwzEbd10tAnSKJSsg01LOXr8MAgKTFO4cp2sjq9moatjN3_IWZ8ZWF9uViTXE-991Nq/exec";
+        const PRIMARY_SPREADSHEET_ID = "1fTQ7K6qvx1IBpaXA_okS90IDbCBhFzpVLkXneLJtiTY";
+        const PRIMARY_SHEET_NAME     = "Cam_Taloja_3108";
+        const LEGACY_SPREADSHEET_ID  = "1GaphoayNzhbQ8RV9z1D45Djr5hsRjUPgyKrtmkjjhGI";
+        const LEGACY_SHEET_NAME      = "Cam_Taloja_3108";
+        const DRIVER_DETAILS_SHEET   = "Driver Details";
+
+        // OPTIMIZATION #7: cache TTL reduced to 5 minutes
+        const CACHE_TTL = 5 * 60 * 1000;
+
+        const CACHE_KEY       = "salary_trips_3108_cache_v4";
+        const CACHE_KEY_LEG   = "salary_trips_3108_cache_v4_legacy";
+        const DIST_CACHE_KEY  = "salary_dist_3108_cache_v4";
+
+        // ---- Diesel / Mileage constants (unchanged rules) ----
+        const CNG_RATE = 98;
+        const DIESEL_RULES = {
+            FIXED_SHORT_KM: 50,     // 0 – 50 km
+            FIXED_SHORT_AMT: 2300,  // ₹ flat
+            FIXED_MED_KM: 150,      // 50 – 150 km
+            FIXED_MED_AMT: 3200     // ₹ flat
+        };
+
+        // ---- Shared state ----
+        let allTrips         = [];
+        let currentViewTrip  = null;
+        let currentRowIndex  = null;
+        let vehicleOptions   = [];
+        let driverOptions    = [];
+        let primaryDataLrSet = new Set();
+        let preloadInProgress = false;
+        let searchDebounceTimer = null;
+
+        const dom = {};
+
+        function cacheDomElements() {
+            dom.page1             = document.getElementById('page1');
+            dom.page2             = document.getElementById('page2');
+            dom.tableBody         = document.getElementById('tableBody');
+            dom.searchInput       = document.getElementById('searchInput');
+            dom.refreshBtn        = document.getElementById('refreshBtnP1');
+            dom.calcTotalBtn      = document.getElementById('calcTotalBtn');
+            dom.mobileRefreshBtn  = document.getElementById('mobileRefreshBtn');
+            dom.mobileCalcTotalBtn= document.getElementById('mobileCalcTotalBtn');
+            dom.backBtn           = document.getElementById('backToPage1Btn');
+            dom.manageSalaryBtn   = document.getElementById('manageSalaryBtn');
+            dom.deleteBtn         = document.getElementById('deleteRecordBtn');
+            dom.detailsContainer  = document.getElementById('detailsContainer');
+            dom.globalModal       = document.getElementById('globalModal');
+            dom.summaryModal      = document.getElementById('summaryModal');
+            dom.salaryModal       = document.getElementById('salaryModal');
+            dom.modalTitle        = document.getElementById('modalTitle');
+            dom.modalMsg          = document.getElementById('modalMsg');
+        }
+
+        // ==================== UTILITIES ====================
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str).replace(/[&<>"']/g, m => ({
+                '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+            }[m]));
+        }
+
+        function formatToDDMMYYYY(dateInput) {
+            if (!dateInput) return '';
+            try {
+                if (typeof dateInput === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(dateInput)) return dateInput;
+                if (typeof dateInput === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
+                    const [y, m, d] = dateInput.split('-');
+                    return `${d}/${m}/${y}`;
+                }
+                const d = (dateInput instanceof Date) ? dateInput : new Date(dateInput);
+                if (isNaN(d.getTime())) return String(dateInput);
+                const dd = String(d.getDate()).padStart(2, '0');
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                return `${dd}/${mm}/${d.getFullYear()}`;
+            } catch { return String(dateInput || ''); }
+        }
+
+        function convertToYYYYMMDD(dateStr) {
+            if (!dateStr) return "";
+            try {
+                if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+                if (dateStr.includes('/')) {
+                    const [d, m, y] = dateStr.split('/');
+                    const yr = y.length === 2 ? '20' + y : y;
+                    return `${yr}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+                }
+                const dt = new Date(dateStr);
+                return isNaN(dt.getTime()) ? "" : dt.toISOString().split('T')[0];
+            } catch { return ""; }
+        }
+
+        function formatDisplayDate(v) {
+            if (!v) return '—';
+            return formatToDDMMYYYY(v) || '—';
+        }
+
+        function cleanLrNumber(lr) {
+            return lr ? String(lr).replace(/,/g, '') : "";
+        }
+
+        function showModal(msg, title = "Message", isConfirm = false, onConfirm = null, autoClose = 0) {
+            if (!dom.globalModal) return;
+            dom.modalTitle.textContent = title;
+            dom.modalMsg.innerHTML = msg;
+            const confirmBtn = document.getElementById('confirmModalBtn');
+            if (confirmBtn) {
+                confirmBtn.onclick = () => {
+                    dom.globalModal.classList.remove('active');
+                    if (isConfirm && onConfirm) onConfirm();
+                };
+            }
+            dom.globalModal.classList.add('active');
+            if (autoClose > 0) setTimeout(() => dom.globalModal.classList.remove('active'), autoClose);
+        }
+
+        function showSpinner(el, show, customHtml = null) {
+            if (!el) return;
+            if (show) {
+                el.disabled = true;
+                el.setAttribute('data-original-text', el.innerHTML);
+                el.innerHTML = customHtml || '<span class="spinner"></span> Loading...';
+            } else {
+                el.disabled = false;
+                const o = el.getAttribute('data-original-text');
+                if (o) el.innerHTML = o;
+            }
+        }
+
+        // ==================== CALCULATION ====================
+        function calculateMileage(kmValue) {
+            const km = parseFloat(kmValue) || 0;
+            if (km <= 150) return "Fix";
+            if (km <= 200) return "4";
+            return "5";
+        }
+
+        /**
+         * Diesel Amt — pure KM rules:
+         *   0  – 50  km : ₹2300 flat
+         *   50 – 150 km : ₹3200 flat
+         *   > 150 km    : (Km / Mileage) × CNG_RATE
+         */
+        function calculateDieselAmt(mileageVal, kmValue, cngRate = CNG_RATE) {
+            const km = parseFloat(kmValue) || 0;
+            if (km <= DIESEL_RULES.FIXED_SHORT_KM) return DIESEL_RULES.FIXED_SHORT_AMT;
+            if (km <= DIESEL_RULES.FIXED_MED_KM)   return DIESEL_RULES.FIXED_MED_AMT;
+            const mileage = parseFloat(mileageVal);
+            if (!isNaN(mileage) && mileage > 0 && km > 0) return Math.round((km / mileage) * cngRate);
+            return 0;
+        }
+
+        function calculateAllFields(formData) {
+            const km             = parseFloat(formData.Km) || 0;
+            const unloadingCharge= parseFloat(formData["L and UL"]) || 0;
+            const salaryAdvance  = parseFloat(formData["Salary Advance"]) || 0;
+            const otherExp       = parseFloat(formData["Other Exp"]) || 0;
+            const actualIntent   = parseFloat(formData["Actual Intent"]) || 0;
+
+            const mileageValue = calculateMileage(km);
+            const dieselAmt    = calculateDieselAmt(mileageValue, km, CNG_RATE);
+            const subtotalBeforeBata = unloadingCharge + dieselAmt + salaryAdvance + otherExp;
+            const driverBata   = actualIntent - subtotalBeforeBata;
+            const driverTaken  = dieselAmt + driverBata;
+            const totalAmount  = unloadingCharge + driverTaken + salaryAdvance + otherExp;
+
+            return {
+                "Mileage": mileageValue,
+                "CNG OR Diesel Rate": CNG_RATE,
+                "Diesel Amt": dieselAmt,
+                "Driver Bata": driverBata,
+                "Driver Taken Amt": driverTaken,
+                "Total Amount": totalAmount
+            };
+        }
+
+        // ==================== CACHE / FETCH ====================
+        // OPTIMIZATION #1: on cold-start we SKIP the cache entirely
+        // and always fetch fresh data. Background refresh keeps future visits fast.
+        async function fetchWithBackgroundCache(url, cacheKey, { skipCache = false } = {}) {
+            let cachedData = null;
+
+            if (!skipCache) {
+                const raw = localStorage.getItem(cacheKey);
+                if (raw) {
+                    try {
+                        const { data, timestamp } = JSON.parse(raw);
+                        if (Date.now() - timestamp < CACHE_TTL) cachedData = data;
+                    } catch { /* corrupt cache — ignore */ }
+                }
+            }
+
+            if (cachedData && !preloadInProgress) {
+                fetchFreshDataInBackground(url, cacheKey);
+                return cachedData;
+            }
+
+            try {
+                const res = await fetch(url);
+                const json = await res.json();
+                if (json.status === "success" && Array.isArray(json.data)) {
+                    const formatted = formatRowsForCache(json.data, cacheKey);
+                    try {
+                        localStorage.setItem(cacheKey, JSON.stringify({ data: formatted, timestamp: Date.now() }));
+                    } catch { /* quota — ignore */ }
+                    return formatted;
+                }
+                return [];
+            } catch (err) {
+                console.error("Fetch error:", err);
+                return cachedData || [];
+            }
+        }
+
+        function formatRowsForCache(rows, cacheKey) {
+            if (cacheKey === DIST_CACHE_KEY) return rows;
+            return rows.map(r => {
+                if (r['Date'])      r['Date']      = formatToDDMMYYYY(r['Date']);
+                if (r['NEFT Date']) r['NEFT Date'] = formatToDDMMYYYY(r['NEFT Date']);
+                return r;
+            });
+        }
+
+        async function fetchFreshDataInBackground(url, cacheKey) {
+            preloadInProgress = true;
+            try {
+                const res  = await fetch(url);
+                const json = await res.json();
+                if (json.status === "success" && Array.isArray(json.data)) {
+                    const formatted = formatRowsForCache(json.data, cacheKey);
+                    try {
+                        localStorage.setItem(cacheKey, JSON.stringify({ data: formatted, timestamp: Date.now() }));
+                    } catch { /* quota */ }
+
+                    if (cacheKey === CACHE_KEY && formatted.length !== allTrips.length) {
+                        await loadAllTrips(true);
+                        renderTablePage1(dom.searchInput?.value || "");
+                    }
+                    if (cacheKey === DIST_CACHE_KEY) {
+                        updateDriverOptionsFromData(formatted);
+                    }
+                }
+            } catch (err) {
+                console.warn("Background fetch failed:", err);
+            } finally {
+                preloadInProgress = false;
+            }
+        }
+
+        // OPTIMIZATION #6: batch all three fetches with Promise.all
+        async function fetchAllSources({ skipCache = false } = {}) {
+            const tripsUrl  = `${SCRIPT_URL}?spreadsheetId=${PRIMARY_SPREADSHEET_ID}&sheetName=${PRIMARY_SHEET_NAME}&_=${Date.now()}`;
+            const legacyUrl = `${SCRIPT_URL}?spreadsheetId=${LEGACY_SPREADSHEET_ID}&sheetName=${LEGACY_SHEET_NAME}&_=${Date.now()}`;
+            const driverUrl = `${SCRIPT_URL}?spreadsheetId=${PRIMARY_SPREADSHEET_ID}&sheetName=${DRIVER_DETAILS_SHEET}&_=${Date.now()}`;
+
+            const [primary, legacy, drivers] = await Promise.all([
+                fetchWithBackgroundCache(tripsUrl,  CACHE_KEY,       { skipCache }),
+                fetchWithBackgroundCache(legacyUrl, CACHE_KEY_LEG,   { skipCache }),
+                fetchWithBackgroundCache(driverUrl, DIST_CACHE_KEY,  { skipCache })
+            ]);
+
+            updateDriverOptionsFromData(drivers);
+            return { primary, legacy, drivers };
+        }
+
+        // ==================== DATA PIPELINE ====================
+        function updateDriverOptionsFromData(data) {
+            const vehicles = new Set();
+            const drivers  = new Set();
+            (data || []).forEach(row => {
+                if (row["Vehicle No"])   vehicles.add(String(row["Vehicle No"]).trim());
+                if (row["Driver Name"])  drivers.add(String(row["Driver Name"]).trim());
+            });
+            vehicleOptions = Array.from(vehicles);
+            driverOptions  = Array.from(drivers);
+        }
+
+        function processTripWithCalculations(rawTrip, isInPrimary = false) {
+            const startKm = parseFloat(rawTrip["Start KM"] || rawTrip["Opening Km"]) || 0;
+            const endKm   = parseFloat(rawTrip["End KM"]   || rawTrip["Closing Km"]) || 0;
+            const km      = parseFloat(rawTrip["Distance"] || rawTrip["Km"]) || Math.max(0, endKm - startKm);
+
+            const unloadingCharge = parseFloat(rawTrip["Unloading Charge"] || rawTrip["L and UL"]) || 0;
+            const salaryAdvance   = parseFloat(rawTrip["Salary Advance"]) || 0;
+            const otherExp        = parseFloat(rawTrip["Other Exp"]) || 0;
+            const actualIntent    = parseFloat(rawTrip["Actual Intent"] || rawTrip["NEFT Amt"]) || 0;
+
+            const mileageRaw = calculateMileage(km);
+            const dieselAmt  = calculateDieselAmt(mileageRaw, km, CNG_RATE);
+            const subtotal   = unloadingCharge + dieselAmt + salaryAdvance + otherExp;
+            const driverBata = actualIntent - subtotal;
+            const driverTaken = dieselAmt + driverBata;
+            const totalAmount = unloadingCharge + driverTaken + salaryAdvance + otherExp;
+
+            let vehicleVal    = rawTrip["Vehicles"] || (vehicleOptions[0] || "");
+            let driverNameVal = rawTrip["Driver Name"] || (driverOptions[0] || "");
+
+            return {
+                "Sr. No": rawTrip["Sr. No"] || "",
+                "Date": rawTrip["Date"] || "",
+                "LR No": cleanLrNumber(rawTrip["LR No"] || ""),
+                "Vehicles": vehicleVal,
+                "Driver Name": driverNameVal,
+                "Mileage": mileageRaw,
+                "Destination": rawTrip["Destination"] || "",
+                "Opening Km": startKm,
+                "Closing Km": endKm,
+                "Km": km,
+                "CNG OR Diesel Rate": CNG_RATE,
+                "L and UL": unloadingCharge,
+                "Driver Taken Amt": driverTaken,
+                "Diesel Amt": dieselAmt,
+                "Driver Bata": driverBata,
+                "Salary Advance": salaryAdvance,
+                "Other Exp": otherExp,
+                "Total Amount": totalAmount,
+                "Actual Intent": actualIntent,
+                "_inPrimary": isInPrimary
+            };
+        }
+
+        async function loadAllTrips(skipCache = false) {
+            // OPTIMIZATION #6: batched fetch of trips + legacy + drivers
+            const { primary, legacy } = await fetchAllSources({ skipCache });
+
+            primaryDataLrSet.clear();
+            primary.forEach(row => {
+                const lr = row["LR No"] ? cleanLrNumber(row["LR No"]).trim() : "";
+                if (lr) primaryDataLrSet.add(lr);
+            });
+
+            const fallbackMap = new Map();
+            legacy.forEach(row => {
+                const lr = row["LR No"] ? cleanLrNumber(row["LR No"]).trim() : "";
+                if (lr) fallbackMap.set(lr, row);
+            });
+
+            let mergedRaw = [];
+            if (primary.length === 0 && legacy.length > 0) {
+                mergedRaw = legacy;
+            } else {
+                mergedRaw = primary.map(row => {
+                    const lr = row["LR No"] ? cleanLrNumber(row["LR No"]).trim() : "";
+                    const fb = fallbackMap.get(lr);
+                    return fb ? { ...fb, ...row } : row;
+                });
+                const primaryLrSetTemp = new Set(primary.map(r => r["LR No"] ? cleanLrNumber(r["LR No"]).trim() : ""));
+                legacy.forEach(fb => {
+                    const lr = fb["LR No"] ? cleanLrNumber(fb["LR No"]).trim() : "";
+                    if (lr && !primaryLrSetTemp.has(lr)) mergedRaw.push(fb);
+                });
+            }
+
+            const processed = mergedRaw.map(raw => {
+                const lr = raw["LR No"] ? cleanLrNumber(raw["LR No"]).trim() : "";
+                return processTripWithCalculations(raw, primaryDataLrSet.has(lr));
+            });
+            processed.sort((a, b) => (parseInt(a["Sr. No"]) || 0) - (parseInt(b["Sr. No"]) || 0));
+
+            allTrips = processed;
+            return processed;
+        }
+
+        // ==================== RENDER (STRING-BUILT DOM) ====================
+        // OPTIMIZATION #8: build HTML as a single string and write once.
+        // We attach a single delegated click listener on the tbody.
+        function renderTablePage1(filter = "") {
+            if (!dom.tableBody) return;
+            const q = filter.toLowerCase();
+
+            const filtered = allTrips.filter(t => {
+                const lr   = (t["LR No"]  || "").toString().toLowerCase();
+                const sr   = (t["Sr. No"] || "").toString().toLowerCase();
+                const date = (t["Date"]   || "").toString().toLowerCase();
+                return lr.includes(q) || sr.includes(q) || date.includes(q);
+            });
+
+            if (!filtered.length) {
+                dom.tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">✨ No trips found</td></tr>';
+                return;
+            }
+
+            // Build rows as strings, join once, set innerHTML once.
+            const rowsHtml = filtered.map(t => {
+                const badge = t._inPrimary ? '<span class="sync-badge" title="Data synced to primary sheet"></span>' : '';
+                return `<tr>
+                    <td><strong>${escapeHtml(t["Sr. No"] || "")}${badge}</strong></td>
+                    <td>${escapeHtml(formatDisplayDate(t["Date"]))}</td>
+                    <td>${escapeHtml(t["LR No"] || "")}</td>
+                    <td><button class="btn btn-sm btn-outline viewBtn" data-sr="${escapeHtml(t["Sr. No"] || "")}">👁️ View</button></td>
+                </tr>`;
+            }).join('');
+
+            dom.tableBody.innerHTML = rowsHtml;
+        }
+
+        // Delegate clicks for view buttons (single listener, no per-row handlers).
+        function attachTableDelegation() {
+            if (!dom.tableBody) return;
+            dom.tableBody.addEventListener('click', (e) => {
+                const btn = e.target.closest('.viewBtn');
+                if (!btn) return;
+                e.stopPropagation();
+                const srVal = btn.getAttribute('data-sr');
+                const found = allTrips.find(t => String(t["Sr. No"]) === String(srVal));
+                if (!found) return;
+                currentViewTrip  = found;
+                currentRowIndex  = allTrips.findIndex(t => String(t["Sr. No"]) === String(srVal)) + 2;
+                showPage2Details(found);
+            });
+        }
+
+        function showPage2Details(trip) {
+            if (!dom.detailsContainer) return;
+            const headers = ["Sr. No","Date","LR No","Vehicles","Driver Name","Mileage","Destination",
+                             "Opening Km","Closing Km","Km","CNG OR Diesel Rate","L and UL","Driver Taken Amt",
+                             "Diesel Amt","Driver Bata","Salary Advance","Other Exp","Total Amount","Actual Intent"];
+
+            // Build all cards as one string.
+            const cardsHtml = headers.map(h => {
+                let val = trip[h] !== undefined ? trip[h] : "";
+                if (h === "Date") val = formatDisplayDate(val);
+                const isNeg = (h === "Driver Bata" || h === "Total Amount") && typeof val === 'number' && val < 0;
+                const displayVal = typeof val === 'number' ? val.toLocaleString('en-IN') : String(val);
+                return `<div class="detail-card${isNeg ? ' negative' : ''}">
+                    <div class="detail-label">${escapeHtml(h)}</div>
+                    <div class="detail-value${isNeg ? ' negative' : ''}">${escapeHtml(displayVal) || '—'}</div>
+                </div>`;
+            }).join('');
+
+            dom.detailsContainer.innerHTML = cardsHtml;
+            dom.page1?.classList.remove('active-page');
+            dom.page2?.classList.add('active-page');
+        }
+
+        function goToPage1() {
+            dom.page2?.classList.remove('active-page');
+            dom.page1?.classList.add('active-page');
+        }
+
+        // ==================== SUMMARY ====================
+        function showSummaryPopup() {
+            if (!dom.summaryModal) return;
+            const bodyDiv = document.getElementById('summaryModalBody');
+            let totalLandUL = 0, totalDriverBata = 0;
+
+            const rowsHtml = allTrips.map(trip => {
+                const lAndUl = parseFloat(trip["L and UL"]) || 0;
+                const bata   = parseFloat(trip["Driver Bata"]) || 0;
+                totalLandUL += lAndUl;
+                totalDriverBata += bata;
+                const cls = bata < 0 ? 'amount-negative' : 'amount-positive';
+                return `<tr>
+                    <td>${escapeHtml(trip["Sr. No"] || "")}</td>
+                    <td>${escapeHtml(formatDisplayDate(trip["Date"]))}</td>
+                    <td>₹ ${lAndUl.toLocaleString('en-IN')}</td>
+                    <td class="${cls}">₹ ${bata.toLocaleString('en-IN')}</td>
+                </tr>`;
+            }).join('');
+
+            bodyDiv.innerHTML = `<table class="summary-table">
+                <thead><tr><th>Sr. No</th><th>Date</th><th>L and UL (₹)</th><th>Driver Bata (₹)</th></tr></thead>
+                <tbody>
+                    ${rowsHtml}
+                    <tr class="total-row">
+                        <td colspan="2"><strong>Total</strong></td>
+                        <td><strong>₹ ${totalLandUL.toLocaleString('en-IN')}</strong></td>
+                        <td class="${totalDriverBata < 0 ? 'amount-negative' : 'amount-positive'}"><strong>₹ ${totalDriverBata.toLocaleString('en-IN')}</strong></td>
+                    </tr>
+                </tbody>
+            </table>`;
+            dom.summaryModal.classList.add('active');
+        }
+
+        // ==================== DELETE ====================
+        async function deleteCurrentRecord() {
+            if (!currentViewTrip) return;
+            const sr = currentViewTrip["Sr. No"];
+            showModal(`⚠️ Are you sure you want to delete Trip Sr. No ${sr}?`, "Confirm Delete", true, async () => {
+                showSpinner(dom.deleteBtn, true);
+                const params = new URLSearchParams({
+                    action: "delete",
+                    spreadsheetId: PRIMARY_SPREADSHEET_ID,
+                    sheetName: PRIMARY_SHEET_NAME,
+                    rowIndex: currentRowIndex
+                });
+                try {
+                    const res  = await fetch(SCRIPT_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: params
+                    });
+                    const json = await res.json();
+                    if (json.status === "success") {
+                        showModal("✅ Record deleted successfully!", "Success", false, null, 1500);
+                        await refreshAllData();
+                        goToPage1();
+                    } else {
+                        showModal("Delete failed: " + (json.message || "unknown"), "Error");
+                    }
+                } catch (err) {
+                    showModal("Error: " + err.message, "Error");
+                } finally {
+                    showSpinner(dom.deleteBtn, false);
+                }
+            });
+        }
+
+        // ==================== AUTOCOMPLETE ====================
+        function setupAutocomplete(inputId, listId, optionsArray) {
+            const input  = document.getElementById(inputId);
+            const listEl = document.getElementById(listId);
+            if (!input || !listEl) return;
+
+            let debounceId = null;
+
+            function render(filterVal = '') {
+                const term = filterVal.toLowerCase();
+                const filtered = term
+                    ? optionsArray.filter(o => o.toLowerCase().includes(term))
+                    : optionsArray;
+
+                if (!filtered.length) {
+                    listEl.style.display = 'none';
+                    return;
+                }
+                // String-build the list.
+                listEl.innerHTML = filtered.map(opt =>
+                    `<div class="autocomplete-item" data-value="${escapeHtml(opt)}">${escapeHtml(opt)}</div>`
+                ).join('');
+                listEl.style.display = 'block';
+            }
+
+            // OPTIMIZATION #5: debounce the autocomplete input handler
+            input.addEventListener('input', (e) => {
+                if (debounceId) clearTimeout(debounceId);
+                debounceId = setTimeout(() => render(e.target.value), 180);
+            });
+
+            input.addEventListener('focus', () => render(input.value));
+            input.addEventListener('blur', () => setTimeout(() => listEl.style.display = 'none', 180));
+
+            listEl.addEventListener('click', (e) => {
+                const item = e.target.closest('.autocomplete-item');
+                if (!item) return;
+                input.value = item.getAttribute('data-value');
+                listEl.style.display = 'none';
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!listEl.contains(e.target) && e.target !== input) listEl.style.display = 'none';
+            });
+        }
+
+        // ==================== SALARY MODAL ====================
+        function openSalaryModal() {
+            if (!currentViewTrip || !dom.salaryModal) return;
+            const bodyDiv = document.getElementById('salaryModalBody');
+
+            const headers = ["Sr. No","Date","LR No","Vehicles","Driver Name","Mileage","Destination",
+                             "Opening Km","Closing Km","Km","CNG OR Diesel Rate","L and UL","Driver Taken Amt",
+                             "Diesel Amt","Driver Bata","Salary Advance","Other Exp","Total Amount","Actual Intent"];
+
+            const calculatedSet = new Set(["Mileage","CNG OR Diesel Rate","Driver Taken Amt","Diesel Amt","Driver Bata","Total Amount"]);
+
+            // Build form HTML as a single string.
+            const fieldsHtml = headers.map(h => {
+                let val = currentViewTrip[h] !== undefined ? currentViewTrip[h] : "";
+                if (h === "Date") val = convertToYYYYMMDD(val);
+                const isCalc = calculatedSet.has(h);
+                const ro     = isCalc ? 'readonly' : '';
+                const cls    = isCalc ? 'calculated-field' : '';
+
+                if (h === "Vehicles") {
+                    return `<div class="field autocomplete-wrap">
+                        <label>Vehicles <span class="info-badge">Type or Select</span></label>
+                        <input type="text" id="field_Vehicles" value="${escapeHtml(val)}" autocomplete="off">
+                        <div id="vehicleAutoList" class="autocomplete-list"></div>
+                    </div>`;
+                }
+                if (h === "Driver Name") {
+                    return `<div class="field autocomplete-wrap">
+                        <label>Driver Name <span class="info-badge">Type or Select</span></label>
+                        <input type="text" id="field_DriverName" value="${escapeHtml(val)}" autocomplete="off">
+                        <div id="driverAutoList" class="autocomplete-list"></div>
+                    </div>`;
+                }
+                const id = `field_${h.replace(/\s/g, '')}`;
+                return `<div class="field">
+                    <label>${escapeHtml(h)}</label>
+                    <input type="text" id="${id}" value="${escapeHtml(val)}" ${ro} class="${cls}">
+                </div>`;
+            }).join('');
+
+            bodyDiv.innerHTML = `
+                <form id="salaryForm">
+                    <div class="form-grid">${fieldsHtml}</div>
+                    <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:1.5rem;">
+                        <button type="button" id="cancelSalaryBtn" class="btn btn-outline">Cancel</button>
+                        <button type="submit" id="updateSalaryBtn" class="btn btn-primary">💾 Update Record</button>
+                    </div>
+                </form>`;
+
+            dom.salaryModal.classList.add('active');
+
+            // Autocomplete setup AFTER DOM injection.
+            setupAutocomplete('field_Vehicles',   'vehicleAutoList', vehicleOptions);
+            setupAutocomplete('field_DriverName', 'driverAutoList',  driverOptions);
+
+            // Live recalculation
+            const updateCalculations = () => {
+                const formData = {
+                    Km: document.getElementById('field_Km')?.value || "0",
+                    Destination: document.getElementById('field_Destination')?.value || "",
+                    "L and UL": document.getElementById('field_LandUL')?.value || "0",
+                    "Salary Advance": document.getElementById('field_SalaryAdvance')?.value || "0",
+                    "Other Exp": document.getElementById('field_OtherExp')?.value || "0",
+                    "Actual Intent": document.getElementById('field_ActualIntent')?.value || "0"
+                };
+                const r = calculateAllFields(formData);
+                const mapping = {
+                    Mileage: r["Mileage"],
+                    CNGORDieselRate: r["CNG OR Diesel Rate"],
+                    DieselAmt: r["Diesel Amt"],
+                    DriverBata: r["Driver Bata"],
+                    DriverTakenAmt: r["Driver Taken Amt"],
+                    TotalAmount: r["Total Amount"]
+                };
+                for (const [id, val] of Object.entries(mapping)) {
+                    const el = document.getElementById(`field_${id}`);
+                    if (el) el.value = val;
+                }
+                const bataEl = document.getElementById('field_DriverBata');
+                if (bataEl) {
+                    if (r["Driver Bata"] < 0) {
+                        bataEl.style.color = '#dc2626';
+                        bataEl.style.fontWeight = 'bold';
+                    } else {
+                        bataEl.style.color = '';
+                        bataEl.style.fontWeight = '';
+                    }
+                }
+            };
+
+            // OPTIMIZATION #5: debounce recalculation on every keystroke
+            let calcTimer = null;
+            const debouncedCalc = () => {
+                if (calcTimer) clearTimeout(calcTimer);
+                calcTimer = setTimeout(updateCalculations, 120);
+            };
+
+            ['field_Km','field_Destination','field_LandUL','field_SalaryAdvance','field_OtherExp','field_ActualIntent']
+                .forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.addEventListener('input', debouncedCalc);
+                });
+
+            updateCalculations();
+
+            document.getElementById('cancelSalaryBtn')?.addEventListener('click', () =>
+                dom.salaryModal.classList.remove('active'));
+
+            document.getElementById('salaryForm')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const saveBtn = document.getElementById('updateSalaryBtn');
+                showSpinner(saveBtn, true, 'Updating...');
+
+                const updatedData = {};
+                for (const h of headers) {
+                    let val = "";
+                    if (h === "Vehicles")         val = document.getElementById('field_Vehicles')?.value || "";
+                    else if (h === "Driver Name") val = document.getElementById('field_DriverName')?.value || "";
+                    else                          val = document.getElementById(`field_${h.replace(/\s/g,'')}`)?.value || "";
+                    if (h === "Date") val = formatToDDMMYYYY(val);
+                    updatedData[h] = val;
+                }
+
+                const params = new URLSearchParams();
+                params.append("action", "update");
+                params.append("spreadsheetId", PRIMARY_SPREADSHEET_ID);
+                params.append("sheetName", PRIMARY_SHEET_NAME);
+                params.append("rowIndex", currentRowIndex);
+                for (const [k, v] of Object.entries(updatedData)) params.append(k, v);
+
+                try {
+                    const res  = await fetch(SCRIPT_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: params
+                    });
+                    const json = await res.json();
+                    if (json.status === "success") {
+                        showModal("✅ Record updated successfully!", "Success", false, null, 1500);
+                        dom.salaryModal.classList.remove('active');
+                        await refreshAllData();
+                        const refreshed = allTrips.find(t => String(t["Sr. No"]) === String(currentViewTrip["Sr. No"]));
+                        if (refreshed) {
+                            currentViewTrip = refreshed;
+                            showPage2Details(currentViewTrip);
+                        } else {
+                            goToPage1();
+                        }
+                    } else {
+                        showModal("Update failed: " + (json.message || "unknown"), "Error");
+                    }
+                } catch (err) {
+                    showModal("Error: " + err.message, "Error");
+                } finally {
+                    showSpinner(saveBtn, false);
+                }
+            });
+        }
+
+        // ==================== REFRESH ====================
+        // OPTIMIZATION #1: always wipe cache + fetch fresh. No stale data on load.
+        async function refreshAllData() {
+            try {
+                localStorage.removeItem(CACHE_KEY);
+                localStorage.removeItem(CACHE_KEY_LEG);
+                localStorage.removeItem(DIST_CACHE_KEY);
+                await loadAllTrips(true);
+                renderTablePage1(dom.searchInput?.value || "");
+            } catch (err) {
+                console.error("Refresh error:", err);
+                showModal("❌ Refresh failed: " + err.message, "Error");
+            }
+        }
+
+        // ==================== INIT ====================
+        async function fastInit() {
+            cacheDomElements();
+            attachTableDelegation();
+
+            // OPTIMIZATION #1: cold-start = fresh fetch (skip cache entirely).
+            // OPTIMIZATION #6: single batched fetch handles trips + legacy + drivers.
+            try {
+                await loadAllTrips(true);
+            } catch (err) {
+                console.error("Initial load failed:", err);
+                if (dom.tableBody) {
+                    dom.tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--danger);">⚠️ Failed to load data. Tap Refresh.</td></tr>';
+                }
+            }
+            renderTablePage1("");
+
+            // Event wiring
+            dom.refreshBtn?.addEventListener('click', async () => {
+                showSpinner(dom.refreshBtn, true);
+                try { await refreshAllData(); } finally { showSpinner(dom.refreshBtn, false); }
+            });
+
+            dom.mobileRefreshBtn?.addEventListener('click', async () => {
+                showSpinner(dom.mobileRefreshBtn, true);
+                try { await refreshAllData(); } finally { showSpinner(dom.mobileRefreshBtn, false); }
+            });
+
+            dom.calcTotalBtn?.addEventListener('click', showSummaryPopup);
+            dom.mobileCalcTotalBtn?.addEventListener('click', () => dom.calcTotalBtn?.click());
+
+            dom.backBtn?.addEventListener('click', goToPage1);
+            dom.manageSalaryBtn?.addEventListener('click', openSalaryModal);
+            dom.deleteBtn?.addEventListener('click', deleteCurrentRecord);
+
+            // OPTIMIZATION #5: debounce search input (was 300 ms)
+            dom.searchInput?.addEventListener('input', (e) => {
+                if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+                searchDebounceTimer = setTimeout(() => renderTablePage1(e.target.value), 250);
+            });
+
+            // Modal close handlers
+            document.getElementById('closeGlobalModal')?.addEventListener('click',    () => dom.globalModal?.classList.remove('active'));
+            document.getElementById('closeSummaryModalBtn')?.addEventListener('click', () => dom.summaryModal?.classList.remove('active'));
+            document.getElementById('closeSalaryModalBtn')?.addEventListener('click',  () => dom.salaryModal?.classList.remove('active'));
+
+            // Click-outside-to-close for all modals
+            window.addEventListener('click', (e) => {
+                if (e.target.classList?.contains('modal-overlay')) {
+                    e.target.classList.remove('active');
+                }
+            });
+        }
+
+        // `defer` guarantees DOM is parsed before this runs — no DOMContentLoaded wrapper needed.
+        fastInit();
+    </script>
+</body>
+</html>
