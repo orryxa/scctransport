@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Yash Transport | Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light Mode */
+            --bg-deep: #f8fafc;
+            --bg-card: #ffffff;
+            --accent: #4f46e5;
+            --border: #e2e8f0;
+            --text-main: #0f172a;
+            --text-dim: #64748b;
+            --shadow: rgba(0, 0, 0, 0.04);
+            --category-text: #dc2626;
+            --category-bg: #ffffff;
+            --transition-speed: 0.3s;
+        }
+
+        [data-theme="dark"] {
+            /* Premium Dark Mode */
+            --bg-deep: #0f172a;
+            --bg-card: #1e293b;
+            --accent: #6366f1;
+            --border: #334155;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --shadow: rgba(0, 0, 0, 0.2);
+            --category-text: #fda4af;
+            --category-bg: #1e293b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ========== MAIN CONTENT LAYOUT ========== */
+        .main-content {
+            flex: 1;
+            max-width: 1400px;
+            width: 95%;
+            margin: 1.5rem auto 3rem auto;
+        }
+
+        .category-header {
+            background-color: var(--category-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 16px;
+            text-align: center;
+            color: var(--category-text);
+            margin: 2rem 0 1.25rem 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: 1px solid var(--border);
+            transition: background-color var(--transition-speed), border-color var(--transition-speed);
+        }
+
+        .category-header i {
+            margin-right: 6px;
+        }
+
+        .fleet-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (min-width: 768px) {
+            .fleet-grid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        }
+
+        @media (min-width: 1024px) {
+            .fleet-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+        }
+
+        /* ========== CARD STYLING ========== */
+        .card-link {
+            text-decoration: none;
+            display: block;
+            color: inherit;
+        }
+
+        .fleet-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.75rem 1rem;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px var(--shadow);
+            cursor: pointer;
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fleet-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px -3px rgba(99, 102, 241, 0.15);
+        }
+
+        .fleet-card:active {
+            transform: translateY(-1px);
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            transition: color var(--transition-speed);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        [data-theme="dark"] .card-icon {
+            background: rgba(99, 102, 241, 0.15);
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.4rem;
+        }
+
+        .card-description {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        /* ========== FOOTER ========== */
+        .app-footer {
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-top: 1px solid var(--border);
+            background: var(--bg-card);
+            transition: background-color var(--transition-speed), border-color var(--transition-speed);
+        }
+
+        /* ========== RESPONSIVE TWEAKS ========== */
+        @media (max-width: 480px) {
+            .main-content {
+                width: 92%;
+                margin: 1rem auto 2rem auto;
+            }
+            .category-header {
+                font-size: 1rem;
+                padding: 14px;
+                margin: 1.5rem 0 1rem 0;
+            }
+            .fleet-card {
+                padding: 1.4rem 0.75rem;
+                min-height: 140px;
+            }
+            .card-icon {
+                width: 52px;
+                height: 52px;
+                font-size: 1.5rem;
+                margin-bottom: 0.75rem;
+            }
+            .card-title {
+                font-size: 0.9rem;
+            }
+            .card-description {
+                font-size: 0.7rem;
+            }
+            .app-footer {
+                padding: 1.5rem 1rem;
+                font-size: 0.65rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .fleet-grid {
+                gap: 0.75rem;
+            }
+            .fleet-card {
+                padding: 1.1rem 0.5rem;
+                min-height: 120px;
+            }
+            .card-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 1.3rem;
+                margin-bottom: 0.6rem;
+            }
+            .card-title {
+                font-size: 0.82rem;
+            }
+            .card-description {
+                font-size: 0.65rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <main class="main-content">
+
+        <h3 class="category-header">
+            <i class="fa-solid fa-truck-fast"></i> Yash Transport
+        </h3>
+
+        <div class="fleet-grid">
+
+            <!-- Card 1: Yash Transport Entry -->
+            <a href="yashtransport.html" class="card-link">
+                <div class="fleet-card">
+                    <div class="card-icon"><i class="fa fa-truck"></i></div>
+                    <h3 class="card-title">Yash Transport Entry</h3>
+                    <p class="card-description">Fleet &amp; Trip Records</p>
+                </div>
+            </a>
+
+            <!-- Card 2: Party Entry -->
+            <a href="PartyEntry.html" class="card-link">
+                <div class="fleet-card">
+                    <div class="card-icon"><i class="fa fa-address-book"></i></div>
+                    <h3 class="card-title">Party Entry</h3>
+                    <p class="card-description">Vendor &amp; Party Management</p>
+                </div>
+            </a>
+
+            <!-- Card 3: GST Invoice -->
+            <a href="GSTInv.html" class="card-link">
+                <div class="fleet-card">
+                    <div class="card-icon"><i class="fa fa-file-invoice-dollar"></i></div>
+                    <h3 class="card-title">GST Invoice</h3>
+                    <p class="card-description">Tax Invoice Generation</p>
+                </div>
+            </a>
+
+            <!-- Card 4: Piu Fashion Entry -->
+            <a href="PiuFashion.html" class="card-link">
+                <div class="fleet-card">
+                    <div class="card-icon"><i class="fa fa-tshirt"></i></div>
+                    <h3 class="card-title">Piu Fashion Entry</h3>
+                    <p class="card-description">LR &amp; Charges Records</p>
+                </div>
+            </a>
+
+        </div>
+
+    </main>
+
+    <footer class="app-footer">
+        &copy; 2026 Yash Transport
+    </footer>
+
+    <script>
+        /* Theme Synchronizer Logic Hook */
+        function syncThemeWithParent() {
+            // Check cache storage values first
+            const localTheme = localStorage.getItem('user-theme-preference');
+            if (localTheme) {
+                document.body.setAttribute('data-theme', localTheme);
+                document.documentElement.setAttribute('data-theme', localTheme);
+            } else {
+                // If nested inside an iframe, inherit directly from parent body attribute
+                try {
+                    if (window.parent && window.parent.document.body) {
+                        const parentTheme = window.parent.document.body.getAttribute('data-theme');
+                        if (parentTheme) {
+                            document.body.setAttribute('data-theme', parentTheme);
+                            document.documentElement.setAttribute('data-theme', parentTheme);
+                        }
+                    }
+                } catch (e) {
+                    console.log("Cross-origin frame safety intercept setup complete.");
+                }
+            }
+        }
+
+        // Initialize synchronization systems
+        window.addEventListener('DOMContentLoaded', syncThemeWithParent);
+        // Continual observation listener for live theme changes in settings tab
+        window.addEventListener('storage', syncThemeWithParent);
+        // Fail-safe structural check
+        setInterval(syncThemeWithParent, 1000);
+    </script>
+</body>
+</html>

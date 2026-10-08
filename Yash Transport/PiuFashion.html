@@ -1,0 +1,2193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <meta name="description" content="Piu Fashion — LR Entry Management">
+    <meta name="theme-color" content="#2563eb">
+    <title>👗 Piu Fashion | LR Entry</title>
+
+    <!-- DNS PREFETCH + PRECONNECT -->
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="dns-prefetch" href="https://script.google.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons loaded async -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+
+    <!-- CRITICAL CSS -->
+    <style id="critical-css">
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html,body{height:100%}
+        body{
+            font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;
+            background:#f0f6ff;color:#0f172a;
+            -webkit-font-smoothing:antialiased;
+            -webkit-tap-highlight-color:transparent;
+        }
+        #appLoading{
+            position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+            background:#f0f6ff;z-index:9999;flex-direction:column;gap:1.5rem;
+        }
+        #appLoading.hidden{display:none!important}
+        #appLoading .spinner{
+            width:50px;height:50px;border:4px solid #dbeafe;border-top-color:#2563eb;
+            border-radius:50%;animation:spin .8s linear infinite;
+        }
+        #appLoading p{color:#475569;font-weight:500;font-size:.9rem}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        [data-theme="dark"] #appLoading{background:#0a1a3a}
+        [data-theme="dark"] #appLoading .spinner{border-color:#1e3a8a;border-top-color:#facc15}
+        [data-theme="dark"] #appLoading p{color:#facc15}
+        #mainContent{display:none}
+        #mainContent.visible{display:block}
+        *{scrollbar-width:none;-ms-overflow-style:none}
+        *::-webkit-scrollbar{width:0!important;height:0!important;display:none!important}
+        html,body{overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    </style>
+
+    <!-- FULL STYLESHEET -->
+    <style id="main-css" media="print" onload="this.media='all'">
+        /* ================================================================
+           CSS VARIABLES — LIGHT MODE (Blue & White)
+           ================================================================ */
+        :root {
+            --bg-body: #f0f6ff;
+            --bg-body-gradient:
+                radial-gradient(1200px 600px at 10% -10%, rgba(37, 99, 235, 0.08), transparent 60%),
+                radial-gradient(900px 500px at 110% 20%, rgba(37, 99, 235, 0.06), transparent 55%),
+                #f0f6ff;
+            --bg-card: #ffffff;
+            --bg-header: #ffffff;
+
+            --text-main: #0f172a;
+            --text-secondary: #1e40af;
+            --text-light: #3b82f6;
+
+            --border-color: #dbeafe;
+            --border-light: #e8f0fc;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #60a5fa;
+            --primary-soft: #eff6ff;
+            --primary-soft-2: #dbeafe;
+
+            --accent: #eab308;
+            --accent-soft: rgba(234, 179, 8, 0.12);
+
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            --gradient-header: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+
+            --table-header-bg: #eff6ff;
+            --table-row-hover: #f5f9ff;
+            --table-border: #e0eaff;
+
+            --transition-fast: 150ms ease;
+            --transition-normal: 300ms ease;
+        }
+
+        /* ================================================================
+           CSS VARIABLES — DARK MODE (Blue + Yellow + White)
+           ================================================================ */
+        [data-theme="dark"] {
+            --bg-body: #0a1a3a;
+            --bg-body-gradient:
+                radial-gradient(1200px 600px at 10% -10%, rgba(37, 99, 235, 0.22), transparent 60%),
+                radial-gradient(900px 500px at 110% 20%, rgba(250, 204, 21, 0.10), transparent 55%),
+                #0a1a3a;
+            --bg-card: #10254a;
+            --bg-header: #10254a;
+
+            --text-main: #ffffff;
+            --text-secondary: #facc15;
+            --text-light: #e5e7eb;
+
+            --border-color: #1e3a8a;
+            --border-light: #1a2f66;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6);
+
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --primary-soft: rgba(59, 130, 246, 0.15);
+            --primary-soft-2: rgba(59, 130, 246, 0.25);
+
+            --accent: #facc15;
+            --accent-soft: rgba(250, 204, 21, 0.15);
+
+            --success: #34d399;
+            --danger: #f87171;
+            --warning: #fbbf24;
+            --info: #22d3ee;
+
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            --gradient-header: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+
+            --table-header-bg: #142b56;
+            --table-row-hover: #183468;
+            --table-border: #1e3a8a;
+        }
+
+        /* ================================================================
+           ANIMATIONS
+           ================================================================ */
+        @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+        @keyframes modalPop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+        @keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+        /* ================================================================
+           BASE
+           ================================================================ */
+        body{
+            background: var(--bg-body-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px 16px;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+            padding-top: calc(20px + env(safe-area-inset-top, 0px));
+            padding-left: calc(16px + env(safe-area-inset-left, 0px));
+            padding-right: calc(16px + env(safe-area-inset-right, 0px));
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+        }
+        #mainContent.visible{animation: fadeIn .4s ease-out}
+        .app-container{max-width: 1400px; margin: 0 auto}
+
+        /* ================================================================
+           HEADER
+           ================================================================ */
+        .card-header{
+            background: var(--bg-header);
+            border-radius: 20px;
+            padding: 1.2rem 1.6rem;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            contain: layout style;
+        }
+        .card-header::before{
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+        [data-theme="dark"] .card-header::before{
+            background: linear-gradient(90deg, #2563eb, #facc15, #2563eb);
+        }
+
+        .header-title-wrap{
+            display: flex; align-items: center; gap: 10px;
+            flex: 1; min-width: 0;
+        }
+        .card-header h2{
+            font-size: 1.5rem; font-weight: 800;
+            color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+            min-width: 0; line-height: 1.2;
+        }
+        .card-header h2 i{
+            color: #fff;
+            background: var(--gradient-primary);
+            padding: 8px; border-radius: 12px;
+            font-size: 1rem; flex-shrink: 0;
+        }
+        [data-theme="dark"] .card-header h2{
+            color: #facc15;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        }
+        [data-theme="dark"] .card-header h2 i{
+            background: linear-gradient(135deg, #facc15, #eab308);
+            color: #1e3a8a;
+        }
+        .card-header h2 .title-text{
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .header-actions{
+            display: flex; align-items: center; gap: 8px;
+            flex-wrap: nowrap; flex-shrink: 0;
+        }
+
+        /* ================================================================
+           BACK BUTTON
+           ================================================================ */
+        .btn-back{
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 8px 16px; border-radius: 60px;
+            font-weight: 600; font-size: .82rem; cursor: pointer;
+            transition: transform var(--transition-fast), background-color var(--transition-fast);
+            background: var(--primary); border: 2px solid var(--primary); color: #fff;
+            white-space: nowrap; font-family: inherit; flex-shrink: 0;
+            min-height: 38px;
+        }
+        .btn-back:hover{
+            background: var(--primary-dark); border-color: var(--primary-dark);
+            transform: translateX(-2px);
+        }
+        .btn-back i{transition: transform var(--transition-fast)}
+        .btn-back:hover i{transform: translateX(-3px)}
+        [data-theme="dark"] .btn-back{
+            background: #facc15; border-color: #facc15; color: #1e3a8a;
+        }
+        [data-theme="dark"] .btn-back:hover{
+            background: #eab308; border-color: #eab308;
+        }
+
+        /* ================================================================
+           SOFT CARD
+           ================================================================ */
+        .soft-card{
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            margin-bottom: 20px;
+            contain: layout style;
+        }
+
+        .search-section{
+            padding: 1.2rem 1.6rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+            background: var(--primary-soft);
+        }
+        [data-theme="dark"] .search-section{
+            background: rgba(59, 130, 246, 0.08);
+        }
+        .search-wrapper{flex: 1; min-width: 200px}
+        .search-wrapper input{
+            width: 100%; padding: 12px 20px;
+            border: 2px solid var(--border-color); border-radius: 60px;
+            background: var(--bg-card); color: var(--text-main);
+            font-size: .9rem; font-family: inherit;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+        }
+        .search-wrapper input::placeholder{color: var(--text-light)}
+        .search-wrapper input:focus{
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, .1);
+        }
+        [data-theme="dark"] .search-wrapper input{
+            background: #0a1a3a; color: #ffffff; border-color: #1e3a8a;
+        }
+        [data-theme="dark"] .search-wrapper input:focus{
+            border-color: #facc15;
+            box-shadow: 0 0 0 4px rgba(250, 204, 21, .15);
+        }
+        [data-theme="dark"] .search-wrapper input::placeholder{
+            color: #94a3b8;
+        }
+
+        /* ================================================================
+           BUTTONS
+           ================================================================ */
+        .btn{
+            border: none; padding: 10px 20px; border-radius: 60px;
+            font-weight: 600; font-size: .85rem; cursor: pointer;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            font-family: inherit; text-decoration: none; white-space: nowrap;
+            min-height: 40px; will-change: transform;
+        }
+        .btn-primary{
+            background: var(--gradient-primary); color: #fff;
+        }
+        .btn-primary:hover{
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px -6px rgba(37, 99, 235, .6);
+        }
+        [data-theme="dark"] .btn-primary:hover{
+            box-shadow: 0 10px 24px -6px rgba(250, 204, 21, .35);
+        }
+
+        .btn-outline{
+            background: #fff; border: 2px solid var(--primary); color: var(--primary);
+        }
+        .btn-outline:hover{
+            background: var(--primary); color: #fff; transform: translateY(-2px);
+        }
+        [data-theme="dark"] .btn-outline{
+            background: transparent; border-color: #facc15; color: #facc15;
+        }
+        [data-theme="dark"] .btn-outline:hover{
+            background: #facc15; color: #1e3a8a;
+        }
+
+        .btn-danger{
+            background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff;
+        }
+        .btn-danger:hover{transform: translateY(-2px); box-shadow: var(--shadow-md)}
+
+        .btn-sm{padding: 6px 14px; font-size: .75rem; min-height: 34px}
+        .btn:disabled{opacity: .6; cursor: not-allowed; transform: none !important}
+
+        /* ================================================================
+           TABLE — perfectly aligned columns
+           ================================================================ */
+        .table-wrapper{
+            overflow-x: auto; overflow-y: visible; padding: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .data-table{
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: .875rem;
+            min-width: 560px;
+            table-layout: fixed;   /* ← locks column widths */
+        }
+        .data-table th{
+            text-align: left;
+            padding: 14px 18px;
+            background: var(--table-header-bg);
+            color: var(--primary-dark);
+            font-weight: 800;
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            border-bottom: 2px solid var(--primary);
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        .data-table td{
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--table-border);
+            color: var(--text-main);
+            font-size: .9rem;
+            transition: background-color var(--transition-fast);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .data-table tr:hover td{background: var(--table-row-hover)}
+
+        /* Column widths — locked so header + cells align perfectly */
+        .data-table .col-sr      { width: 70px;  text-align: center; font-weight: 700; color: var(--text-secondary); }
+        .data-table .col-date    { width: 120px; text-align: left; }
+        .data-table .col-vehicle { width: auto;  text-align: left; }
+        .data-table .col-amount  {
+            width: 130px; text-align: right;
+            font-weight: 700; color: var(--success);
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "tnum";
+        }
+        .data-table .col-action  { width: 100px; text-align: center; }
+
+        /* Header alignment matches cells */
+        .data-table th.col-sr      { text-align: center; }
+        .data-table th.col-date    { text-align: left; }
+        .data-table th.col-vehicle { text-align: left; }
+        .data-table th.col-amount  { text-align: right; }
+        .data-table th.col-action  { text-align: center; }
+
+        [data-theme="dark"] .data-table th{
+            color: #facc15;
+            border-bottom-color: #facc15;
+        }
+        [data-theme="dark"] .data-table td{color: #ffffff}
+        [data-theme="dark"] .data-table .col-sr{color: #cbd5e1}
+        [data-theme="dark"] .data-table .col-amount{color: #34d399}
+
+        .view-action-btn{
+            background: var(--gradient-primary); color: #fff;
+            border: none; padding: 6px 14px; border-radius: 30px;
+            font-size: .72rem; font-weight: 600; cursor: pointer;
+            transition: transform var(--transition-fast), filter var(--transition-fast);
+            display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+        }
+        .view-action-btn:hover{transform: translateY(-2px); filter: brightness(1.05)}
+
+        /* ================================================================
+           SKELETON LOADERS
+           ================================================================ */
+        .skeleton-row td{padding: 16px 18px}
+        .skeleton{
+            background: linear-gradient(90deg,
+                var(--border-color) 25%,
+                var(--primary-soft) 50%,
+                var(--border-color) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s linear infinite;
+            border-radius: 8px; height: 16px;
+        }
+        .skeleton.sm{width: 60%}
+        .skeleton.md{width: 80%}
+        .skeleton.lg{width: 95%}
+
+        /* ================================================================
+           MOBILE BUTTONS
+           ================================================================ */
+        .mobile-buttons{display: none; gap: 10px; margin-top: 10px; width: 100%}
+        .mobile-buttons .btn{flex: 1; justify-content: center}
+
+        /* ================================================================
+           MODAL
+           ================================================================ */
+        .modal-overlay{
+            position: fixed; inset: 0;
+            background: rgba(15, 23, 42, .5);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2000;
+            visibility: hidden; opacity: 0;
+            transition: opacity var(--transition-normal), visibility var(--transition-normal);
+            padding: 16px;
+            padding-top: calc(16px + env(safe-area-inset-top, 0px));
+            padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+        }
+        .modal-overlay.active{visibility: visible; opacity: 1}
+
+        .modal-box{
+            background: var(--bg-card);
+            width: 100%; max-width: 720px; max-height: 90vh;
+            border-radius: 24px;
+            overflow-y: auto; overflow-x: hidden;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+            -webkit-overflow-scrolling: touch;
+            transform: scale(.94);
+            transition: transform var(--transition-normal);
+            will-change: transform;
+        }
+        .modal-overlay.active .modal-box{
+            animation: modalPop .28s cubic-bezier(.34, 1.56, .64, 1) forwards;
+        }
+        [data-theme="dark"] .modal-box{
+            background: #10254a;
+            border-color: #1e3a8a;
+        }
+
+        .modal-header{
+            background: var(--gradient-header);
+            padding: 1.1rem 1.4rem;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 10;
+            color: #fff; gap: 10px;
+        }
+        .modal-header h3{
+            font-size: 1.15rem; font-weight: 700;
+            display: flex; align-items: center; gap: 10px;
+            min-width: 0; flex: 1;
+        }
+        .modal-header h3 i{flex-shrink: 0}
+        [data-theme="dark"] .modal-header{
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+        }
+        [data-theme="dark"] .modal-header h3{color: #facc15}
+
+        .close-modal{
+            background: rgba(255, 255, 255, .2); border: none;
+            width: 36px; height: 36px; border-radius: 50%;
+            font-size: 1.3rem; cursor: pointer; color: #fff;
+            transition: transform var(--transition-fast), background-color var(--transition-fast);
+            line-height: 1; display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .close-modal:hover{transform: rotate(90deg); background: rgba(255, 255, 255, .3)}
+        [data-theme="dark"] .close-modal{
+            color: #facc15;
+            background: rgba(250, 204, 21, .15);
+        }
+        [data-theme="dark"] .close-modal:hover{
+            background: rgba(250, 204, 21, .3);
+        }
+
+        .modal-body{padding: 1.4rem}
+
+        /* ================================================================
+           FORM
+           ================================================================ */
+        .form-grid{
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1rem;
+        }
+        .field{display: flex; flex-direction: column; gap: 6px; position: relative;}
+        .field label{
+            font-size: .7rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: .5px;
+            color: var(--primary-dark);
+        }
+        .field input,
+        .field select,
+        .field textarea{
+            padding: 12px 14px; border-radius: 12px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-card); color: var(--text-main);
+            font-size: 16px; /* Prevents iOS auto-zoom */
+            font-family: inherit;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            min-height: 46px;
+        }
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus{
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, .1);
+        }
+        .field input::placeholder,
+        .field textarea::placeholder{color: var(--text-light)}
+        .field input[readonly]{
+            background: var(--primary-soft);
+            cursor: not-allowed;
+            color: var(--text-secondary);
+        }
+        .field input[type="date"]{
+            -webkit-appearance: none;
+            appearance: none;
+            min-height: 46px;
+        }
+
+        [data-theme="dark"] .field label{color: #facc15}
+        [data-theme="dark"] .field input,
+        [data-theme="dark"] .field select,
+        [data-theme="dark"] .field textarea{
+            background: #0a1a3a;
+            color: #ffffff;
+            border-color: #1e3a8a;
+        }
+        [data-theme="dark"] .field input:focus,
+        [data-theme="dark"] .field select:focus,
+        [data-theme="dark"] .field textarea:focus{
+            border-color: #facc15;
+            box-shadow: 0 0 0 4px rgba(250, 204, 21, .15);
+        }
+        [data-theme="dark"] .field input::placeholder,
+        [data-theme="dark"] .field textarea::placeholder{
+            color: #94a3b8;
+        }
+        [data-theme="dark"] .field input[readonly]{
+            background: rgba(250, 204, 21, 0.06);
+            color: #facc15;
+        }
+
+        .field .hint{
+            color: var(--text-light);
+            font-size: .7rem;
+            margin-top: 2px;
+        }
+        [data-theme="dark"] .field .hint{color: #94a3b8}
+
+        .fullwidth{grid-column: 1 / -1}
+
+        .form-section-title{
+            grid-column: 1 / -1;
+            font-size: .72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary-dark);
+            padding: 4px 0 2px;
+            border-bottom: 1px dashed var(--border-color);
+            margin-top: 6px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        [data-theme="dark"] .form-section-title{color: #facc15; border-bottom-color: #1e3a8a}
+
+        /* ================================================================
+           AUTOCOMPLETE
+           ================================================================ */
+        .autocomplete-wrap { position: relative; }
+        .autocomplete-list {
+            position: absolute;
+            top: 100%; left: 0; right: 0;
+            background: var(--bg-card);
+            border-radius: 12px;
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 9999;
+            display: none;
+            box-shadow: var(--shadow-lg);
+            margin-top: 6px;
+            border: 1px solid var(--border-color);
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+        }
+        .autocomplete-item {
+            padding: 12px 14px;
+            cursor: pointer;
+            font-size: .9rem;
+            color: var(--text-main);
+            transition: background var(--transition-fast), color var(--transition-fast);
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .autocomplete-item:last-child { border-bottom: none; }
+        .autocomplete-item:hover,
+        .autocomplete-item:active {
+            background: var(--primary);
+            color: #fff;
+        }
+        .autocomplete-item.create-new {
+            color: var(--success);
+            font-weight: 700;
+            border-top: 1px dashed var(--border-color);
+        }
+        .autocomplete-item.create-new:hover,
+        .autocomplete-item.create-new:active {
+            background: var(--success);
+            color: #fff;
+        }
+
+        /* ================================================================
+           DETAIL VIEW
+           ================================================================ */
+        .details-grid{
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+            padding: 1.4rem;
+        }
+        .detail-card{
+            background: #fff;
+            border-radius: 14px;
+            padding: 1rem 1.2rem;
+            border: 1px solid var(--border-color);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+            contain: layout style;
+        }
+        .detail-card:hover{
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+        .detail-label{
+            font-size: .65rem; text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--primary-dark); font-weight: 700;
+        }
+        .detail-value{
+            font-weight: 700; font-size: .95rem; margin-top: 6px;
+            color: var(--text-main); word-break: break-word;
+        }
+        .detail-card.fullwidth{grid-column: 1 / -1}
+
+        [data-theme="dark"] .detail-card{
+            background: #142b56;
+            border-color: #1e3a8a;
+        }
+        [data-theme="dark"] .detail-card:hover{border-color: #facc15}
+        [data-theme="dark"] .detail-label{color: #facc15}
+        [data-theme="dark"] .detail-value{color: #ffffff}
+
+        .action-row{
+            padding: 0 1.4rem 1.4rem;
+            display: flex; gap: 12px;
+            justify-content: flex-end; flex-wrap: wrap;
+        }
+
+        /* ================================================================
+           EMPTY / LOADING STATES
+           ================================================================ */
+        .empty-state{padding: 40px 20px; text-align: center; color: var(--text-secondary)}
+        .empty-state i{font-size: 3rem; color: var(--text-light); margin-bottom: 10px; display: block}
+        .empty-state p{font-size: .95rem}
+        .empty-state .sub-text{font-size: .8rem; color: var(--text-light); margin-top: 4px}
+
+        /* ================================================================
+           TOAST
+           ================================================================ */
+        .alert-popup{
+            position: fixed;
+            bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+            left: 50%;
+            transform: translate(-50%, 100px);
+            background: var(--bg-card); color: var(--text-main);
+            padding: 14px 24px; border-radius: 14px;
+            font-size: .9rem; font-weight: 600;
+            box-shadow: var(--shadow-xl);
+            z-index: 3000; opacity: 0;
+            transition: transform .35s ease, opacity .35s ease;
+            display: flex; align-items: center; gap: 10px;
+            max-width: calc(100% - 40px);
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--primary);
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+        .alert-popup.show{opacity: 1; transform: translate(-50%, 0)}
+        .alert-popup.success{border-left-color: var(--success)}
+        .alert-popup.error{border-left-color: var(--danger)}
+        .alert-popup.info{border-left-color: var(--info)}
+        .alert-popup.warning{border-left-color: var(--warning)}
+
+        [data-theme="dark"] .alert-popup{
+            background: #10254a;
+            color: #ffffff;
+            border-color: #1e3a8a;
+        }
+        [data-theme="dark"] .alert-popup.success{border-left-color: #34d399}
+        [data-theme="dark"] .alert-popup.error{border-left-color: #f87171}
+        [data-theme="dark"] .alert-popup.warning{border-left-color: #fbbf24}
+        [data-theme="dark"] .alert-popup.info{border-left-color: #22d3ee}
+
+        /* ================================================================
+           RESPONSIVE — MOBILE FIRST ADJUSTMENTS
+           ================================================================ */
+        @media (max-width: 768px) {
+            body { padding: 12px 10px; }
+
+            .card-header {
+                padding: .9rem 1rem;
+                border-radius: 16px;
+                gap: 8px;
+            }
+            .card-header h2 { font-size: 1.1rem; gap: 8px; }
+            .card-header h2 i { padding: 6px; font-size: .85rem; border-radius: 10px; }
+            .header-actions { gap: 6px; }
+            .btn-back {
+                padding: 7px 12px; font-size: .75rem; min-height: 34px;
+            }
+            .btn-back .back-label { display: none; }
+            .btn-back i { font-size: .85rem; }
+
+            .desktop-buttons { display: none !important; }
+            .mobile-buttons { display: flex; }
+
+            .search-section { padding: 1rem; }
+
+            /* Compact table for mobile */
+            .data-table { min-width: 480px; font-size: .8rem; }
+            .data-table th, .data-table td {
+                padding: 10px 8px;
+                font-size: .78rem;
+            }
+            .data-table th {
+                font-size: .68rem;
+                padding: 10px 6px;
+            }
+            .data-table .col-sr      { width: 45px; }
+            .data-table .col-date    { width: 85px; }
+            .data-table .col-amount  { width: 95px; font-size: .75rem; }
+            .data-table .col-action  { width: 70px; }
+
+            .view-action-btn {
+                padding: 5px 8px;
+                font-size: .65rem;
+                min-height: 32px;
+            }
+            .view-action-btn i { font-size: .6rem; }
+
+            .form-grid { grid-template-columns: 1fr; gap: .9rem; }
+
+            .details-grid {
+                grid-template-columns: 1fr 1fr;
+                padding: 1rem;
+                gap: .75rem;
+            }
+            .detail-card {
+                padding: .8rem .9rem;
+                border-radius: 12px;
+            }
+            .detail-label { font-size: .6rem; }
+            .detail-value { font-size: .85rem; margin-top: 4px; }
+
+            .action-row {
+                padding: 0 1rem 1rem;
+                gap: 10px;
+            }
+            .action-row .btn { flex: 1; justify-content: center; }
+
+            .modal-overlay { padding: 10px; }
+            .modal-box {
+                max-height: 94vh;
+                border-radius: 18px;
+                max-width: 100%;
+            }
+            .modal-header { padding: .9rem 1rem; }
+            .modal-header h3 { font-size: 1rem; }
+            .close-modal { width: 32px; height: 32px; font-size: 1.15rem; }
+            .modal-body { padding: 1rem; }
+
+            .field input,
+            .field select,
+            .field textarea {
+                padding: 11px 12px;
+                font-size: 16px;
+                min-height: 44px;
+            }
+            .field label { font-size: .65rem; }
+
+            .autocomplete-item {
+                padding: 11px 12px;
+                font-size: .85rem;
+                min-height: 42px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-buttons { display: none !important; }
+        }
+
+        @media (max-width: 480px) {
+            .details-grid { grid-template-columns: 1fr; }
+            .action-row { flex-direction: column-reverse; }
+            .action-row .btn { width: 100%; justify-content: center; }
+            .card-header h2 { font-size: 1rem; }
+            .card-header h2 i { padding: 5px; font-size: .75rem; }
+            .data-table { min-width: 440px; }
+        }
+
+        @media (max-width: 400px) {
+            .card-header h2 { font-size: .95rem; }
+            .card-header h2 i { padding: 5px; font-size: .7rem; }
+            .data-table th, .data-table td { padding: 8px 6px; font-size: .72rem; }
+            .data-table .col-sr      { width: 40px; }
+            .data-table .col-date    { width: 75px; }
+            .data-table .col-amount  { width: 85px; font-size: .7rem; }
+            .data-table .col-action  { width: 60px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- LOADING OVERLAY                                               -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div id="appLoading" role="status" aria-live="polite">
+        <div class="spinner"></div>
+        <p><i class="fas fa-tshirt"></i> Loading Piu Fashion...</p>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- MAIN CONTENT                                                  -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div id="mainContent">
+        <div class="app-container">
+
+            <!-- ===================== PAGE 1 - LIST VIEW ===================== -->
+            <div id="page1" class="page active-page">
+                <div class="soft-card">
+                    <div class="card-header">
+                        <div class="header-title-wrap">
+                            <h2>
+                                <i class="fas fa-tshirt" aria-hidden="true"></i>
+                                <span class="title-text">Piu Fashion — LR Entry</span>
+                            </h2>
+                        </div>
+                        <div class="header-actions">
+                            <div class="desktop-buttons" style="display:flex;gap:8px;">
+                                <button id="refreshBtn" class="btn btn-outline">
+                                    <i class="fas fa-sync-alt" aria-hidden="true"></i> Refresh
+                                </button>
+                                <button id="addNewBtn" class="btn btn-primary">
+                                    <i class="fas fa-plus" aria-hidden="true"></i> Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="search-section">
+                        <div class="search-wrapper">
+                            <input type="text" id="searchInput"
+                                   placeholder="🔍 Search by Vehicle No, Loading, Unloading or LR No..."
+                                   autocomplete="off" inputmode="search">
+                        </div>
+                        <div class="mobile-buttons">
+                            <button id="mobileRefreshBtn" class="btn btn-outline">
+                                <i class="fas fa-sync-alt" aria-hidden="true"></i> Refresh
+                            </button>
+                            <button id="mobileAddBtn" class="btn btn-primary">
+                                <i class="fas fa-plus" aria-hidden="true"></i> Add Entry
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-sr">Sr. No</th>
+                                    <th class="col-date">Date</th>
+                                    <th class="col-vehicle">Vehicle No</th>
+                                    <th class="col-amount">Amount</th>
+                                    <th class="col-action">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <!-- Skeleton rows injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== PAGE 2 - DETAIL VIEW ===================== -->
+            <div id="page2" class="page" style="display:none;">
+                <div class="soft-card">
+                    <div class="card-header">
+                        <div class="header-title-wrap">
+                            <h2>
+                                <i class="fas fa-file-invoice" aria-hidden="true"></i>
+                                <span class="title-text">Entry Details</span>
+                            </h2>
+                        </div>
+                        <button id="backToPage1Btn" class="btn-back" title="Back">
+                            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                            <span class="back-label">Back</span>
+                        </button>
+                    </div>
+                    <div id="detailsContainer" class="details-grid"></div>
+                    <div class="action-row">
+                        <button id="editFromDetailBtn" class="btn btn-primary">
+                            <i class="fas fa-edit" aria-hidden="true"></i> Edit
+                        </button>
+                        <button id="deleteFromDetailBtn" class="btn btn-danger">
+                            <i class="fas fa-trash" aria-hidden="true"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== FORM MODAL ===================== -->
+            <div id="formModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="formModalTitle">
+                <div class="modal-box">
+                    <div class="modal-header">
+                        <h3 id="formModalTitle">
+                            <i class="fas fa-plus" aria-hidden="true"></i> Add New Entry
+                        </h3>
+                        <button class="close-modal" id="closeFormModalBtn" aria-label="Close">×</button>
+                    </div>
+                    <div class="modal-body" id="formModalBody"></div>
+                </div>
+            </div>
+
+            <!-- ===================== GLOBAL MODAL ===================== -->
+            <div id="globalModal" class="modal-overlay" role="dialog" aria-modal="true">
+                <div class="modal-box" style="max-width:420px;">
+                    <div class="modal-header">
+                        <h3 id="modalTitle">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i> Notice
+                        </h3>
+                        <button class="close-modal" id="closeGlobalModal" aria-label="Close">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="modalMsg" style="font-size:.95rem;line-height:1.5;margin-bottom:1.2rem;"></p>
+                        <div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;">
+                            <button id="cancelModalBtn" class="btn btn-outline" style="display:none;">Cancel</button>
+                            <button id="confirmModalBtn" class="btn btn-primary">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== ALERT POPUP ===================== -->
+            <div id="alertBox" class="alert-popup" role="status" aria-live="polite">
+                <i class="fas fa-check-circle" aria-hidden="true"></i>
+                <span id="alertText">Message...</span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         MAIN SCRIPT
+         ═══════════════════════════════════════════════════════════════════ -->
+    <script defer>
+/* =====================================================================
+   PiuFashion.html — Full Script (v4 — Aligned Columns + Explicit Close)
+   ---------------------------------------------------------------------
+   Sheet Columns (backend): Sr. No | Date | Vehicle No | Loading |
+                            Unloading | LR No | LR Charges |
+                            Extra Charges | Amount
+   Front table shows:        Sr. No | Date | Vehicle No | Amount | Action
+   Date format saved:        DD/MM/YYYY
+   Modals:                   Only × button / Cancel / OK can close them
+   ===================================================================== */
+
+(function() {
+'use strict';
+
+/* =====================================================================
+   SECTION 1 — DARK MODE SYNC
+   ===================================================================== */
+function syncThemeWithParent() {
+    const localTheme = localStorage.getItem('user-theme-preference');
+    if (localTheme) {
+        document.body.setAttribute('data-theme', localTheme);
+        document.documentElement.setAttribute('data-theme', localTheme);
+    } else {
+        try {
+            if (window.parent && window.parent.document.body) {
+                const parentTheme = window.parent.document.body.getAttribute('data-theme');
+                if (parentTheme) {
+                    document.body.setAttribute('data-theme', parentTheme);
+                    document.documentElement.setAttribute('data-theme', parentTheme);
+                }
+            }
+        } catch(e) { }
+    }
+}
+
+/* =====================================================================
+   SECTION 2 — CONFIGURATION
+   ===================================================================== */
+const SCRIPT_URL             = "https://script.google.com/macros/s/AKfycbwzEbd10tAnSKJSsg01LOXr8MAgKTFO4cp2sjq9moatjN3_IWZ8ZWF9uViTXE-991Nq/exec";
+const SPREADSHEET_ID         = "1ufYQniJ_0ke7O0Bd5zNGAimdNKBSvi4dGMeQp3CQjwY";
+const SHEET_NAME             = "Piu_Fashion";
+const SOURCE_SHEET_NAME      = "Source";
+const DESTINATION_SHEET_NAME = "Destination";
+
+/* Cache TTL — 5 minutes */
+const CACHE_TTL             = 5 * 60 * 1000;
+const CACHE_KEY             = 'piu_fashion_cache_v4';
+const SOURCE_CACHE_KEY      = 'piu_fashion_source_cache_v4';
+const DEST_CACHE_KEY        = 'piu_fashion_dest_cache_v4';
+
+/* Auto background refresh */
+const AUTO_REFRESH_INTERVAL = 5 * 60 * 1000;
+
+/* =====================================================================
+   SECTION 3 — GLOBAL STATE
+   ===================================================================== */
+let allEntries         = [];
+let currentViewItem    = null;
+let currentViewRowIdx  = null;
+let vehicleOptions     = [];
+let loadingOptions     = [];
+let unloadingOptions   = [];
+let saveInProgress     = false;
+let initDone           = false;
+let autoRefreshTimer   = null;
+let isFetching         = false;
+let lastFetchTime      = 0;
+let activeFetchController = null;
+
+/* =====================================================================
+   SECTION 4 — UTILITIES
+   ===================================================================== */
+const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+const HTML_ESCAPE_REGEX = /[&<>"']/g;
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(HTML_ESCAPE_REGEX, m => HTML_ESCAPES[m]);
+}
+
+function showToast(msg, type = 'info') {
+    const box = document.getElementById('alertBox');
+    const txt = document.getElementById('alertText');
+    const icon = box.firstElementChild;
+    if (!box || !txt) return;
+    txt.textContent = msg;
+    box.className = `alert-popup ${type} show`;
+    const iconMap = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+    };
+    icon.className = `fas ${iconMap[type] || iconMap.info}`;
+    if (box._timeout) clearTimeout(box._timeout);
+    box._timeout = setTimeout(() => box.classList.remove('show'), 3000);
+}
+
+function showModal(msg, title = "Notice", isConfirm = false, onConfirm = null, confirmText = "OK") {
+    const modal = document.getElementById('globalModal');
+    document.getElementById('modalTitle').innerHTML =
+        `<i class="fas ${isConfirm ? 'fa-exclamation-triangle' : 'fa-info-circle'}" aria-hidden="true"></i> ${title}`;
+    document.getElementById('modalMsg').innerHTML = msg;
+    const confirmBtn = document.getElementById('confirmModalBtn');
+    const cancelBtn = document.getElementById('cancelModalBtn');
+    confirmBtn.textContent = confirmText;
+    if (isConfirm) {
+        cancelBtn.style.display = 'inline-flex';
+        cancelBtn.onclick = () => modal.classList.remove('active');
+    } else {
+        cancelBtn.style.display = 'none';
+    }
+    confirmBtn.onclick = () => {
+        modal.classList.remove('active');
+        if (isConfirm && onConfirm) onConfirm();
+    };
+    modal.classList.add('active');
+}
+
+function debounce(fn, wait = 250) {
+    let timer = null;
+    return function(...args) {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => { timer = null; fn.apply(this, args); }, wait);
+    };
+}
+
+const scheduleIdle = window.requestIdleCallback
+    ? (fn) => window.requestIdleCallback(fn, { timeout: 1500 })
+    : (fn) => setTimeout(fn, 1);
+
+function showSpinner(el, show, customHtml = null) {
+    if (!el) return;
+    if (show) {
+        el.disabled = true;
+        if (!el.hasAttribute('data-original')) el.setAttribute('data-original', el.innerHTML);
+        el.innerHTML = customHtml || '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;"></span>';
+    } else {
+        el.disabled = false;
+        const orig = el.getAttribute('data-original');
+        if (orig) { el.innerHTML = orig; el.removeAttribute('data-original'); }
+    }
+}
+
+/* ---------------------------------------------------------------------
+   DATE HELPERS — save as DD/MM/YYYY
+   --------------------------------------------------------------------- */
+function inputDateToDDMMYYYY(inputValue) {
+    if (!inputValue) return '';
+    const m = String(inputValue).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return inputValue;
+    return `${m[3]}/${m[2]}/${m[1]}`;
+}
+function anyDateToInputValue(value) {
+    if (!value) return '';
+    const s = String(value).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    let m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+    m = s.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+    if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        return `${d.getFullYear()}-${mm}-${dd}`;
+    }
+    return '';
+}
+function formatDisplayDate(value) {
+    if (!value) return '—';
+    const s = String(value).trim();
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(s)) return s;
+    const iso = anyDateToInputValue(s);
+    if (!iso) return s;
+    const [y, m, d] = iso.split('-');
+    return `${d}/${m}/${y}`;
+}
+
+/* =====================================================================
+   SECTION 5 — CACHE
+   ===================================================================== */
+function getCache(key = CACHE_KEY) {
+    try {
+        const raw = sessionStorage.getItem(key);
+        if (!raw) return null;
+        const { data, ts } = JSON.parse(raw);
+        if (Date.now() - ts > CACHE_TTL) {
+            sessionStorage.removeItem(key);
+            return null;
+        }
+        return data;
+    } catch (e) { return null; }
+}
+function setCache(data, key = CACHE_KEY) {
+    try {
+        sessionStorage.setItem(key, JSON.stringify({ data, ts: Date.now() }));
+    } catch (e) {
+        try { sessionStorage.removeItem(key); } catch (_) {}
+    }
+}
+function invalidateCache(key = CACHE_KEY) {
+    try { sessionStorage.removeItem(key); } catch (e) {}
+}
+
+/* =====================================================================
+   SECTION 6 — NAVIGATION
+   ===================================================================== */
+function showPage1() {
+    document.getElementById('page2').style.display = 'none';
+    document.getElementById('page1').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'instant' });
+}
+function showPage2() {
+    document.getElementById('page1').style.display = 'none';
+    document.getElementById('page2').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+/* =====================================================================
+   SECTION 7 — SKELETON  (5 columns)
+   ===================================================================== */
+function renderSkeleton(rows = 6) {
+    let html = '';
+    for (let i = 0; i < rows; i++) {
+        const w1 = i % 2 ? 'md' : 'sm';
+        const w2 = i % 2 ? 'lg' : 'md';
+        html += `<tr class="skeleton-row">` +
+            `<td><div class="skeleton sm"></div></td>` +
+            `<td><div class="skeleton ${w1}"></div></td>` +
+            `<td><div class="skeleton ${w2}"></div></td>` +
+            `<td><div class="skeleton md"></div></td>` +
+            `<td><div class="skeleton sm"></div></td>` +
+            `</tr>`;
+    }
+    return html;
+}
+
+/* =====================================================================
+   SECTION 8 — POST HELPER
+   ===================================================================== */
+async function postToSheet(params) {
+    try {
+        const res = await fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams(params).toString()
+        });
+        const json = await res.json();
+        return json;
+    } catch (err) {
+        console.error("POST error:", err);
+        return { status: "error", message: err.message };
+    }
+}
+
+/* =====================================================================
+   SECTION 9 — DATA FETCHING
+   ===================================================================== */
+async function fetchSheet(sheetName) {
+    const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${encodeURIComponent(sheetName)}&_=${Date.now()}`;
+    const res = await fetch(url, { cache: 'default' });
+    const json = await res.json();
+    if (json.status === 'success' && Array.isArray(json.data)) return json.data;
+    throw new Error(json.message || 'Failed to fetch ' + sheetName);
+}
+
+async function loadEntries(options = {}) {
+    const { forceRefresh = false, silent = false } = options;
+    if (isFetching && !forceRefresh) return;
+
+    const tbody = document.getElementById('tableBody');
+
+    if (!forceRefresh) {
+        const cached = getCache();
+        if (cached && Array.isArray(cached)) {
+            allEntries = cached.map((item, idx) => ({ ...item, _rowIndex: idx + 2 }));
+            renderTable();
+            lastFetchTime = Date.now();
+            scheduleIdle(() => silentRefresh());
+            return;
+        }
+    }
+
+    if (!silent) tbody.innerHTML = renderSkeleton(6);
+    isFetching = true;
+
+    if (activeFetchController) activeFetchController.abort();
+    activeFetchController = new AbortController();
+
+    try {
+        const data = await fetchSheet(SHEET_NAME);
+        allEntries = data.map((item, idx) => ({ ...item, _rowIndex: idx + 2 }));
+        setCache(data);
+        lastFetchTime = Date.now();
+        renderTable();
+    } catch (err) {
+        if (err.name === 'AbortError') { isFetching = false; return; }
+        console.error('Load error:', err);
+        tbody.innerHTML = `
+            <tr><td colspan="5">
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i>
+                    <p>Failed to load records</p>
+                    <p class="sub-text">${escapeHtml(err.message)}</p>
+                    <button class="btn btn-primary btn-sm" data-retry="1" style="margin-top:12px;">
+                        <i class="fas fa-redo"></i> Retry
+                    </button>
+                </div>
+            </td></tr>`;
+        if (!silent) showToast('❌ Failed to load entries', 'error');
+    } finally {
+        isFetching = false;
+    }
+}
+
+async function silentRefresh() {
+    if (isFetching) return;
+    if (Date.now() - lastFetchTime < CACHE_TTL) return;
+    try {
+        const data = await fetchSheet(SHEET_NAME);
+        const newHash = JSON.stringify(data);
+        const oldHash = JSON.stringify(allEntries.map(i => {
+            const { _rowIndex, ...rest } = i;
+            return rest;
+        }));
+        if (newHash !== oldHash) {
+            allEntries = data.map((item, idx) => ({ ...item, _rowIndex: idx + 2 }));
+            setCache(data);
+            renderTable();
+            lastFetchTime = Date.now();
+            console.log('🔄 Background refresh updated data');
+        } else {
+            lastFetchTime = Date.now();
+        }
+    } catch (err) {
+        console.log('Background refresh skipped:', err.message);
+    }
+}
+
+/* ---------------------------------------------------------------------
+   DROPDOWN SOURCES
+   --------------------------------------------------------------------- */
+async function loadVehicleOptions(options = {}) {
+    const { forceRefresh = false } = options;
+    if (!forceRefresh) {
+        const cached = getCache(SOURCE_CACHE_KEY);
+        if (Array.isArray(cached) && cached.length) {
+            vehicleOptions = cached;
+            return;
+        }
+    }
+    try {
+        const rows = await fetchSheet(SOURCE_SHEET_NAME);
+        const headers = Object.keys(rows[0] || {});
+        const key = headers.find(h => {
+            const n = String(h).toLowerCase().replace(/[\s._-]/g, '');
+            return n === 'vehicleno';
+        });
+        if (!key) { vehicleOptions = []; return; }
+        const set = new Set();
+        rows.forEach(r => {
+            const v = r[key];
+            if (v !== null && v !== undefined && String(v).trim()) set.add(String(v).trim());
+        });
+        vehicleOptions = Array.from(set).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+        setCache(vehicleOptions, SOURCE_CACHE_KEY);
+        console.log(`✅ Loaded ${vehicleOptions.length} vehicle option(s)`);
+    } catch (err) {
+        console.warn('Vehicle options fetch failed:', err.message);
+    }
+}
+
+async function loadDestinationOptions(options = {}) {
+    const { forceRefresh = false } = options;
+    if (!forceRefresh) {
+        const cached = getCache(DEST_CACHE_KEY);
+        if (cached && Array.isArray(cached.loadings) && Array.isArray(cached.unloadings)) {
+            loadingOptions   = cached.loadings;
+            unloadingOptions = cached.unloadings;
+            return;
+        }
+    }
+    try {
+        const rows = await fetchSheet(DESTINATION_SHEET_NAME);
+        const headers = Object.keys(rows[0] || {});
+        const destKey = headers.find(h => String(h).toLowerCase().replace(/[\s._-]/g, '') === 'destination');
+        const pickupKey = headers.find(h => String(h).toLowerCase().replace(/[\s._-]/g, '') === 'pickupname');
+        const loadSet = new Set();
+        const unloadSet = new Set();
+        rows.forEach(r => {
+            if (destKey) {
+                const v = r[destKey];
+                if (v !== null && v !== undefined && String(v).trim()) loadSet.add(String(v).trim());
+            }
+            if (pickupKey) {
+                const v = r[pickupKey];
+                if (v !== null && v !== undefined && String(v).trim()) unloadSet.add(String(v).trim());
+            }
+        });
+        loadingOptions   = Array.from(loadSet).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+        unloadingOptions = Array.from(unloadSet).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+        setCache({ loadings: loadingOptions, unloadings: unloadingOptions }, DEST_CACHE_KEY);
+        console.log(`✅ Loaded ${loadingOptions.length} loading + ${unloadingOptions.length} unloading option(s)`);
+    } catch (err) {
+        console.warn('Destination options fetch failed:', err.message);
+    }
+}
+
+/* =====================================================================
+   SECTION 10 — TABLE RENDERING  (5 columns, aligned)
+   ===================================================================== */
+let renderRafHandle = null;
+let pendingFilter = '';
+
+function scheduleRender(filter = '') {
+    pendingFilter = filter;
+    if (renderRafHandle) return;
+    renderRafHandle = requestAnimationFrame(() => {
+        renderRafHandle = null;
+        renderTable(pendingFilter);
+    });
+}
+
+function renderTable(filter = '') {
+    const tbody = document.getElementById('tableBody');
+    const q = filter.toLowerCase().trim();
+
+    let filtered = allEntries;
+    if (q) {
+        filtered = allEntries.filter(item => {
+            const v  = String(item['Vehicle No'] || '').toLowerCase();
+            const l  = String(item['Loading'] || '').toLowerCase();
+            const u  = String(item['Unloading'] || '').toLowerCase();
+            const lr = String(item['LR No'] || '').toLowerCase();
+            const d  = String(item['Date'] || '').toLowerCase();
+            return v.includes(q) || l.includes(q) || u.includes(q) || lr.includes(q) || d.includes(q);
+        });
+    }
+
+    if (!filtered.length) {
+        tbody.innerHTML = `
+            <tr><td colspan="5">
+                <div class="empty-state">
+                    <i class="fas fa-tshirt"></i>
+                    <p>${q ? 'No matching records found' : 'No entries yet'}</p>
+                    <p class="sub-text">${q ? 'Try a different search' : 'Click "Add" to create one'}</p>
+                </div>
+            </td></tr>`;
+        return;
+    }
+
+    const rows = new Array(filtered.length);
+    for (let i = 0; i < filtered.length; i++) {
+        const item = filtered[i];
+        const srNo    = item['Sr. No'] || (i + 1);
+        const date    = formatDisplayDate(item['Date']);
+        const vehicle = item['Vehicle No'] || '—';
+        const amount  = item['Amount'];
+        const amountFmt = (amount !== undefined && amount !== '' && !isNaN(parseFloat(amount)))
+            ? '₹' + parseFloat(amount).toLocaleString('en-IN')
+            : '—';
+        const actualIndex = allEntries.indexOf(item);
+
+        rows[i] =
+            `<tr>` +
+            `<td class="col-sr">${escapeHtml(srNo)}</td>` +
+            `<td class="col-date">${escapeHtml(date)}</td>` +
+            `<td class="col-vehicle">${escapeHtml(vehicle)}</td>` +
+            `<td class="col-amount">${escapeHtml(amountFmt)}</td>` +
+            `<td class="col-action">` +
+                `<button class="view-action-btn" data-srno="${escapeHtml(srNo)}" data-index="${actualIndex}">` +
+                    `<i class="fas fa-eye" aria-hidden="true"></i> View` +
+                `</button>` +
+            `</td>` +
+            `</tr>`;
+    }
+    tbody.innerHTML = rows.join('');
+}
+
+/* =====================================================================
+   SECTION 11 — DETAIL VIEW
+   ===================================================================== */
+function showDetailView(item) {
+    const cards = [];
+    const push = (label, value, fullwidth = false) => {
+        cards.push(cardHtml(label, value, fullwidth));
+    };
+
+    push('Sr. No', item['Sr. No'] || '—');
+    push('Date', formatDisplayDate(item['Date']));
+    push('Vehicle No', item['Vehicle No'] || '—');
+    push('Loading', item['Loading'] || '—');
+    push('Unloading', item['Unloading'] || '—');
+    push('LR No', item['LR No'] || '—');
+    push('LR Charges', (item['LR Charges'] !== undefined && item['LR Charges'] !== '')
+        ? '₹ ' + parseFloat(item['LR Charges'] || 0).toLocaleString('en-IN') : '—');
+    push('Extra Charges', (item['Extra Charges'] !== undefined && item['Extra Charges'] !== '')
+        ? '₹ ' + parseFloat(item['Extra Charges'] || 0).toLocaleString('en-IN') : '—');
+    push('Amount', (item['Amount'] !== undefined && item['Amount'] !== '')
+        ? '₹ ' + parseFloat(item['Amount'] || 0).toLocaleString('en-IN') : '—');
+
+    document.getElementById('detailsContainer').innerHTML = cards.join('');
+    showPage2();
+}
+
+function cardHtml(label, value, fullwidth = false) {
+    return `<div class="detail-card${fullwidth ? ' fullwidth' : ''}">` +
+        `<div class="detail-label">${escapeHtml(label)}</div>` +
+        `<div class="detail-value">${escapeHtml(String(value))}</div>` +
+        `</div>`;
+}
+
+/* =====================================================================
+   SECTION 12 — FORM BUILDER
+   ===================================================================== */
+function buildFormHtml(item = null, isEdit = false) {
+    const def = {
+        'Sr. No': '',
+        'Date': '',
+        'Vehicle No': '',
+        'Loading': '',
+        'Unloading': '',
+        'LR No': '',
+        'LR Charges': '',
+        'Extra Charges': '',
+        'Amount': ''
+    };
+    if (item) {
+        for (const k in def) {
+            if (item[k] !== undefined && item[k] !== null && item[k] !== '') def[k] = item[k];
+        }
+    }
+    const dateInputValue = def['Date'] ? anyDateToInputValue(def['Date']) : '';
+
+    return `<form id="piuForm" novalidate autocomplete="off">
+        <div class="form-grid">
+
+            <div class="form-section-title">
+                <i class="fas fa-truck" aria-hidden="true"></i> Trip Information
+            </div>
+
+            <div class="field">
+                <label for="fSrNo">Sr. No (Auto)</label>
+                <input type="text" id="fSrNo" value="${escapeHtml(def['Sr. No'])}"
+                       placeholder="Auto-generated" readonly inputmode="none">
+                <span class="hint">Managed automatically by the server.</span>
+            </div>
+
+            <div class="field">
+                <label for="fDate">Date *</label>
+                <input type="date" id="fDate" value="${escapeHtml(dateInputValue)}" required>
+                <span class="hint">Stored as DD/MM/YYYY.</span>
+            </div>
+
+            <div class="field autocomplete-wrap">
+                <label for="fVehicleNo">Vehicle No</label>
+                <input type="text" id="fVehicleNo" value="${escapeHtml(def['Vehicle No'])}"
+                       placeholder="Type or select vehicle no"
+                       autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+                       inputmode="text">
+                <div id="vehicleAutoList" class="autocomplete-list"></div>
+                <span class="hint">New values auto-add to "Source" sheet.</span>
+            </div>
+
+            <div class="field autocomplete-wrap">
+                <label for="fLoading">Loading</label>
+                <input type="text" id="fLoading" value="${escapeHtml(def['Loading'])}"
+                       placeholder="Type or select loading point"
+                       autocomplete="off" autocorrect="off" spellcheck="false"
+                       inputmode="text">
+                <div id="loadingAutoList" class="autocomplete-list"></div>
+                <span class="hint">Auto-adds to "Destination" sheet.</span>
+            </div>
+
+            <div class="field autocomplete-wrap">
+                <label for="fUnloading">Unloading</label>
+                <input type="text" id="fUnloading" value="${escapeHtml(def['Unloading'])}"
+                       placeholder="Type or select unloading point"
+                       autocomplete="off" autocorrect="off" spellcheck="false"
+                       inputmode="text">
+                <div id="unloadingAutoList" class="autocomplete-list"></div>
+                <span class="hint">Auto-adds to "Destination" sheet.</span>
+            </div>
+
+            <div class="field">
+                <label for="fLrNo">LR No</label>
+                <input type="number" id="fLrNo" value="${escapeHtml(def['LR No'])}"
+                       placeholder="e.g., 12345" inputmode="numeric" min="0" step="1">
+            </div>
+
+            <div class="form-section-title">
+                <i class="fas fa-rupee-sign" aria-hidden="true"></i> Charges
+            </div>
+
+            <div class="field">
+                <label for="fLrCharges">LR Charges</label>
+                <input type="number" id="fLrCharges" value="${escapeHtml(def['LR Charges'])}"
+                       placeholder="0.00" inputmode="decimal" min="0" step="0.01">
+            </div>
+
+            <div class="field">
+                <label for="fExtraCharges">Extra Charges</label>
+                <input type="number" id="fExtraCharges" value="${escapeHtml(def['Extra Charges'])}"
+                       placeholder="0.00" inputmode="decimal" min="0" step="0.01">
+            </div>
+
+            <div class="field">
+                <label for="fAmount">Amount</label>
+                <input type="number" id="fAmount" value="${escapeHtml(def['Amount'])}"
+                       placeholder="0.00" inputmode="decimal" min="0" step="0.01">
+            </div>
+
+        </div>
+
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:1.4rem;padding-top:1rem;border-top:1px solid var(--border-color);flex-wrap:wrap;">
+            <button type="button" id="cancelFormBtn" class="btn btn-outline" style="flex:0 0 auto;">Cancel</button>
+            <button type="submit" id="saveFormBtn" class="btn btn-primary" style="flex:1 1 auto;">
+                <i class="fas fa-save" aria-hidden="true"></i> ${isEdit ? 'Update Entry' : 'Save Entry'}
+            </button>
+        </div>
+    </form>`;
+}
+
+/* =====================================================================
+   SECTION 13 — AUTOCOMPLETE
+   ---------------------------------------------------------------------
+   ✅ List hides immediately on selection
+   ✅ Focus alone does NOT re-open the list after selection
+   ✅ Escape key hides list
+   ✅ Touch-friendly (44px min item height)
+   ===================================================================== */
+function setupAutocomplete(inputId, listId, optionsGetter) {
+    const input  = document.getElementById(inputId);
+    const listEl = document.getElementById(listId);
+    if (!input || !listEl) return;
+
+    let debounceId     = null;
+    let blockFocusOpen = false;
+    let isSelecting    = false;
+
+    function render(filterVal = '') {
+        const arr  = optionsGetter();
+        const term = String(filterVal || '').toLowerCase().trim();
+        const filtered = term
+            ? arr.filter(o => o.toLowerCase().includes(term))
+            : arr;
+
+        let html = '';
+        filtered.slice(0, 100).forEach(opt => {
+            html += `<div class="autocomplete-item" data-value="${escapeHtml(opt)}">${escapeHtml(opt)}</div>`;
+        });
+
+        if (term && !arr.some(o => o.toLowerCase() === term)) {
+            const rawVal = String(filterVal).trim();
+            if (rawVal) {
+                html += `<div class="autocomplete-item create-new" data-value="${escapeHtml(rawVal)}" data-create="1">` +
+                    `➕ Use new value: "${escapeHtml(rawVal)}"</div>`;
+            }
+        }
+
+        if (!html) { listEl.style.display = 'none'; return; }
+        listEl.innerHTML = html;
+        listEl.style.display = 'block';
+    }
+
+    function hideList() {
+        listEl.style.display = 'none';
+        listEl.innerHTML = '';
+    }
+
+    input.addEventListener('input', (e) => {
+        if (isSelecting) return;
+        blockFocusOpen = false;
+        if (debounceId) clearTimeout(debounceId);
+        debounceId = setTimeout(() => render(e.target.value), 180);
+    });
+
+    input.addEventListener('focus', () => {
+        if (blockFocusOpen) return;
+        render(input.value);
+    });
+
+    input.addEventListener('blur', () => {
+        setTimeout(() => hideList(), 200);
+    });
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') hideList();
+    });
+
+    const handleSelect = (e) => {
+        const item = e.target.closest('.autocomplete-item');
+        if (!item) return;
+        e.preventDefault();
+        e.stopPropagation();
+
+        isSelecting = true;
+        input.value = item.getAttribute('data-value');
+        hideList();
+        blockFocusOpen = true;
+
+        input.addEventListener('blur', () => {
+            blockFocusOpen = false;
+            isSelecting = false;
+        }, { once: true });
+
+        input.addEventListener('input', () => {
+            blockFocusOpen = false;
+            isSelecting = false;
+        }, { once: true });
+    };
+    listEl.addEventListener('click', handleSelect);
+    listEl.addEventListener('touchend', handleSelect);
+
+    document.addEventListener('click', (e) => {
+        if (!listEl.contains(e.target) && e.target !== input) hideList();
+    });
+}
+
+/* =====================================================================
+   SECTION 14 — MODAL OPEN
+   ===================================================================== */
+async function openAddModal() {
+    const body = document.getElementById('formModalBody');
+    document.getElementById('formModalTitle').innerHTML = '<i class="fas fa-plus" aria-hidden="true"></i> Add New Entry';
+    body.innerHTML = buildFormHtml(null, false);
+    document.getElementById('formModal').classList.add('active');
+
+    requestAnimationFrame(() => {
+        setupAutocomplete('fVehicleNo', 'vehicleAutoList', () => vehicleOptions);
+        setupAutocomplete('fLoading',   'loadingAutoList', () => loadingOptions);
+        setupAutocomplete('fUnloading', 'unloadingAutoList', () => unloadingOptions);
+        bindFormEvents(false, null);
+        if (window.innerWidth > 768) {
+            document.getElementById('fDate')?.focus();
+        }
+    });
+
+    if (!vehicleOptions.length)   loadVehicleOptions();
+    if (!loadingOptions.length && !unloadingOptions.length) loadDestinationOptions();
+}
+
+async function openEditModal() {
+    if (!currentViewItem) { showToast('❌ No record selected', 'error'); return; }
+    const body = document.getElementById('formModalBody');
+    document.getElementById('formModalTitle').innerHTML = '<i class="fas fa-edit" aria-hidden="true"></i> Edit Entry';
+    body.innerHTML = buildFormHtml(currentViewItem, true);
+    document.getElementById('formModal').classList.add('active');
+
+    requestAnimationFrame(() => {
+        setupAutocomplete('fVehicleNo', 'vehicleAutoList', () => vehicleOptions);
+        setupAutocomplete('fLoading',   'loadingAutoList', () => loadingOptions);
+        setupAutocomplete('fUnloading', 'unloadingAutoList', () => unloadingOptions);
+        bindFormEvents(true, currentViewRowIdx);
+        if (window.innerWidth > 768) {
+            document.getElementById('fDate')?.focus();
+        }
+    });
+
+    if (!vehicleOptions.length)   loadVehicleOptions();
+    if (!loadingOptions.length && !unloadingOptions.length) loadDestinationOptions();
+}
+
+/* =====================================================================
+   SECTION 15 — FORM BINDINGS
+   ===================================================================== */
+function bindFormEvents(isEdit, rowIdx) {
+    document.getElementById('cancelFormBtn')?.addEventListener('click', () => {
+        document.getElementById('formModal').classList.remove('active');
+    });
+    document.getElementById('piuForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleSubmit(e, isEdit, rowIdx);
+    });
+}
+
+/* =====================================================================
+   SECTION 16 — SUBMIT
+   ===================================================================== */
+async function handleSubmit(e, isEdit, rowIdx) {
+    e.preventDefault();
+    if (saveInProgress) return;
+
+    const srNo          = document.getElementById('fSrNo')?.value.trim() || '';
+    const dateInputVal  = document.getElementById('fDate')?.value || '';
+    const vehicleNo     = document.getElementById('fVehicleNo')?.value.trim() || '';
+    const loading       = document.getElementById('fLoading')?.value.trim() || '';
+    const unloading     = document.getElementById('fUnloading')?.value.trim() || '';
+    const lrNo          = document.getElementById('fLrNo')?.value.trim() || '';
+    const lrCharges     = document.getElementById('fLrCharges')?.value || '';
+    const extraCharges  = document.getElementById('fExtraCharges')?.value || '';
+    const amount        = document.getElementById('fAmount')?.value || '';
+
+    if (!dateInputVal || !/^\d{4}-\d{2}-\d{2}$/.test(dateInputVal)) {
+        showToast('⚠️ Date is required', 'warning');
+        document.getElementById('fDate')?.focus();
+        return;
+    }
+    const [yyyy, mm, dd] = dateInputVal.split('-');
+    const testDate = new Date(yyyy, mm - 1, dd);
+    if (isNaN(testDate.getTime()) ||
+        testDate.getFullYear() != yyyy ||
+        testDate.getMonth() + 1 != mm ||
+        testDate.getDate() != dd) {
+        showToast('⚠️ Invalid date selected', 'warning');
+        document.getElementById('fDate')?.focus();
+        return;
+    }
+
+    const dateForSheet = `${dd}/${mm}/${yyyy}`;
+
+    saveInProgress = true;
+    const saveBtn = document.getElementById('saveFormBtn');
+    showSpinner(saveBtn, true);
+
+    try {
+        const params = {
+            action: isEdit ? 'update' : 'insert',
+            spreadsheetId: SPREADSHEET_ID,
+            sheetName: SHEET_NAME,
+            'Date': dateForSheet,
+            'Vehicle No': vehicleNo,
+            'Loading': loading,
+            'Unloading': unloading,
+            'LR No': lrNo,
+            'LR Charges': lrCharges,
+            'Extra Charges': extraCharges,
+            'Amount': amount
+        };
+        if (isEdit && rowIdx) params.rowIndex = rowIdx;
+        if (isEdit && srNo)   params['Sr. No'] = srNo;
+
+        const result = await postToSheet(params);
+
+        if (result.status === 'success') {
+            const tasks = [];
+            if (vehicleNo) tasks.push(smartSaveVehicle(vehicleNo));
+            if (loading)   tasks.push(smartSaveDestination('Destination', loading));
+            if (unloading) tasks.push(smartSaveDestination('Pickup Name', unloading));
+            Promise.all(tasks).catch(err => console.warn('Dropdown save warning:', err));
+
+            invalidateCache();
+            invalidateCache(SOURCE_CACHE_KEY);
+            invalidateCache(DEST_CACHE_KEY);
+
+            showToast(`✅ Entry ${isEdit ? 'updated' : 'saved'} successfully!`, 'success');
+            document.getElementById('formModal').classList.remove('active');
+
+            await Promise.all([
+                loadEntries({ forceRefresh: true }),
+                loadVehicleOptions({ forceRefresh: true }),
+                loadDestinationOptions({ forceRefresh: true })
+            ]);
+            if (isEdit) showPage1();
+        } else {
+            throw new Error(result.message || 'Unknown error');
+        }
+    } catch (err) {
+        console.error('Submit error:', err);
+        showToast('❌ ' + err.message, 'error');
+    } finally {
+        saveInProgress = false;
+        showSpinner(saveBtn, false);
+    }
+}
+
+/* ---------------------------------------------------------------------
+   SMART SAVE HELPERS
+   --------------------------------------------------------------------- */
+async function smartSaveVehicle(vehicleNo) {
+    const v = String(vehicleNo).trim();
+    if (!v) return;
+    if (vehicleOptions.some(o => o.toLowerCase() === v.toLowerCase())) return;
+
+    let rows = [];
+    try { rows = await fetchSheet(SOURCE_SHEET_NAME); } catch (e) { rows = []; }
+    const headers = Object.keys(rows[0] || {});
+    const vKey = headers.find(h => String(h).toLowerCase().replace(/[\s._-]/g, '') === 'vehicleno');
+    if (!vKey) return;
+
+    const exists = rows.some(r => String(r[vKey] || '').trim().toLowerCase() === v.toLowerCase());
+    if (exists) return;
+
+    const srKey = headers.find(h => String(h).toLowerCase().replace(/[\s._-]/g, '') === 'srno') || headers[0];
+    let maxSr = 0;
+    rows.forEach(r => {
+        const n = parseInt(r[srKey], 10);
+        if (!isNaN(n) && n > maxSr) maxSr = n;
+    });
+
+    const res = await postToSheet({
+        action: 'insert',
+        spreadsheetId: SPREADSHEET_ID,
+        sheetName: SOURCE_SHEET_NAME,
+        [srKey]: String(maxSr + 1),
+        [vKey]: v
+    });
+    if (res.status === 'success') {
+        console.log(`✅ Added vehicle "${v}" to Source sheet`);
+    }
+}
+
+async function smartSaveDestination(columnName, value) {
+    const v = String(value).trim();
+    if (!v) return;
+
+    const localOpts = columnName === 'Destination' ? loadingOptions : unloadingOptions;
+    if (localOpts.some(o => o.toLowerCase() === v.toLowerCase())) return;
+
+    let rows = [];
+    try { rows = await fetchSheet(DESTINATION_SHEET_NAME); } catch (e) { rows = []; }
+    const headers = Object.keys(rows[0] || {});
+    const targetKey = headers.find(h => String(h).trim() === columnName);
+    if (!targetKey) return;
+
+    const exists = rows.some(r => String(r[targetKey] || '').trim().toLowerCase() === v.toLowerCase());
+    if (exists) return;
+
+    const srKey = headers.find(h => String(h).toLowerCase().replace(/[\s._-]/g, '') === 'srno') || headers[0];
+    let maxSr = 0;
+    rows.forEach(r => {
+        const n = parseInt(r[srKey], 10);
+        if (!isNaN(n) && n > maxSr) maxSr = n;
+    });
+
+    const res = await postToSheet({
+        action: 'insert',
+        spreadsheetId: SPREADSHEET_ID,
+        sheetName: DESTINATION_SHEET_NAME,
+        [srKey]: String(maxSr + 1),
+        [targetKey]: v
+    });
+    if (res.status === 'success') {
+        console.log(`✅ Added "${v}" to Destination → ${columnName}`);
+    }
+}
+
+/* =====================================================================
+   SECTION 17 — DELETE
+   ===================================================================== */
+function deleteEntry() {
+    if (!currentViewItem || !currentViewRowIdx) {
+        showToast('❌ No record selected', 'error'); return;
+    }
+    const lr = currentViewItem['LR No'] || '';
+    const vehicle = currentViewItem['Vehicle No'] || '';
+    const label = lr ? `LR No ${lr}` : (vehicle ? `Vehicle ${vehicle}` : 'this record');
+
+    showModal(
+        `Are you sure you want to delete <strong>${escapeHtml(label)}</strong>?` +
+        `<br><br>This action cannot be undone.`,
+        'Confirm Delete',
+        true,
+        async () => {
+            const btn = document.getElementById('deleteFromDetailBtn');
+            showSpinner(btn, true);
+            try {
+                const result = await postToSheet({
+                    action: 'delete',
+                    spreadsheetId: SPREADSHEET_ID,
+                    sheetName: SHEET_NAME,
+                    rowIndex: currentViewRowIdx
+                });
+                if (result.status === 'success') {
+                    invalidateCache();
+                    showToast('✅ Entry deleted!', 'success');
+                    currentViewItem = null;
+                    currentViewRowIdx = null;
+                    await loadEntries({ forceRefresh: true });
+                    showPage1();
+                } else {
+                    throw new Error(result.message || 'Unknown error');
+                }
+            } catch (err) {
+                console.error('Delete error:', err);
+                showToast('❌ Delete failed: ' + err.message, 'error');
+            } finally {
+                showSpinner(btn, false);
+            }
+        },
+        'Delete'
+    );
+}
+
+/* =====================================================================
+   SECTION 18 — EVENT DELEGATION
+   ===================================================================== */
+function handleTableClick(e) {
+    const btn = e.target.closest('.view-action-btn');
+    if (!btn) {
+        const retry = e.target.closest('[data-retry]');
+        if (retry) loadEntries({ forceRefresh: true });
+        return;
+    }
+    const srNo = btn.getAttribute('data-srno');
+    const index = parseInt(btn.getAttribute('data-index'), 10);
+
+    let found = null;
+    if (srNo) found = allEntries.find(item => String(item['Sr. No']) === String(srNo));
+    if (!found && !isNaN(index) && index >= 0 && index < allEntries.length) {
+        found = allEntries[index];
+    }
+    if (found) {
+        currentViewItem = found;
+        currentViewRowIdx = found._rowIndex;
+        showDetailView(found);
+    } else {
+        showToast('❌ Record not found', 'error');
+    }
+}
+
+/* =====================================================================
+   SECTION 19 — AUTO BACKGROUND UPDATE
+   ===================================================================== */
+function startAutoRefresh() {
+    if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+    autoRefreshTimer = setInterval(() => {
+        if (document.visibilityState === 'visible') {
+            silentRefresh();
+        }
+    }, AUTO_REFRESH_INTERVAL);
+}
+function stopAutoRefresh() {
+    if (autoRefreshTimer) {
+        clearInterval(autoRefreshTimer);
+        autoRefreshTimer = null;
+    }
+}
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        if (Date.now() - lastFetchTime > CACHE_TTL) {
+            scheduleIdle(() => silentRefresh());
+        }
+        startAutoRefresh();
+    } else {
+        stopAutoRefresh();
+    }
+});
+
+/* =====================================================================
+   SECTION 20 — INITIALIZATION
+   ===================================================================== */
+function initApp() {
+    if (initDone) return;
+    initDone = true;
+
+    const refreshBtn       = document.getElementById('refreshBtn');
+    const addNewBtn        = document.getElementById('addNewBtn');
+    const mobileRefreshBtn = document.getElementById('mobileRefreshBtn');
+    const mobileAddBtn     = document.getElementById('mobileAddBtn');
+
+    const doRefresh = async (btn) => {
+        showSpinner(btn, true);
+        invalidateCache();
+        invalidateCache(SOURCE_CACHE_KEY);
+        invalidateCache(DEST_CACHE_KEY);
+        await Promise.all([
+            loadEntries({ forceRefresh: true, silent: true }),
+            loadVehicleOptions({ forceRefresh: true }),
+            loadDestinationOptions({ forceRefresh: true })
+        ]);
+        showSpinner(btn, false);
+        showToast('🔄 Data refreshed', 'success');
+    };
+
+    refreshBtn?.addEventListener('click', () => doRefresh(refreshBtn));
+    mobileRefreshBtn?.addEventListener('click', () => doRefresh(mobileRefreshBtn));
+    addNewBtn?.addEventListener('click', openAddModal);
+    mobileAddBtn?.addEventListener('click', openAddModal);
+
+    document.getElementById('backToPage1Btn')?.addEventListener('click', showPage1);
+    document.getElementById('editFromDetailBtn')?.addEventListener('click', openEditModal);
+    document.getElementById('deleteFromDetailBtn')?.addEventListener('click', deleteEntry);
+
+    document.getElementById('closeFormModalBtn')?.addEventListener('click', () => {
+        document.getElementById('formModal').classList.remove('active');
+    });
+    document.getElementById('closeGlobalModal')?.addEventListener('click', () => {
+        document.getElementById('globalModal').classList.remove('active');
+    });
+
+    /* ⚠️ Modals deliberately do NOT close on outside click.
+       Only the × button, Cancel, or OK dismisses them.
+       This prevents accidental data loss on mobile/tablet taps. */
+
+    document.getElementById('tableBody')?.addEventListener('click', handleTableClick);
+
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(function() {
+            scheduleRender(this.value);
+        }, 250));
+    }
+
+    /* Escape key — only closes modals if you want. Uncomment to enable:
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay.active').forEach(m => {
+                m.classList.remove('active');
+            });
+        }
+    });
+    */
+
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'user-theme-preference') syncThemeWithParent();
+    });
+
+    loadEntries();
+    loadVehicleOptions();
+    loadDestinationOptions();
+    startAutoRefresh();
+
+    console.log('✅ Piu Fashion LR Entry ready (v4)');
+    console.log('   ⚡ Auto-refresh: every 5 min (paused when tab hidden)');
+    console.log('   💾 Cache TTL: 5 min');
+    console.log('   🔒 Modals require explicit close');
+}
+
+/* =====================================================================
+   SECTION 21 — BOOTSTRAP
+   ===================================================================== */
+function bootstrap() {
+    syncThemeWithParent();
+
+    const main = document.getElementById('mainContent');
+    const loading = document.getElementById('appLoading');
+
+    if (loading) loading.classList.add('hidden');
+    if (main) {
+        main.style.display = 'block';
+        main.classList.add('visible');
+    }
+    initApp();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootstrap);
+} else {
+    bootstrap();
+}
+
+/* =====================================================================
+   SECTION 22 — WINDOW EXPORTS
+   ===================================================================== */
+window.piuFashionApp = {
+    loadEntries,
+    loadVehicleOptions,
+    loadDestinationOptions,
+    openAddModal,
+    openEditModal,
+    invalidateCache,
+    silentRefresh
+};
+
+console.log('✅ PiuFashion.html script initialised (v4)');
+
+})();
+    </script>
+</body>
+</html>

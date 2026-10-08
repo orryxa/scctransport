@@ -1,0 +1,1973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <meta name="description" content="Party Entry Management — Universal English Medium High School">
+    <title>🏢 Party Entry | Universal English Medium High School</title>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         DNS PREFETCH + PRECONNECT
+         ═══════════════════════════════════════════════════════════════ -->
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="dns-prefetch" href="https://script.google.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons loaded async — non-blocking -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         CRITICAL CSS — above-the-fold (loading shell)
+         ═══════════════════════════════════════════════════════════════ -->
+    <style id="critical-css">
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html,body{height:100%}
+        body{
+            font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;
+            background:#f0f6ff;color:#0f172a;
+            -webkit-font-smoothing:antialiased;
+        }
+        /* Loading overlay */
+        #appLoading{
+            position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+            background:#f0f6ff;z-index:9999;flex-direction:column;gap:1.5rem;
+        }
+        #appLoading.hidden{display:none!important}
+        #appLoading .spinner{
+            width:50px;height:50px;border:4px solid #dbeafe;border-top-color:#2563eb;
+            border-radius:50%;animation:spin .8s linear infinite;
+        }
+        #appLoading p{color:#475569;font-weight:500;font-size:.9rem}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        /* Dark mode override for loading overlay */
+        [data-theme="dark"] #appLoading{background:#0a1a3a}
+        [data-theme="dark"] #appLoading .spinner{border-color:#1e3a8a;border-top-color:#facc15}
+        [data-theme="dark"] #appLoading p{color:#facc15}
+
+        #mainContent{display:none}
+        #mainContent.visible{display:block}
+
+        /* Hidden scrollbars — scroll still works */
+        *{scrollbar-width:none;-ms-overflow-style:none}
+        *::-webkit-scrollbar{width:0!important;height:0!important;display:none!important}
+        html,body{overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         FULL STYLESHEET — loaded async (non-blocking)
+         ═══════════════════════════════════════════════════════════════ -->
+    <style id="main-css" media="print" onload="this.media='all'">
+        /* ================================================================
+           CSS VARIABLES — LIGHT MODE (Blue & White) — from income.html
+           ================================================================ */
+        :root {
+            --bg-body: #f0f6ff;
+            --bg-body-gradient:
+                radial-gradient(1200px 600px at 10% -10%, rgba(37, 99, 235, 0.08), transparent 60%),
+                radial-gradient(900px 500px at 110% 20%, rgba(37, 99, 235, 0.06), transparent 55%),
+                #f0f6ff;
+            --bg-card: #ffffff;
+            --bg-header: #ffffff;
+
+            --text-main: #0f172a;
+            --text-secondary: #1e40af;
+            --text-light: #3b82f6;
+
+            --border-color: #dbeafe;
+            --border-light: #e8f0fc;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #60a5fa;
+            --primary-soft: #eff6ff;
+            --primary-soft-2: #dbeafe;
+
+            --accent: #eab308;
+            --accent-soft: rgba(234, 179, 8, 0.12);
+
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            --gradient-header: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+
+            --table-header-bg: #eff6ff;
+            --table-row-hover: #f5f9ff;
+            --table-border: #e0eaff;
+
+            --transition-fast: 150ms ease;
+            --transition-normal: 300ms ease;
+        }
+
+        /* ================================================================
+           CSS VARIABLES — DARK MODE (Blue + Yellow + White) — from index.html
+           ================================================================ */
+        [data-theme="dark"] {
+            --bg-body: #0a1a3a;
+            --bg-body-gradient:
+                radial-gradient(1200px 600px at 10% -10%, rgba(37, 99, 235, 0.22), transparent 60%),
+                radial-gradient(900px 500px at 110% 20%, rgba(250, 204, 21, 0.10), transparent 55%),
+                #0a1a3a;
+            --bg-card: #10254a;
+            --bg-header: #10254a;
+
+            --text-main: #ffffff;
+            --text-secondary: #facc15;
+            --text-light: #e5e7eb;
+
+            --border-color: #1e3a8a;
+            --border-light: #1a2f66;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6);
+
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --primary-soft: rgba(59, 130, 246, 0.15);
+            --primary-soft-2: rgba(59, 130, 246, 0.25);
+
+            --accent: #facc15;
+            --accent-soft: rgba(250, 204, 21, 0.15);
+
+            --success: #34d399;
+            --danger: #f87171;
+            --warning: #fbbf24;
+            --info: #22d3ee;
+
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            --gradient-header: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+
+            --table-header-bg: #142b56;
+            --table-row-hover: #183468;
+            --table-border: #1e3a8a;
+        }
+
+        /* ================================================================
+           ANIMATIONS
+           ================================================================ */
+        @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+        @keyframes modalPop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+        @keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+        /* ================================================================
+           BASE
+           ================================================================ */
+        body{
+            background: var(--bg-body-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px 16px;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+        }
+        #mainContent.visible{animation: fadeIn .4s ease-out}
+        .app-container{max-width: 1400px; margin: 0 auto}
+
+        /* ================================================================
+           HEADER
+           ================================================================ */
+        .card-header{
+            background: var(--bg-header);
+            border-radius: 20px;
+            padding: 1.2rem 1.6rem;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            contain: layout style;
+        }
+        .card-header::before{
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+        [data-theme="dark"] .card-header::before{
+            background: linear-gradient(90deg, #2563eb, #facc15, #2563eb);
+        }
+
+        .header-title-wrap{
+            display: flex; align-items: center; gap: 10px;
+            flex: 1; min-width: 0;
+        }
+        .card-header h2{
+            font-size: 1.5rem; font-weight: 800;
+            color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+            min-width: 0; line-height: 1.2;
+        }
+        .card-header h2 i{
+            color: #fff;
+            background: var(--gradient-primary);
+            padding: 8px; border-radius: 12px;
+            font-size: 1rem; flex-shrink: 0;
+        }
+        [data-theme="dark"] .card-header h2{
+            color: #facc15;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        }
+        [data-theme="dark"] .card-header h2 i{
+            background: linear-gradient(135deg, #facc15, #eab308);
+            color: #1e3a8a;
+        }
+        .card-header h2 .title-text{
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .header-actions{
+            display: flex; align-items: center; gap: 8px;
+            flex-wrap: nowrap; flex-shrink: 0;
+        }
+
+        /* ================================================================
+           BACK BUTTON
+           ================================================================ */
+        .btn-back{
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 8px 16px; border-radius: 60px;
+            font-weight: 600; font-size: .82rem; cursor: pointer;
+            transition: transform var(--transition-fast), background-color var(--transition-fast);
+            background: var(--primary); border: 2px solid var(--primary); color: #fff;
+            white-space: nowrap; font-family: inherit; flex-shrink: 0;
+            min-height: 38px;
+        }
+        .btn-back:hover{
+            background: var(--primary-dark); border-color: var(--primary-dark);
+            transform: translateX(-2px);
+        }
+        .btn-back i{transition: transform var(--transition-fast)}
+        .btn-back:hover i{transform: translateX(-3px)}
+        [data-theme="dark"] .btn-back{
+            background: #facc15; border-color: #facc15; color: #1e3a8a;
+        }
+        [data-theme="dark"] .btn-back:hover{
+            background: #eab308; border-color: #eab308;
+        }
+
+        /* ================================================================
+           SOFT CARD
+           ================================================================ */
+        .soft-card{
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            margin-bottom: 20px;
+            contain: layout style;
+        }
+
+        .search-section{
+            padding: 1.2rem 1.6rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+            background: var(--primary-soft);
+        }
+        [data-theme="dark"] .search-section{
+            background: rgba(59, 130, 246, 0.08);
+        }
+        .search-wrapper{flex: 1; min-width: 200px}
+        .search-wrapper input{
+            width: 100%; padding: 12px 20px;
+            border: 2px solid var(--border-color); border-radius: 60px;
+            background: var(--bg-card); color: var(--text-main);
+            font-size: .9rem; font-family: inherit;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+        }
+        .search-wrapper input::placeholder{color: var(--text-light)}
+        .search-wrapper input:focus{
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, .1);
+        }
+        [data-theme="dark"] .search-wrapper input{
+            background: #0a1a3a; color: #ffffff; border-color: #1e3a8a;
+        }
+        [data-theme="dark"] .search-wrapper input:focus{
+            border-color: #facc15;
+            box-shadow: 0 0 0 4px rgba(250, 204, 21, .15);
+        }
+        [data-theme="dark"] .search-wrapper input::placeholder{
+            color: #94a3b8;
+        }
+
+        /* ================================================================
+           BUTTONS
+           ================================================================ */
+        .btn{
+            border: none; padding: 10px 20px; border-radius: 60px;
+            font-weight: 600; font-size: .85rem; cursor: pointer;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            font-family: inherit; text-decoration: none; white-space: nowrap;
+            min-height: 40px; will-change: transform;
+        }
+        .btn-primary{
+            background: var(--gradient-primary); color: #fff;
+        }
+        .btn-primary:hover{
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px -6px rgba(37, 99, 235, .6);
+        }
+        [data-theme="dark"] .btn-primary:hover{
+            box-shadow: 0 10px 24px -6px rgba(250, 204, 21, .35);
+        }
+
+        .btn-outline{
+            background: #fff; border: 2px solid var(--primary); color: var(--primary);
+        }
+        .btn-outline:hover{
+            background: var(--primary); color: #fff; transform: translateY(-2px);
+        }
+        [data-theme="dark"] .btn-outline{
+            background: transparent; border-color: #facc15; color: #facc15;
+        }
+        [data-theme="dark"] .btn-outline:hover{
+            background: #facc15; color: #1e3a8a;
+        }
+
+        .btn-danger{
+            background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff;
+        }
+        .btn-danger:hover{transform: translateY(-2px); box-shadow: var(--shadow-md)}
+
+        .btn-sm{padding: 6px 14px; font-size: .75rem; min-height: 34px}
+        .btn:disabled{opacity: .6; cursor: not-allowed; transform: none !important}
+
+        /* ================================================================
+           TABLE
+           ================================================================ */
+        .table-wrapper{
+            overflow-x: auto; overflow-y: visible; padding: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .data-table{
+            width: 100%; border-collapse: separate; border-spacing: 0;
+            font-size: .875rem; min-width: 480px;
+        }
+        .data-table th{
+            text-align: left; padding: 14px 18px;
+            background: var(--table-header-bg); color: var(--primary-dark);
+            font-weight: 800; font-size: .75rem;
+            text-transform: uppercase; letter-spacing: .6px;
+            border-bottom: 2px solid var(--primary); white-space: nowrap;
+            position: sticky; top: 0; z-index: 2;
+        }
+        .data-table td{
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--table-border);
+            color: var(--text-main); font-size: .9rem;
+            transition: background-color var(--transition-fast);
+        }
+        .data-table tr:hover td{background: var(--table-row-hover)}
+
+        .data-table .sr-col{width: 60px; text-align: center; font-weight: 700; color: var(--text-secondary)}
+        .data-table .action-col{width: 100px; text-align: center; white-space: nowrap}
+
+        [data-theme="dark"] .data-table th{
+            color: #facc15;
+            border-bottom-color: #facc15;
+        }
+        [data-theme="dark"] .data-table td{color: #ffffff}
+        [data-theme="dark"] .data-table .sr-col{color: #cbd5e1}
+
+        .view-action-btn{
+            background: var(--gradient-primary); color: #fff;
+            border: none; padding: 6px 14px; border-radius: 30px;
+            font-size: .72rem; font-weight: 600; cursor: pointer;
+            transition: transform var(--transition-fast), filter var(--transition-fast);
+            display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+        }
+        .view-action-btn:hover{transform: translateY(-2px); filter: brightness(1.05)}
+
+        /* ================================================================
+           SKELETON LOADERS
+           ================================================================ */
+        .skeleton-row td{padding: 16px 18px}
+        .skeleton{
+            background: linear-gradient(90deg,
+                var(--border-color) 25%,
+                var(--primary-soft) 50%,
+                var(--border-color) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s linear infinite;
+            border-radius: 8px; height: 16px;
+        }
+        .skeleton.sm{width: 60%}
+        .skeleton.md{width: 80%}
+        .skeleton.lg{width: 95%}
+
+        /* ================================================================
+           MOBILE BUTTONS
+           ================================================================ */
+        .mobile-buttons{display: none; gap: 10px; margin-top: 10px; width: 100%}
+        .mobile-buttons .btn{flex: 1; justify-content: center}
+
+        /* ================================================================
+           MODAL
+           ================================================================ */
+        .modal-overlay{
+            position: fixed; inset: 0;
+            background: rgba(15, 23, 42, .5);
+            backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2000;
+            visibility: hidden; opacity: 0;
+            transition: opacity var(--transition-normal), visibility var(--transition-normal);
+            padding: 16px;
+        }
+        .modal-overlay.active{visibility: visible; opacity: 1}
+
+        .modal-box{
+            background: var(--bg-card);
+            width: 100%; max-width: 720px; max-height: 90vh;
+            border-radius: 24px;
+            overflow-y: auto; overflow-x: hidden;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+            -webkit-overflow-scrolling: touch;
+            transform: scale(.94);
+            transition: transform var(--transition-normal);
+            will-change: transform;
+        }
+        .modal-overlay.active .modal-box{
+            animation: modalPop .28s cubic-bezier(.34, 1.56, .64, 1) forwards;
+        }
+        [data-theme="dark"] .modal-box{
+            background: #10254a;
+            border-color: #1e3a8a;
+        }
+
+        .modal-header{
+            background: var(--gradient-header);
+            padding: 1.1rem 1.4rem;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 10;
+            color: #fff; gap: 10px;
+        }
+        .modal-header h3{
+            font-size: 1.15rem; font-weight: 700;
+            display: flex; align-items: center; gap: 10px;
+            min-width: 0; flex: 1;
+        }
+        .modal-header h3 i{flex-shrink: 0}
+        [data-theme="dark"] .modal-header{
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+        }
+        [data-theme="dark"] .modal-header h3{color: #facc15}
+
+        .close-modal{
+            background: rgba(255, 255, 255, .2); border: none;
+            width: 32px; height: 32px; border-radius: 50%;
+            font-size: 1.3rem; cursor: pointer; color: #fff;
+            transition: transform var(--transition-fast), background-color var(--transition-fast);
+            line-height: 1; display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .close-modal:hover{transform: rotate(90deg); background: rgba(255, 255, 255, .3)}
+        [data-theme="dark"] .close-modal{
+            color: #facc15;
+            background: rgba(250, 204, 21, .15);
+        }
+        [data-theme="dark"] .close-modal:hover{
+            background: rgba(250, 204, 21, .3);
+        }
+
+        .modal-body{padding: 1.4rem}
+
+        /* ================================================================
+           FORM
+           ================================================================ */
+        .form-grid{
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1rem;
+        }
+        .field{display: flex; flex-direction: column; gap: 6px}
+        .field label{
+            font-size: .7rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: .5px;
+            color: var(--primary-dark);
+        }
+        .field input,
+        .field select,
+        .field textarea{
+            padding: 11px 14px; border-radius: 12px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-card); color: var(--text-main);
+            font-size: .9rem; font-family: inherit;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+            width: 100%;
+        }
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus{
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, .1);
+        }
+        .field input::placeholder,
+        .field textarea::placeholder{color: var(--text-light)}
+        .field input[readonly]{
+            background: var(--primary-soft);
+            cursor: not-allowed;
+            color: var(--text-secondary);
+        }
+
+        [data-theme="dark"] .field label{color: #facc15}
+        [data-theme="dark"] .field input,
+        [data-theme="dark"] .field select,
+        [data-theme="dark"] .field textarea{
+            background: #0a1a3a;
+            color: #ffffff;
+            border-color: #1e3a8a;
+        }
+        [data-theme="dark"] .field input:focus,
+        [data-theme="dark"] .field select:focus,
+        [data-theme="dark"] .field textarea:focus{
+            border-color: #facc15;
+            box-shadow: 0 0 0 4px rgba(250, 204, 21, .15);
+        }
+        [data-theme="dark"] .field input::placeholder,
+        [data-theme="dark"] .field textarea::placeholder{
+            color: #94a3b8;
+        }
+        [data-theme="dark"] .field input[readonly]{
+            background: rgba(250, 204, 21, 0.06);
+            color: #facc15;
+        }
+
+        .field .hint{
+            color: var(--text-light);
+            font-size: .7rem;
+            margin-top: 2px;
+        }
+        [data-theme="dark"] .field .hint{color: #94a3b8}
+
+        .fullwidth{grid-column: 1 / -1}
+
+        .form-section-title{
+            grid-column: 1 / -1;
+            font-size: .72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary-dark);
+            padding: 4px 0 2px;
+            border-bottom: 1px dashed var(--border-color);
+            margin-top: 6px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        [data-theme="dark"] .form-section-title{color: #facc15; border-bottom-color: #1e3a8a}
+
+        .gst-row{
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        @media (max-width: 640px){
+            .gst-row{grid-template-columns: 1fr}
+        }
+
+        /* ================================================================
+           DETAIL VIEW
+           ================================================================ */
+        .details-grid{
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+            padding: 1.4rem;
+        }
+        .detail-card{
+            background: #fff;
+            border-radius: 14px;
+            padding: 1rem 1.2rem;
+            border: 1px solid var(--border-color);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+            contain: layout style;
+        }
+        .detail-card:hover{
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+        .detail-label{
+            font-size: .65rem; text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--primary-dark); font-weight: 700;
+        }
+        .detail-value{
+            font-weight: 700; font-size: .95rem; margin-top: 6px;
+            color: var(--text-main); word-break: break-word;
+        }
+        .detail-card.fullwidth{grid-column: 1 / -1}
+
+        [data-theme="dark"] .detail-card{
+            background: #142b56;
+            border-color: #1e3a8a;
+        }
+        [data-theme="dark"] .detail-card:hover{border-color: #facc15}
+        [data-theme="dark"] .detail-label{color: #facc15}
+        [data-theme="dark"] .detail-value{color: #ffffff}
+
+        .action-row{
+            padding: 0 1.4rem 1.4rem;
+            display: flex; gap: 12px;
+            justify-content: flex-end; flex-wrap: wrap;
+        }
+
+        /* ================================================================
+           EMPTY / LOADING STATES
+           ================================================================ */
+        .empty-state{padding: 40px 20px; text-align: center; color: var(--text-secondary)}
+        .empty-state i{font-size: 3rem; color: var(--text-light); margin-bottom: 10px; display: block}
+        .empty-state p{font-size: .95rem}
+        .empty-state .sub-text{font-size: .8rem; color: var(--text-light); margin-top: 4px}
+
+        /* ================================================================
+           TOAST
+           ================================================================ */
+        .alert-popup{
+            position: fixed; bottom: 24px; left: 50%;
+            transform: translate(-50%, 100px);
+            background: var(--bg-card); color: var(--text-main);
+            padding: 14px 24px; border-radius: 14px;
+            font-size: .9rem; font-weight: 600;
+            box-shadow: var(--shadow-xl);
+            z-index: 3000; opacity: 0;
+            transition: transform .35s ease, opacity .35s ease;
+            display: flex; align-items: center; gap: 10px;
+            max-width: calc(100% - 40px);
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--primary);
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+        .alert-popup.show{opacity: 1; transform: translate(-50%, 0)}
+        .alert-popup.success{border-left-color: var(--success)}
+        .alert-popup.error{border-left-color: var(--danger)}
+        .alert-popup.info{border-left-color: var(--info)}
+        .alert-popup.warning{border-left-color: var(--warning)}
+
+        [data-theme="dark"] .alert-popup{
+            background: #10254a;
+            color: #ffffff;
+            border-color: #1e3a8a;
+        }
+        [data-theme="dark"] .alert-popup.success{border-left-color: #34d399}
+        [data-theme="dark"] .alert-popup.error{border-left-color: #f87171}
+        [data-theme="dark"] .alert-popup.warning{border-left-color: #fbbf24}
+        [data-theme="dark"] .alert-popup.info{border-left-color: #22d3ee}
+
+        /* ================================================================
+           RESPONSIVE
+           ================================================================ */
+        @media (max-width: 768px) {
+            body { padding: 12px 10px; }
+            .card-header { padding: .9rem 1rem; border-radius: 16px; gap: 8px; }
+            .card-header h2 { font-size: 1.1rem; gap: 8px; }
+            .card-header h2 i { padding: 6px; font-size: .85rem; border-radius: 10px; }
+            .header-actions { gap: 6px; }
+            .btn-back { padding: 7px 12px; font-size: .75rem; min-height: 34px; }
+            .btn-back .back-label { display: none; }
+            .btn-back i { font-size: .85rem; }
+            .desktop-buttons { display: none !important; }
+            .mobile-buttons { display: flex; }
+            .search-section { padding: 1rem; }
+            .data-table th, .data-table td { padding: 10px 12px; font-size: .8rem; }
+            .form-grid { grid-template-columns: 1fr; }
+            .details-grid { grid-template-columns: 1fr 1fr; padding: 1rem; }
+            .action-row { padding: 0 1rem 1rem; }
+        }
+        @media (min-width: 769px) {
+            .mobile-buttons { display: none !important; }
+        }
+        @media (max-width: 480px) {
+            .details-grid { grid-template-columns: 1fr; }
+            .action-row { flex-direction: column-reverse; }
+            .action-row .btn { width: 100%; justify-content: center; }
+        }
+        @media (max-width: 400px) {
+            .card-header h2 { font-size: 1rem; }
+            .card-header h2 i { padding: 5px; font-size: .75rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- LOADING OVERLAY                                               -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div id="appLoading" role="status" aria-live="polite">
+        <div class="spinner"></div>
+        <p><i class="fas fa-address-book"></i> Loading Party Entry...</p>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- MAIN CONTENT                                                  -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div id="mainContent">
+
+        <div class="app-container">
+
+            <!-- ===================== PAGE 1 - LIST VIEW ===================== -->
+            <div id="page1" class="page active-page">
+                <div class="soft-card">
+                    <div class="card-header">
+                        <div class="header-title-wrap">
+                            <h2>
+                                <i class="fas fa-address-book" aria-hidden="true"></i>
+                                <span class="title-text">Party Entry</span>
+                            </h2>
+                        </div>
+
+                        <div class="header-actions">
+                            <div class="desktop-buttons" style="display:flex;gap:8px;">
+                                <button id="refreshBtn" class="btn btn-outline">
+                                    <i class="fas fa-sync-alt" aria-hidden="true"></i> Refresh
+                                </button>
+                                <button id="addNewBtn" class="btn btn-primary">
+                                    <i class="fas fa-plus" aria-hidden="true"></i> Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="search-section">
+                        <div class="search-wrapper">
+                            <input type="text" id="searchInput"
+                                   placeholder="🔍 Search by Party Name, E-Mail or State..."
+                                   autocomplete="off" inputmode="search">
+                        </div>
+
+                        <div class="mobile-buttons">
+                            <button id="mobileRefreshBtn" class="btn btn-outline">
+                                <i class="fas fa-sync-alt" aria-hidden="true"></i> Refresh
+                            </button>
+                            <button id="mobileAddBtn" class="btn btn-primary">
+                                <i class="fas fa-plus" aria-hidden="true"></i> Add Party
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Sr. No</th>
+                                    <th>Party Name</th>
+                                    <th>E-Mail</th>
+                                    <th>State Name</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <tr class="skeleton-row">
+                                    <td><div class="skeleton sm"></div></td>
+                                    <td><div class="skeleton md"></div></td>
+                                    <td><div class="skeleton lg"></div></td>
+                                    <td><div class="skeleton sm"></div></td>
+                                    <td><div class="skeleton sm"></div></td>
+                                </tr>
+                                <tr class="skeleton-row">
+                                    <td><div class="skeleton sm"></div></td>
+                                    <td><div class="skeleton lg"></div></td>
+                                    <td><div class="skeleton md"></div></td>
+                                    <td><div class="skeleton sm"></div></td>
+                                    <td><div class="skeleton sm"></div></td>
+                                </tr>
+                                <tr class="skeleton-row">
+                                    <td><div class="skeleton sm"></div></td>
+                                    <td><div class="skeleton md"></div></td>
+                                    <td><div class="skeleton lg"></div></td>
+                                    <td><div class="skeleton sm"></div></td>
+                                    <td><div class="skeleton sm"></div></td>
+                                </tr>
+                                <tr class="skeleton-row">
+                                    <td><div class="skeleton sm"></div></td>
+                                    <td><div class="skeleton lg"></div></td>
+                                    <td><div class="skeleton md"></div></td>
+                                    <td><div class="skeleton sm"></div></td>
+                                    <td><div class="skeleton sm"></div></td>
+                                </tr>
+                                <tr class="skeleton-row">
+                                    <td><div class="skeleton sm"></div></td>
+                                    <td><div class="skeleton md"></div></td>
+                                    <td><div class="skeleton lg"></div></td>
+                                    <td><div class="skeleton sm"></div></td>
+                                    <td><div class="skeleton sm"></div></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== PAGE 2 - DETAIL VIEW ===================== -->
+            <div id="page2" class="page" style="display:none;">
+                <div class="soft-card">
+                    <div class="card-header">
+                        <div class="header-title-wrap">
+                            <h2>
+                                <i class="fas fa-id-card" aria-hidden="true"></i>
+                                <span class="title-text">Party Details</span>
+                            </h2>
+                        </div>
+                        <button id="backToPage1Btn" class="btn-back" title="Back">
+                            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                            <span class="back-label">Back</span>
+                        </button>
+                    </div>
+
+                    <div id="detailsContainer" class="details-grid"></div>
+
+                    <div class="action-row">
+                        <button id="editFromDetailBtn" class="btn btn-primary">
+                            <i class="fas fa-edit" aria-hidden="true"></i> Edit
+                        </button>
+                        <button id="deleteFromDetailBtn" class="btn btn-danger">
+                            <i class="fas fa-trash" aria-hidden="true"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== FORM MODAL ===================== -->
+            <div id="formModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="formModalTitle">
+                <div class="modal-box">
+                    <div class="modal-header">
+                        <h3 id="formModalTitle">
+                            <i class="fas fa-plus" aria-hidden="true"></i> Add New Party
+                        </h3>
+                        <button class="close-modal" id="closeFormModalBtn" aria-label="Close">×</button>
+                    </div>
+                    <div class="modal-body" id="formModalBody"></div>
+                </div>
+            </div>
+
+            <!-- ===================== GLOBAL MODAL ===================== -->
+            <div id="globalModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+                <div class="modal-box" style="max-width:420px;">
+                    <div class="modal-header">
+                        <h3 id="modalTitle">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i> Notice
+                        </h3>
+                        <button class="close-modal" id="closeGlobalModal" aria-label="Close">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="modalMsg" style="font-size:.95rem;line-height:1.5;margin-bottom:1.2rem;"></p>
+                        <div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;">
+                            <button id="cancelModalBtn" class="btn btn-outline" style="display:none;">Cancel</button>
+                            <button id="confirmModalBtn" class="btn btn-primary">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== ALERT POPUP ===================== -->
+            <div id="alertBox" class="alert-popup" role="status" aria-live="polite">
+                <i class="fas fa-check-circle" aria-hidden="true"></i>
+                <span id="alertText">Message...</span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         MAIN SCRIPT — defer to avoid blocking parse
+         ═══════════════════════════════════════════════════════════════════ -->
+    <script defer>
+/* =====================================================================
+   PartyEntry.html — Full Script (No Auth Gate)
+   ---------------------------------------------------------------------
+   • Anyone can access — no login required
+   • 5-min sessionStorage cache + auto background refresh
+   • Skeleton loaders, debounced search, string-built DOM
+   • Party Name dropdown populated from "Source" sheet
+   • State dropdown: Maharashtra, Gujarat, Madhya Pradesh,
+     Uttar Pradesh, Rajasthan
+   • GST defaults: CGST=9, SGST=9, Code=27
+   ===================================================================== */
+
+(function() {
+'use strict';
+
+/* =====================================================================
+   SECTION 1 — DARK MODE SYNC
+   ===================================================================== */
+
+function syncThemeWithParent() {
+    const localTheme = localStorage.getItem('user-theme-preference');
+    if (localTheme) {
+        document.body.setAttribute('data-theme', localTheme);
+        document.documentElement.setAttribute('data-theme', localTheme);
+    } else {
+        try {
+            if (window.parent && window.parent.document.body) {
+                const parentTheme = window.parent.document.body.getAttribute('data-theme');
+                if (parentTheme) {
+                    document.body.setAttribute('data-theme', parentTheme);
+                    document.documentElement.setAttribute('data-theme', parentTheme);
+                }
+            }
+        } catch(e) { }
+    }
+}
+
+/* =====================================================================
+   SECTION 2 — CONFIGURATION
+   ===================================================================== */
+
+/* ── Target sheet (where parties are saved) ── */
+const SCRIPT_URL       = "https://script.google.com/macros/s/AKfycbwzEbd10tAnSKJSsg01LOXr8MAgKTFO4cp2sjq9moatjN3_IWZ8ZWF9uViTXE-991Nq/exec";
+const SPREADSHEET_ID   = "1ufYQniJ_0ke7O0Bd5zNGAimdNKBSvi4dGMeQp3CQjwY";
+const SHEET_NAME       = "Party_Address";
+
+/* ── Source sheet (Party Name dropdown) ── */
+const SOURCE_SPREADSHEET_ID = "1ufYQniJ_0ke7O0Bd5zNGAimdNKBSvi4dGMeQp3CQjwY";
+const SOURCE_SHEET_NAME     = "Source";
+
+/* Static State dropdown options */
+const STATE_OPTIONS = [
+    'Maharashtra',
+    'Gujarat',
+    'Madhya Pradesh',
+    'Uttar Pradesh',
+    'Rajasthan'
+];
+
+/* Defaults */
+const DEFAULT_CGST = 9;
+const DEFAULT_SGST = 9;
+const DEFAULT_CODE = 27;
+
+/* Cache TTL — 5 minutes */
+const CACHE_TTL = 5 * 60 * 1000;
+const CACHE_KEY = 'party_entry_cache_v2';
+const SOURCE_CACHE_KEY = 'party_source_names_v2';
+
+/* Auto background refresh interval — 5 minutes */
+const AUTO_REFRESH_INTERVAL = 5 * 60 * 1000;
+
+/* =====================================================================
+   SECTION 3 — GLOBAL STATE
+   ===================================================================== */
+
+let allParties = [];
+let partyNameOptions = [];
+let currentViewItem = null;
+let currentViewRowIndex = null;
+let saveInProgress = false;
+let initDone = false;
+let autoRefreshTimer = null;
+let isFetching = false;
+let lastFetchTime = 0;
+let activeFetchController = null;
+
+/* =====================================================================
+   SECTION 4 — UTILITIES
+   ===================================================================== */
+
+const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+const HTML_ESCAPE_REGEX = /[&<>"']/g;
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(HTML_ESCAPE_REGEX, m => HTML_ESCAPES[m]);
+}
+
+function showToast(msg, type = 'info') {
+    const box = document.getElementById('alertBox');
+    const txt = document.getElementById('alertText');
+    const icon = box.firstElementChild;
+    if (!box || !txt) return;
+
+    txt.textContent = msg;
+    box.className = `alert-popup ${type} show`;
+
+    const iconMap = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+    };
+    icon.className = `fas ${iconMap[type] || iconMap.info}`;
+
+    if (box._timeout) clearTimeout(box._timeout);
+    box._timeout = setTimeout(() => box.classList.remove('show'), 3000);
+}
+
+function showModal(msg, title = "Notice", isConfirm = false, onConfirm = null, confirmText = "OK") {
+    const modal = document.getElementById('globalModal');
+    document.getElementById('modalTitle').innerHTML =
+        `<i class="fas ${isConfirm ? 'fa-exclamation-triangle' : 'fa-info-circle'}" aria-hidden="true"></i> ${title}`;
+    document.getElementById('modalMsg').innerHTML = msg;
+    const confirmBtn = document.getElementById('confirmModalBtn');
+    const cancelBtn = document.getElementById('cancelModalBtn');
+    confirmBtn.textContent = confirmText;
+
+    if (isConfirm) {
+        cancelBtn.style.display = 'inline-flex';
+        cancelBtn.onclick = () => modal.classList.remove('active');
+    } else {
+        cancelBtn.style.display = 'none';
+    }
+
+    confirmBtn.onclick = () => {
+        modal.classList.remove('active');
+        if (isConfirm && onConfirm) onConfirm();
+    };
+
+    modal.classList.add('active');
+}
+
+function debounce(fn, wait = 250) {
+    let timer = null;
+    return function(...args) {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => { timer = null; fn.apply(this, args); }, wait);
+    };
+}
+
+const scheduleIdle = window.requestIdleCallback
+    ? (fn) => window.requestIdleCallback(fn, { timeout: 1500 })
+    : (fn) => setTimeout(fn, 1);
+
+function showSpinner(el, show, customHtml = null) {
+    if (!el) return;
+    if (show) {
+        el.disabled = true;
+        if (!el.hasAttribute('data-original')) el.setAttribute('data-original', el.innerHTML);
+        el.innerHTML = customHtml || '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;"></span>';
+    } else {
+        el.disabled = false;
+        const orig = el.getAttribute('data-original');
+        if (orig) { el.innerHTML = orig; el.removeAttribute('data-original'); }
+    }
+}
+
+/* =====================================================================
+   SECTION 5 — CACHE (5-minute TTL)
+   ===================================================================== */
+
+function getCache(key = CACHE_KEY) {
+    try {
+        const raw = sessionStorage.getItem(key);
+        if (!raw) return null;
+        const { data, ts } = JSON.parse(raw);
+        if (Date.now() - ts > CACHE_TTL) {
+            sessionStorage.removeItem(key);
+            return null;
+        }
+        return data;
+    } catch (e) { return null; }
+}
+
+function setCache(data, key = CACHE_KEY) {
+    try {
+        sessionStorage.setItem(key, JSON.stringify({ data, ts: Date.now() }));
+    } catch (e) {
+        try { sessionStorage.removeItem(key); } catch (_) {}
+    }
+}
+
+function invalidateCache(key = CACHE_KEY) {
+    try { sessionStorage.removeItem(key); } catch (e) {}
+}
+
+/* =====================================================================
+   SECTION 6 — NAVIGATION
+   ===================================================================== */
+
+function showPage1() {
+    document.getElementById('page2').style.display = 'none';
+    document.getElementById('page1').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+function showPage2() {
+    document.getElementById('page1').style.display = 'none';
+    document.getElementById('page2').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+/* =====================================================================
+   SECTION 7 — SKELETON LOADER
+   ===================================================================== */
+
+function renderSkeleton(rows = 5) {
+    let html = '';
+    for (let i = 0; i < rows; i++) {
+        const w1 = i % 2 ? 'md' : 'sm';
+        const w2 = i % 2 ? 'lg' : 'md';
+        html += `<tr class="skeleton-row">` +
+            `<td><div class="skeleton sm"></div></td>` +
+            `<td><div class="skeleton ${w2}"></div></td>` +
+            `<td><div class="skeleton ${w1}"></div></td>` +
+            `<td><div class="skeleton sm"></div></td>` +
+            `<td><div class="skeleton sm"></div></td>` +
+            `</tr>`;
+    }
+    return html;
+}
+
+/* =====================================================================
+   SECTION 8 — DATA FETCHING
+   ===================================================================== */
+
+async function loadParties(options = {}) {
+    const { forceRefresh = false, silent = false } = options;
+    if (isFetching && !forceRefresh) return;
+
+    const tbody = document.getElementById('tableBody');
+
+    if (!forceRefresh) {
+        const cached = getCache();
+        if (cached && Array.isArray(cached)) {
+            allParties = cached.map((item, idx) => ({ ...item, _rowIndex: idx + 2 }));
+            renderTable();
+            lastFetchTime = Date.now();
+            scheduleIdle(() => silentRefresh());
+            return;
+        }
+    }
+
+    if (!silent) tbody.innerHTML = renderSkeleton(6);
+
+    isFetching = true;
+
+    if (activeFetchController) activeFetchController.abort();
+    activeFetchController = new AbortController();
+
+    try {
+        const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${encodeURIComponent(SHEET_NAME)}&_=${Date.now()}`;
+        const response = await fetch(url, {
+            signal: activeFetchController.signal,
+            cache: 'default'
+        });
+        const result = await response.json();
+
+        if (result.status === 'success' && Array.isArray(result.data)) {
+            allParties = result.data.map((item, idx) => ({ ...item, _rowIndex: idx + 2 }));
+            setCache(result.data);
+            lastFetchTime = Date.now();
+            renderTable();
+        } else {
+            throw new Error(result.message || 'Failed to load data');
+        }
+    } catch (err) {
+        if (err.name === 'AbortError') { isFetching = false; return; }
+        console.error('Load error:', err);
+        tbody.innerHTML = `
+            <tr><td colspan="5">
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i>
+                    <p>Failed to load party records</p>
+                    <p class="sub-text">${escapeHtml(err.message)}</p>
+                    <button class="btn btn-primary btn-sm" data-retry="1" style="margin-top:12px;">
+                        <i class="fas fa-redo"></i> Retry
+                    </button>
+                </div>
+            </td></tr>`;
+        if (!silent) showToast('❌ Failed to load party records', 'error');
+    } finally {
+        isFetching = false;
+    }
+}
+
+async function silentRefresh() {
+    if (isFetching) return;
+    if (Date.now() - lastFetchTime < CACHE_TTL) return;
+    try {
+        const url = `${SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${encodeURIComponent(SHEET_NAME)}&_=${Date.now()}`;
+        const response = await fetch(url);
+        const result = await response.json();
+        if (result.status === 'success' && Array.isArray(result.data)) {
+            const newHash = JSON.stringify(result.data);
+            const oldHash = JSON.stringify(allParties.map(i => {
+                const { _rowIndex, ...rest } = i;
+                return rest;
+            }));
+            if (newHash !== oldHash) {
+                allParties = result.data.map((item, idx) => ({ ...item, _rowIndex: idx + 2 }));
+                setCache(result.data);
+                renderTable();
+                lastFetchTime = Date.now();
+                console.log('🔄 Background refresh updated data');
+            } else {
+                lastFetchTime = Date.now();
+            }
+        }
+    } catch (err) {
+        console.log('Background refresh skipped:', err.message);
+    }
+}
+
+/* =====================================================================
+   SECTION 9 — PARTY NAME DROPDOWN (from Source sheet → "Vendor Name")
+   =====================================================================
+   Fetches the "Source" sheet from spreadsheet
+   1ufYQniJ_0ke7O0Bd5zNGAimdNKBSvi4dGMeQp3CQjwY
+   and reads values from the header column "Vendor Name".
+   ===================================================================== */
+
+const SOURCE_COLUMN_NAME = 'Vendor Name';   // ← exact header in Source sheet
+
+async function loadPartyNameOptions(options = {}) {
+    const { forceRefresh = false } = options;
+
+    /* [OPT] Serve from cache if fresh */
+    if (!forceRefresh) {
+        const cached = getCache(SOURCE_CACHE_KEY);
+        if (Array.isArray(cached) && cached.length) {
+            partyNameOptions = cached;
+            return;
+        }
+    }
+
+    try {
+        const url = `${SCRIPT_URL}?spreadsheetId=${SOURCE_SPREADSHEET_ID}` +
+                    `&sheetName=${encodeURIComponent(SOURCE_SHEET_NAME)}` +
+                    `&_=${Date.now()}`;
+
+        const response = await fetch(url);
+        const result   = await response.json();
+
+        if (result.status !== 'success' || !Array.isArray(result.data)) {
+            console.warn('Source fetch failed:', result.message);
+            partyNameOptions = [];
+            return;
+        }
+
+        const rows = result.data;
+        if (!rows.length) { partyNameOptions = []; return; }
+
+        /* ── Locate "Vendor Name" column (flexible match) ── */
+        const headers = Object.keys(rows[0] || {});
+        const vendorKey = headers.find(h => {
+            const n = String(h).toLowerCase().replace(/[\s._-]/g, '');
+            return n === 'vendorname';
+        });
+
+        if (!vendorKey) {
+            console.warn(`Column "${SOURCE_COLUMN_NAME}" not found in Source sheet. Headers:`, headers);
+            partyNameOptions = [];
+            return;
+        }
+
+        /* ── Extract unique, non-empty Vendor Names (trimmed, deduped, sorted) ── */
+        const seen  = new Set();
+        const names = [];
+
+        for (let i = 0; i < rows.length; i++) {
+            const raw = rows[i][vendorKey];
+            if (raw === null || raw === undefined) continue;
+
+            const val = String(raw).trim();
+            if (!val) continue;
+
+            const key = val.toLowerCase();
+            if (seen.has(key)) continue;
+
+            seen.add(key);
+            names.push(val);
+        }
+
+        names.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+
+        partyNameOptions = names;
+        setCache(names, SOURCE_CACHE_KEY);
+
+        console.log(`✅ Loaded ${names.length} vendor name(s) from Source → "${vendorKey}"`);
+
+    } catch (err) {
+        console.warn('Vendor Name source fetch failed:', err.message);
+        /* Keep whatever options were there before — don't break the page */
+    }
+}
+
+function populatePartyNameDatalist() {
+    const datalist = document.getElementById('partyNameList');
+    if (!datalist) return;
+    datalist.innerHTML = partyNameOptions
+        .map(n => `<option value="${escapeHtml(n)}"></option>`)
+        .join('');
+}
+
+/* =====================================================================
+   SECTION 10 — TABLE RENDERING
+   ===================================================================== */
+
+let renderRafHandle = null;
+let pendingFilter = '';
+
+function scheduleRender(filter = '') {
+    pendingFilter = filter;
+    if (renderRafHandle) return;
+    renderRafHandle = requestAnimationFrame(() => {
+        renderRafHandle = null;
+        renderTable(pendingFilter);
+    });
+}
+
+function renderTable(filter = '') {
+    const tbody = document.getElementById('tableBody');
+    const searchLower = filter.toLowerCase().trim();
+
+    let filtered = allParties;
+    if (searchLower) {
+        filtered = allParties.filter(item => {
+            const partyName = String(item['Party Name'] || '').toLowerCase();
+            const email     = String(item['E-Mail'] || '').toLowerCase();
+            const state     = String(item['State Name'] || '').toLowerCase();
+            return partyName.indexOf(searchLower) !== -1 ||
+                   email.indexOf(searchLower) !== -1 ||
+                   state.indexOf(searchLower) !== -1;
+        });
+    }
+
+    if (!filtered.length) {
+        tbody.innerHTML = `
+            <tr><td colspan="5">
+                <div class="empty-state">
+                    <i class="fas fa-address-book"></i>
+                    <p>${searchLower ? 'No matching records found' : 'No party records yet'}</p>
+                    <p class="sub-text">${searchLower ? 'Try a different search' : 'Click "Add Party" to create one'}</p>
+                </div>
+            </td></tr>`;
+        return;
+    }
+
+    const rows = new Array(filtered.length);
+    for (let i = 0; i < filtered.length; i++) {
+        const item = filtered[i];
+        const srNo      = item['Sr. No'] || (i + 1);
+        const partyName = item['Party Name'] || '—';
+        const email     = item['E-Mail'] || '—';
+        const state     = item['State Name'] || '—';
+        const actualIndex = allParties.indexOf(item);
+
+        rows[i] =
+            `<tr>` +
+            `<td class="sr-col">${escapeHtml(srNo)}</td>` +
+            `<td>${escapeHtml(partyName)}</td>` +
+            `<td>${escapeHtml(email)}</td>` +
+            `<td>${escapeHtml(state)}</td>` +
+            `<td class="action-col">` +
+                `<button class="view-action-btn" data-srno="${escapeHtml(srNo)}" data-index="${actualIndex}">` +
+                    `<i class="fas fa-eye" aria-hidden="true"></i> View` +
+                `</button>` +
+            `</td>` +
+            `</tr>`;
+    }
+    tbody.innerHTML = rows.join('');
+}
+
+/* =====================================================================
+   SECTION 11 — DETAIL VIEW
+   ===================================================================== */
+
+function showDetailView(item) {
+    const cards = [];
+
+    cards.push(cardHtml('Sr. No', item['Sr. No'] || '—'));
+    cards.push(cardHtml('Party Name', item['Party Name'] || '—'));
+    cards.push(cardHtml('E-Mail', item['E-Mail'] || '—'));
+    cards.push(cardHtml('Address', item['Address'] || '—', true));
+
+    cards.push(cardHtml('CGST (%)', item['CGST (%)'] !== undefined && item['CGST (%)'] !== '' ? item['CGST (%)'] : '—'));
+    cards.push(cardHtml('SGST (%)', item['SGST (%)'] !== undefined && item['SGST (%)'] !== '' ? item['SGST (%)'] : '—'));
+    cards.push(cardHtml('IGST (%)', item['IGST (%)'] !== undefined && item['IGST (%)'] !== '' ? item['IGST (%)'] : '—'));
+
+    cards.push(cardHtml('GSTIN/UIN', item['GSTIN/UIN'] || '—'));
+    cards.push(cardHtml('State Name', item['State Name'] || '—'));
+    cards.push(cardHtml('Code', item['Code'] !== undefined && item['Code'] !== '' ? item['Code'] : '—'));
+
+    document.getElementById('detailsContainer').innerHTML = cards.join('');
+    showPage2();
+}
+
+function cardHtml(label, value, fullwidth = false) {
+    return `<div class="detail-card${fullwidth ? ' fullwidth' : ''}">` +
+        `<div class="detail-label">${escapeHtml(label)}</div>` +
+        `<div class="detail-value">${escapeHtml(String(value))}</div>` +
+        `</div>`;
+}
+
+/* =====================================================================
+   SECTION 12 — FORM BUILDER
+   ===================================================================== */
+
+function buildFormHtml(item = null, isEdit = false) {
+    const def = {
+        'Sr. No': '',
+        'Party Name': '',
+        'E-Mail': '',
+        'Address': '',
+        'CGST (%)': isEdit ? '' : DEFAULT_CGST,
+        'SGST (%)': isEdit ? '' : DEFAULT_SGST,
+        'IGST (%)': '',
+        'GSTIN/UIN': '',
+        'State Name': '',
+        'Code': isEdit ? '' : DEFAULT_CODE
+    };
+
+    if (item) {
+        for (const k in def) {
+            if (item[k] !== undefined && item[k] !== null && item[k] !== '') def[k] = item[k];
+        }
+    }
+
+    const stateOpts = STATE_OPTIONS.map(s =>
+        `<option value="${escapeHtml(s)}"${def['State Name'] === s ? ' selected' : ''}>${escapeHtml(s)}</option>`
+    ).join('');
+
+    return `<form id="partyForm" novalidate>
+        <div class="form-grid">
+
+            <div class="form-section-title">
+                <i class="fas fa-user-tie" aria-hidden="true"></i> Party Information
+            </div>
+
+            <div class="field">
+                <label for="fSrNo">Sr. No (Auto)</label>
+                <input type="text" id="fSrNo" value="${escapeHtml(def['Sr. No'])}"
+                       placeholder="Auto-generated" readonly>
+                <span class="hint">Managed automatically by the server.</span>
+            </div>
+
+            <div class="field">
+                <label for="fPartyName">Party Name</label>
+                <input type="text" id="fPartyName" list="partyNameList"
+                       value="${escapeHtml(def['Party Name'])}"
+                       placeholder="Type or select a party name" autocomplete="off">
+                <datalist id="partyNameList"></datalist>
+                <span class="hint">Choose from list or type a new name.</span>
+            </div>
+
+            <div class="field">
+                <label for="fEmail">E-Mail</label>
+                <input type="email" id="fEmail" value="${escapeHtml(def['E-Mail'])}"
+                       placeholder="e.g., party@example.com" autocomplete="off"
+                       inputmode="email">
+            </div>
+
+            <div class="field fullwidth">
+                <label for="fAddress">Address</label>
+                <textarea id="fAddress" rows="3"
+                          placeholder="Full postal address of the party...">${escapeHtml(def['Address'])}</textarea>
+            </div>
+
+            <div class="form-section-title">
+                <i class="fas fa-percent" aria-hidden="true"></i> Tax Information
+            </div>
+
+            <div class="gst-row">
+                <div class="field">
+                    <label for="fCgst">CGST (%)</label>
+                    <input type="number" id="fCgst" min="0" max="100" step="0.01"
+                           value="${escapeHtml(def['CGST (%)'])}"
+                           placeholder="0.00" inputmode="decimal">
+                    <span class="hint">Default: ${DEFAULT_CGST}</span>
+                </div>
+
+                <div class="field">
+                    <label for="fSgst">SGST (%)</label>
+                    <input type="number" id="fSgst" min="0" max="100" step="0.01"
+                           value="${escapeHtml(def['SGST (%)'])}"
+                           placeholder="0.00" inputmode="decimal">
+                    <span class="hint">Default: ${DEFAULT_SGST}</span>
+                </div>
+
+                <div class="field">
+                    <label for="fIgst">IGST (%)</label>
+                    <input type="number" id="fIgst" min="0" max="100" step="0.01"
+                           value="${escapeHtml(def['IGST (%)'])}"
+                           placeholder="0.00" inputmode="decimal">
+                    <span class="hint">Optional for inter-state.</span>
+                </div>
+            </div>
+
+            <div class="field fullwidth">
+                <label for="fGstin">GSTIN/UIN</label>
+                <input type="text" id="fGstin" value="${escapeHtml(def['GSTIN/UIN'])}"
+                       maxlength="15" placeholder="15-character GSTIN / UIN"
+                       autocomplete="off" style="text-transform:uppercase;">
+                <span class="hint">Example: 27ABCDE1234F1Z5</span>
+            </div>
+
+            <div class="field">
+                <label for="fStateName">State Name</label>
+                <input type="text" id="fStateName" list="stateNameList"
+                       value="${escapeHtml(def['State Name'])}"
+                       placeholder="Type or select state" autocomplete="off">
+                <datalist id="stateNameList">${stateOpts}</datalist>
+                <span class="hint">Type or choose from list.</span>
+            </div>
+
+            <div class="field">
+                <label for="fCode">Code</label>
+                <input type="number" id="fCode" min="0" max="9999" step="1"
+                       value="${escapeHtml(def['Code'])}"
+                       placeholder="e.g., 27" inputmode="numeric">
+                <span class="hint">Default: ${DEFAULT_CODE} (state code).</span>
+            </div>
+
+        </div>
+
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:1.4rem;padding-top:1rem;border-top:1px solid var(--border-color);flex-wrap:wrap;">
+            <button type="button" id="cancelFormBtn" class="btn btn-outline">Cancel</button>
+            <button type="submit" id="saveFormBtn" class="btn btn-primary">
+                <i class="fas fa-save" aria-hidden="true"></i> ${isEdit ? 'Update Party' : 'Save Party'}
+            </button>
+        </div>
+    </form>`;
+}
+
+/* =====================================================================
+   SECTION 13 — MODAL OPEN
+   ===================================================================== */
+
+function openAddModal() {
+    const body = document.getElementById('formModalBody');
+    document.getElementById('formModalTitle').innerHTML = '<i class="fas fa-plus" aria-hidden="true"></i> Add New Party';
+    body.innerHTML = buildFormHtml(null, false);
+
+    populatePartyNameDatalist();
+
+    bindFormEvents(false, null);
+    document.getElementById('formModal').classList.add('active');
+
+    requestAnimationFrame(() => document.getElementById('fPartyName')?.focus());
+
+    if (!partyNameOptions.length) {
+        loadPartyNameOptions().then(() => {
+            if (document.getElementById('formModal').classList.contains('active')) {
+                populatePartyNameDatalist();
+            }
+        });
+    }
+}
+
+function openEditModal() {
+    if (!currentViewItem) { showToast('❌ No record selected', 'error'); return; }
+
+    const body = document.getElementById('formModalBody');
+    document.getElementById('formModalTitle').innerHTML = '<i class="fas fa-edit" aria-hidden="true"></i> Edit Party';
+    body.innerHTML = buildFormHtml(currentViewItem, true);
+
+    populatePartyNameDatalist();
+
+    bindFormEvents(true, currentViewRowIndex);
+    document.getElementById('formModal').classList.add('active');
+
+    requestAnimationFrame(() => document.getElementById('fPartyName')?.focus());
+}
+
+/* =====================================================================
+   SECTION 14 — FORM BINDINGS
+   ===================================================================== */
+
+function bindFormEvents(isEdit, rowIdx) {
+    document.getElementById('cancelFormBtn')?.addEventListener('click', () => {
+        document.getElementById('formModal').classList.remove('active');
+    });
+
+    document.getElementById('partyForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleSubmit(e, isEdit, rowIdx);
+    });
+
+    const gstinInput = document.getElementById('fGstin');
+    if (gstinInput) {
+        gstinInput.addEventListener('input', function() {
+            const v = this.value.toUpperCase().replace(/[^0-9A-Z]/g, '').slice(0, 15);
+            if (v !== this.value) this.value = v;
+        });
+    }
+
+    const partyInput = document.getElementById('fPartyName');
+    if (partyInput) {
+        partyInput.addEventListener('blur', function() {
+            const v = this.value.trim();
+            if (v) this.value = v;
+        });
+    }
+}
+
+/* =====================================================================
+   SECTION 15 — SUBMIT
+   ===================================================================== */
+
+async function handleSubmit(e, isEdit, rowIdx) {
+    e.preventDefault();
+    if (saveInProgress) return;
+
+    const srNo      = document.getElementById('fSrNo')?.value.trim() || '';
+    const partyName = document.getElementById('fPartyName')?.value.trim() || '';
+    const email     = document.getElementById('fEmail')?.value.trim() || '';
+    const address   = document.getElementById('fAddress')?.value.trim() || '';
+    const cgst      = document.getElementById('fCgst')?.value || '';
+    const sgst      = document.getElementById('fSgst')?.value || '';
+    const igst      = document.getElementById('fIgst')?.value || '';
+    const gstin     = document.getElementById('fGstin')?.value.trim().toUpperCase() || '';
+    const stateName = document.getElementById('fStateName')?.value.trim() || '';
+    const code      = document.getElementById('fCode')?.value || '';
+
+    if (!partyName) {
+        showToast('⚠️ Party Name is required', 'warning');
+        document.getElementById('fPartyName')?.focus();
+        return;
+    }
+
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showToast('⚠️ Please enter a valid E-Mail address', 'warning');
+        document.getElementById('fEmail')?.focus();
+        return;
+    }
+
+    if (gstin && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(gstin)) {
+        showToast('⚠️ GSTIN format looks invalid (15 chars)', 'warning');
+        document.getElementById('fGstin')?.focus();
+        return;
+    }
+
+    const numOrEmpty = (v) => (v === '' || v === null || v === undefined) ? '' : String(v);
+    const validatePct = (v, label) => {
+        if (v === '') return true;
+        const n = parseFloat(v);
+        if (isNaN(n) || n < 0 || n > 100) {
+            showToast(`⚠️ ${label} must be between 0 and 100`, 'warning');
+            return false;
+        }
+        return true;
+    };
+    if (!validatePct(cgst, 'CGST (%)')) return;
+    if (!validatePct(sgst, 'SGST (%)')) return;
+    if (!validatePct(igst, 'IGST (%)')) return;
+
+    if (code !== '' && (isNaN(parseInt(code, 10)) || parseInt(code, 10) < 0)) {
+        showToast('⚠️ Code must be a non-negative number', 'warning');
+        return;
+    }
+
+    saveInProgress = true;
+    const saveBtn = document.getElementById('saveFormBtn');
+    showSpinner(saveBtn, true);
+
+    try {
+        const params = new URLSearchParams();
+        params.append('action', isEdit ? 'update' : 'insert');
+        params.append('spreadsheetId', SPREADSHEET_ID);
+        params.append('sheetName', SHEET_NAME);
+        if (isEdit && rowIdx) params.append('rowIndex', rowIdx);
+
+        if (isEdit && srNo) params.append('Sr. No', srNo);
+
+        params.append('Party Name', partyName);
+        params.append('E-Mail', email);
+        params.append('Address', address);
+        params.append('CGST (%)', numOrEmpty(cgst));
+        params.append('SGST (%)', numOrEmpty(sgst));
+        params.append('IGST (%)', numOrEmpty(igst));
+        params.append('GSTIN/UIN', gstin);
+        params.append('State Name', stateName);
+        params.append('Code', numOrEmpty(code));
+
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
+        });
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            invalidateCache();
+            showToast(`✅ Party ${isEdit ? 'updated' : 'saved'} successfully!`, 'success');
+            document.getElementById('formModal').classList.remove('active');
+            await loadParties({ forceRefresh: true });
+            if (isEdit) showPage1();
+        } else {
+            throw new Error(result.message || 'Unknown error');
+        }
+    } catch (err) {
+        console.error('Submit error:', err);
+        showToast('❌ ' + err.message, 'error');
+    } finally {
+        saveInProgress = false;
+        showSpinner(saveBtn, false);
+    }
+}
+
+/* =====================================================================
+   SECTION 16 — DELETE
+   ===================================================================== */
+
+function deleteParty() {
+    if (!currentViewItem || !currentViewRowIndex) {
+        showToast('❌ No record selected', 'error'); return;
+    }
+
+    const name = currentViewItem['Party Name'] || 'this record';
+    const email = currentViewItem['E-Mail'] || '';
+
+    showModal(
+        `Are you sure you want to delete <strong>${escapeHtml(name)}</strong>` +
+        (email ? ` (${escapeHtml(email)})` : '') +
+        `?<br><br>This action cannot be undone.`,
+        'Confirm Delete',
+        true,
+        async () => {
+            const btn = document.getElementById('deleteFromDetailBtn');
+            showSpinner(btn, true);
+            try {
+                const params = new URLSearchParams();
+                params.append('action', 'delete');
+                params.append('spreadsheetId', SPREADSHEET_ID);
+                params.append('sheetName', SHEET_NAME);
+                params.append('rowIndex', currentViewRowIndex);
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params.toString()
+                });
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    invalidateCache();
+                    showToast('✅ Party record deleted!', 'success');
+                    currentViewItem = null;
+                    currentViewRowIndex = null;
+                    await loadParties({ forceRefresh: true });
+                    showPage1();
+                } else {
+                    throw new Error(result.message || 'Unknown error');
+                }
+            } catch (err) {
+                console.error('Delete error:', err);
+                showToast('❌ Delete failed: ' + err.message, 'error');
+            } finally {
+                showSpinner(btn, false);
+            }
+        },
+        'Delete'
+    );
+}
+
+/* =====================================================================
+   SECTION 17 — EVENT DELEGATION
+   ===================================================================== */
+
+function handleTableClick(e) {
+    const btn = e.target.closest('.view-action-btn');
+    if (!btn) {
+        const retry = e.target.closest('[data-retry]');
+        if (retry) loadParties({ forceRefresh: true });
+        return;
+    }
+
+    const srNo = btn.getAttribute('data-srno');
+    const index = parseInt(btn.getAttribute('data-index'), 10);
+
+    let found = null;
+    if (srNo) found = allParties.find(item => String(item['Sr. No']) === String(srNo));
+    if (!found && !isNaN(index) && index >= 0 && index < allParties.length) {
+        found = allParties[index];
+    }
+
+    if (found) {
+        currentViewItem = found;
+        currentViewRowIndex = found._rowIndex;
+        showDetailView(found);
+    } else {
+        showToast('❌ Record not found', 'error');
+    }
+}
+
+/* =====================================================================
+   SECTION 18 — AUTO BACKGROUND UPDATE
+   ===================================================================== */
+
+function startAutoRefresh() {
+    if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+    autoRefreshTimer = setInterval(() => {
+        if (document.visibilityState === 'visible') {
+            silentRefresh();
+        }
+    }, AUTO_REFRESH_INTERVAL);
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshTimer) {
+        clearInterval(autoRefreshTimer);
+        autoRefreshTimer = null;
+    }
+}
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        if (Date.now() - lastFetchTime > CACHE_TTL) {
+            scheduleIdle(() => silentRefresh());
+        }
+        startAutoRefresh();
+    } else {
+        stopAutoRefresh();
+    }
+});
+
+/* =====================================================================
+   SECTION 19 — INITIALIZATION
+   ===================================================================== */
+
+function initApp() {
+    if (initDone) return;
+    initDone = true;
+
+    const refreshBtn = document.getElementById('refreshBtn');
+    const addNewBtn = document.getElementById('addNewBtn');
+    const mobileRefreshBtn = document.getElementById('mobileRefreshBtn');
+    const mobileAddBtn = document.getElementById('mobileAddBtn');
+
+    const doRefresh = async (btn) => {
+        showSpinner(btn, true);
+        invalidateCache();
+        invalidateCache(SOURCE_CACHE_KEY);
+        await Promise.all([
+            loadParties({ forceRefresh: true, silent: true }),
+            loadPartyNameOptions({ forceRefresh: true })
+        ]);
+        showSpinner(btn, false);
+        showToast('🔄 Data refreshed', 'success');
+    };
+
+    refreshBtn?.addEventListener('click', () => doRefresh(refreshBtn));
+    mobileRefreshBtn?.addEventListener('click', () => doRefresh(mobileRefreshBtn));
+
+    addNewBtn?.addEventListener('click', openAddModal);
+    mobileAddBtn?.addEventListener('click', openAddModal);
+
+    document.getElementById('backToPage1Btn')?.addEventListener('click', showPage1);
+    document.getElementById('editFromDetailBtn')?.addEventListener('click', openEditModal);
+    document.getElementById('deleteFromDetailBtn')?.addEventListener('click', deleteParty);
+
+    document.getElementById('closeFormModalBtn')?.addEventListener('click', () => {
+        document.getElementById('formModal').classList.remove('active');
+    });
+    document.getElementById('closeGlobalModal')?.addEventListener('click', () => {
+        document.getElementById('globalModal').classList.remove('active');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (e.target.classList && e.target.classList.contains('modal-overlay')) {
+            e.target.classList.remove('active');
+        }
+    });
+
+    document.getElementById('tableBody')?.addEventListener('click', handleTableClick);
+
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(function() {
+            scheduleRender(this.value);
+        }, 250));
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay.active').forEach(m => {
+                m.classList.remove('active');
+            });
+        }
+    });
+
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'user-theme-preference') syncThemeWithParent();
+    });
+
+    loadParties();
+    loadPartyNameOptions();
+
+    startAutoRefresh();
+
+    console.log('✅ Party Entry System ready (no auth gate)');
+    console.log('   ⚡ Auto-refresh: every 5 min (paused when tab hidden)');
+    console.log('   💾 Cache TTL: 5 min');
+}
+
+/* =====================================================================
+   SECTION 20 — BOOTSTRAP (NO AUTH GATE — auto-reveal)
+   ===================================================================== */
+
+function bootstrap() {
+    syncThemeWithParent();
+
+    /* Reveal main content immediately — no auth check */
+    const main = document.getElementById('mainContent');
+    const loading = document.getElementById('appLoading');
+
+    if (loading) loading.classList.add('hidden');
+    if (main) {
+        main.style.display = 'block';
+        main.classList.add('visible');
+    }
+
+    initApp();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootstrap);
+} else {
+    bootstrap();
+}
+
+/* =====================================================================
+   SECTION 21 — WINDOW EXPORTS
+   ===================================================================== */
+
+window.partyApp = {
+    loadParties,
+    loadPartyNameOptions,
+    openAddModal,
+    openEditModal,
+    invalidateCache,
+    silentRefresh
+};
+
+console.log('✅ PartyEntry.html script initialised (no auth, fully public)');
+
+})();
+    </script>
+</body>
+</html>
