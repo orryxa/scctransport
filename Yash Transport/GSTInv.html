@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <meta name="description" content="GST Tax Invoice — Universal English Medium High School">
-    <title>🧾 GST Tax Invoice | Universal English Medium High School</title>
+    <meta name="description" content="GST Tax Invoice — Yash Transport">
+    <title>🧾 GST Tax Invoice | Yash Transport</title>
 
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
@@ -692,287 +692,259 @@
         }
 
        /* ================================================================
-   PRINT — Tax Invoice layout (A4, single-table structure)
+   PRINT — Tax Invoice layout (A4, exact reference structure)
+   OPTIMIZED FOR SINGLE PAGE PRINT
    ================================================================ */
 #printContainer{display:none}
 
-.tax-invoice-print{
-    background:#fff;
-    color:#000;
+#printContainer,
+#printContainer *{
+    box-sizing: border-box;
+}
+#printContainer{
+    color: #111;
     font-family: Arial, Helvetica, sans-serif;
-    font-size:10px;
-    line-height:1.25;
-    width:210mm;
-    min-height:297mm;
-    margin:0 auto;
-    padding:8mm 6mm 4mm;
-    box-sizing:border-box;
+    font-size: 10pt;
+    background: #fff;
+}
+#printContainer .invoice{
+    width: 190mm;
+    /* Removed min-height to prevent forced page breaks */
+    margin: 0 auto;
+    padding: 0;
+    background: #fff;
+}
+#printContainer .heading{
+    height: 8mm;
+    text-align: center;
+    font-size: 14pt;
+    font-weight: bold;
+    padding-top: 1mm;
+}
+#printContainer table{
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+#printContainer td,
+#printContainer th{
+    border: 0.25mm solid #777;
+    padding: 0.6mm 1mm;
+    vertical-align: top;
+    line-height: 1.12;
 }
 
-.tax-invoice-print .inv-title{
-    text-align:center;
-    font-size:14px;
-    font-weight:bold;
-    padding-bottom:3px;
-    text-decoration:underline;
-    text-underline-offset:3px;
-    letter-spacing:.3px;
+/* ---------- TOP SECTION ---------- */
+#printContainer .top td{ height: 7mm; }
+#printContainer .company{ width: 56%; }
+#printContainer .right{ width: 44%; }
+/* Reduced from 29mm to 25mm */
+#printContainer .company-block{ height: 25mm; }
+/* Reduced from 28mm to 25mm */
+#printContainer .party-block{ height: 30mm; }
+/* Reduced from 28mm to 25mm */
+#printContainer .buyer-block{ height: 30mm; }
+#printContainer .company-name,
+#printContainer .party-name{ font-weight: bold; }
+
+#printContainer .meta{ padding: 0; }
+#printContainer .meta table td{ height: 7mm; }
+#printContainer .meta table{ border: 0; }
+#printContainer .meta td{ border-top: 0; border-left: 0; }
+#printContainer .meta td:last-child{ border-right: 0; }
+#printContainer .meta tr:last-child td{ border-bottom: 0; }
+#printContainer .meta .terms{ height: 22mm; }
+#printContainer .label{ font-weight: normal; }
+
+/* ---------- ITEMS TABLE ---------- */
+#printContainer .items th{
+    text-align: center;
+    font-weight: normal;
+    vertical-align: middle;
+    height: 8mm;
+}
+#printContainer .items .sl{ width: 2.7%; }
+#printContainer .items .desc{ width: 54.8%; }
+#printContainer .items .hsn{ width: 8.7%; }
+#printContainer .items .qty{ width: 8.8%; }
+#printContainer .items .rate{ width: 8.8%; }
+#printContainer .items .per{ width: 3.8%; }
+#printContainer .items .amount{ width: 12.4%; }
+
+/* *** KEY CHANGE: Reduced from 103mm to 80mm *** */
+#printContainer .item-area td{ height: 80mm; }
+#printContainer .item-area .description{ position: relative; }
+#printContainer .service{
+    font-weight: bold;
+    font-size: 11pt;
 }
 
-/* ---------- SINGLE MASTER TABLE (7 columns) ---------- */
-.tax-invoice-print table.master{
-    width:100%;
-    border-collapse:collapse;
-    table-layout:fixed;
-    border:1px solid #000;
+/* Tax overlay cells — adjusted top position to match reduced height */
+#printContainer .tax-labels{
+    position: absolute;
+    right: 1mm;
+    top: 14mm; /* Moved up slightly */
+    text-align: right;
+    font-weight: bold;
+    font-style: italic;
+    line-height: 1.25;
 }
-.tax-invoice-print table.master > tbody > tr > td,
-.tax-invoice-print table.master > tbody > tr > th{
-    border:1px solid #000;
-    padding:3px 5px;
-    vertical-align:top;
-    font-size:10px;
-    line-height:1.3;
+#printContainer .tax-rates{
+    position: absolute;
+    left: 0;
+    right: 1mm;
+    top: 14mm;
+    text-align: right;
+    line-height: 1.25;
 }
+#printContainer .tax-percent{
+    position: absolute;
+    left: 0;
+    right: 1mm;
+    top: 14mm;
+    text-align: center;
+    line-height: 1.25;
+}
+#printContainer .tax-amounts{
+    position: absolute;
+    left: 0;
+    right: 1mm;
+    top: 14mm;
+    text-align: right;
+    font-weight: bold;
+    line-height: 1.25;
+}
+#printContainer .rate-cell,
+#printContainer .per-cell,
+#printContainer .amount-cell{ position: relative; }
 
-/* Column widths — 7 columns
-   Col1 = 42%, Col2 = 11%, Col3 = 10%, Col4 = 10%,
-   Col5 = 6%, Col6 = 6%, Col7 = 15%
-*/
-.tax-invoice-print .col-c1{width:42%}
-.tax-invoice-print .col-c2{width:11%}
-.tax-invoice-print .col-c3{width:10%}
-.tax-invoice-print .col-c4{width:10%}
-.tax-invoice-print .col-c5{width:6%}
-.tax-invoice-print .col-c6{width:6%}
-.tax-invoice-print .col-c7{width:15%}
-
-/* ---------- HEADER BLOCK ---------- */
-.tax-invoice-print .seller-name{
-    font-weight:bold;
-    font-size:11px;
-    margin-bottom:1px;
-}
-.tax-invoice-print .seller-line{
-    font-size:10px;
-    line-height:1.35;
-}
-.tax-invoice-print .hdr-lbl{
-    font-size:9px;
-    font-weight:normal;
-    line-height:1.15;
-}
-.tax-invoice-print .hdr-val{
-    font-size:10.5px;
-    font-weight:bold;
-    margin-top:1px;
-    line-height:1.2;
-}
-.tax-invoice-print .hdr-empty{
-    font-size:10px;
-    line-height:1.2;
-    min-height:11px;
-}
-
-/* ---------- PARTY BLOCKS ---------- */
-.tax-invoice-print .party-lbl{
-    font-size:9px;
-    margin-bottom:1px;
-}
-.tax-invoice-print .party-name{
-    font-weight:bold;
-    font-size:10.5px;
-    margin-bottom:1px;
-}
-.tax-invoice-print .party-line{
-    font-size:10px;
-    line-height:1.35;
-}
-.tax-invoice-print .party-kv{
-    display:grid;
-    grid-template-columns: 82px 1fr;
-    font-size:10px;
-    line-height:1.35;
-}
-
-/* ---------- SERVICES ROW ---------- */
-.tax-invoice-print .svc-header{
-    text-align:center;
-    font-weight:bold;
-    font-size:9.5px;
-    line-height:1.2;
-}
-.tax-invoice-print .svc-cell{
-    padding:3px 5px;
-    vertical-align:top;
-    font-size:10px;
-    line-height:1.35;
-}
-.tax-invoice-print .svc-desc{
-    font-weight:bold;
-    font-size:10.5px;
-}
-.tax-invoice-print .svc-num{
-    text-align:right;
-    font-size:10px;
-    white-space:nowrap;
-}
-.tax-invoice-print .svc-ctr{
-    text-align:center;
-    font-size:10px;
-}
-
-/* Inline CGST/SGST block (inside first service Description cell) */
-.tax-invoice-print .tax-inline{
-    margin-top:14px;
-    text-align:right;
-}
-.tax-invoice-print .tax-inline .line{
-    display:grid;
-    grid-template-columns: 1fr 34px 80px;
-    font-weight:bold;
-    font-size:10.5px;
-    line-height:1.55;
-}
-.tax-invoice-print .tax-inline .line .lbl{text-align:right;padding-right:6px}
-.tax-invoice-print .tax-inline .line .pct{text-align:right;padding-right:8px}
-.tax-invoice-print .tax-inline .line .amt{text-align:right;white-space:nowrap}
-
-/* Tall blank service rows — first row is tall to hold the tax block */
-.tax-invoice-print .svc-blank{
-    height:22px;
-}
-
-/* Total row (spans 6 columns for label + 1 for value) */
-.tax-invoice-print .svc-total-lbl{
-    text-align:right;
-    font-weight:bold;
-    font-size:10.5px;
-    padding:4px 6px;
-    vertical-align:middle;
-}
-.tax-invoice-print .svc-total-val{
-    text-align:right;
-    font-weight:bold;
-    font-size:11px;
-    padding:4px 6px;
-    vertical-align:middle;
-    white-space:nowrap;
-}
+#printContainer .num{ text-align: right; white-space: nowrap; }
 
 /* ---------- AMOUNT IN WORDS ---------- */
-.tax-invoice-print .words-lbl{
-    font-size:9px;
-    line-height:1.2;
-    margin-bottom:1px;
+#printContainer .words{ height: 8mm; }
+#printContainer .words strong{ font-size: 11pt; }
+
+/* ---------- HSN SUMMARY (full-width, aligned) ---------- */
+#printContainer .tax-summary{
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
 }
-.tax-invoice-print .words-val{
-    font-weight:bold;
-    font-size:10.5px;
-    line-height:1.3;
+#printContainer .tax-summary colgroup{
+    display: table-column-group;
 }
-.tax-invoice-print .eoe-line{
-    text-align:right;
-    font-size:10px;
-    font-style:italic;
+#printContainer .tax-summary col{
+    display: table-column;
+}
+#printContainer .tax-summary th,
+#printContainer .tax-summary td{
+    border: 0.25mm solid #777 !important;
+    padding: 0.5mm 1mm;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 1.15;
+    font-size: 10pt;
+}
+#printContainer .tax-summary th{
+    font-weight: normal;
+}
+#printContainer .tax-summary .left{
+    text-align: left;
+}
+#printContainer .tax-summary .rightnum{
+    text-align: right;
+    padding-right: 2mm;
+}
+#printContainer .tax-summary .sumtotal{
+    font-weight: bold;
 }
 
-/* ---------- HSN SUMMARY ---------- */
-.tax-invoice-print .hsn-head{
-    text-align:center;
-    font-weight:bold;
-    font-size:9.5px;
-    line-height:1.2;
-    vertical-align:middle;
+/* ---------- BOTTOM SECTION ---------- */
+#printContainer .bottom{
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
 }
-.tax-invoice-print .hsn-ctr{
-    text-align:center;
-    font-size:10px;
+/* *** KEY CHANGE: Reduced from 32mm to 25mm *** */
+#printContainer .bottom td{
+    height: 25mm;
+    border: 0.25mm solid #777;
 }
-.tax-invoice-print .hsn-num{
-    text-align:right;
-    font-size:10px;
-    white-space:nowrap;
+#printContainer .bank{ border: 0; width: 100%; }
+#printContainer .bank td{
+    border: 0;
+    padding: 0;
+    line-height: 1.18;
 }
-.tax-invoice-print .hsn-total-row td{
-    font-weight:bold;
-    font-size:10px;
+#printContainer .declaration{
+    width: 38%;
+    vertical-align: bottom;
 }
-
-/* ---------- TAX AMOUNT IN WORDS ---------- */
-.tax-invoice-print .tax-words{
-    font-weight:bold;
-    font-size:10.5px;
-    line-height:1.35;
+#printContainer .bank-cell{
+    width: 62%;
+    padding: 5 !important;
 }
-
-/* ---------- FOOTER ---------- */
-.tax-invoice-print .decl-title{
-    font-weight:bold;
-    font-size:10px;
-    margin-bottom:2px;
+/* *** KEY CHANGE: Reduced from 15mm to 12mm *** */
+#printContainer .signature{
+    height: 12mm;
+    border-top: 0.25mm solid #777;
+    position: relative;
+    font-weight: bold;
+    text-align: right;
+    padding-right: 1mm !important;
 }
-.tax-invoice-print .decl-text{
-    font-size:10px;
-    line-height:1.35;
+#printContainer .signature span{
+    position: absolute;
+    right: 1mm;
+    bottom: 1mm;
+    font-weight: normal;
 }
-.tax-invoice-print .bank-title{
-    font-weight:bold;
-    font-size:10px;
-    margin-bottom:2px;
-}
-.tax-invoice-print .bank-line{
-    display:grid;
-    grid-template-columns: 120px 1fr;
-    font-size:10px;
-    line-height:1.45;
-}
-.tax-invoice-print .bank-line .k{font-weight:normal}
-.tax-invoice-print .bank-line .v{font-weight:bold}
-.tax-invoice-print .sign-for{
-    text-align:right;
-    font-weight:bold;
-    font-size:10.5px;
-    margin-top:32px;
-}
-.tax-invoice-print .sign-sub{
-    text-align:right;
-    font-size:9.5px;
-    margin-top:2px;
+#printContainer .computer{
+    text-align: center;
+    margin-top: 2mm;
+    font-size: 9pt;
 }
 
-/* ---------- COMPUTER NOTE ---------- */
-.tax-invoice-print .computer-note{
-    text-align:center;
-    font-size:10px;
-    margin-top:4px;
-}
-
+/* ---------- SCREEN PREVIEW ---------- */
 @media screen{
-    #printContainer{display:none !important}
+    #printContainer{ display: none !important; }
 }
 
+/* ---------- PRINT MEDIA ---------- */
 @media print {
+    @page { size: A4 portrait; margin: 10mm; }
+    html, body{
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        width: 190mm;
+    }
     body * { visibility: hidden !important; }
-    #printContainer, #printContainer * { visibility: visible !important; }
+    #printContainer,
+    #printContainer *{ visibility: visible !important; }
     #printContainer{
-        display:block !important;
-        position:absolute;
-        left:0; top:0;
-        width:100%;
-        padding:0;
-        margin:0;
-        background:#fff;
-        color:#000;
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 190mm;
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        color: #111;
         z-index: 999999;
     }
-    .tax-invoice-print{
-        width:210mm;
-        min-height:297mm;
-        padding:8mm 6mm 4mm;
-        margin:0 auto;
+    #printContainer .invoice{
+        width: 190mm;
+        margin: 0;
+        box-shadow: none;
     }
-    @page { size: A4 portrait; margin: 0; }
+    * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
 }
     </style>
 </head>
@@ -2617,29 +2589,57 @@ function buildInlineTaxBlock(invoice) {
     return `<div class="inline-tax">${lines.join('')}</div>`;
 }
 
+/* =====================================================================
+   PRINT TAX INVOICE — builds exact reference layout with real data
+   =====================================================================
+   - Seller block is fixed (Yash Transport)
+   - Consignee / Buyer blocks pull from partyDetail (Party_Address sheet)
+   - Invoice No + Date come from invoice record
+   - First service row shows description, HSN, qty, rate, amount
+   - CGST/SGST/IGST appear as right-aligned overlays inside the item row
+   - Total, Amount in words, HSN summary, Tax in words all computed live
+   - Empty HSN rows are skipped so no stray "0" row appears
+   - Total row uses 7 explicit <td>s (no colspan) so Chrome always renders it
+   - HSN summary uses inline style widths so it always spans full width
+   ===================================================================== */
 function buildPrintHtml(invoice, partyDetail) {
-    const partyName   = invoice['Party Name'] || '';
+    /* ── Party fields from Party_Address ── */
+    const partyName = invoice['Party Name'] || '';
+    const pAddress  = partyDetail?.Address || '';
+    const pGstin    = partyDetail?.GSTIN   || '';
+    const pState    = partyDetail?.State   || '';
+    const pCode     = partyDetail?.Code    || '';
+    const pEmail    = partyDetail?.Email   || '';
+
+    /* ── Invoice meta ── */
     const invoiceNo   = invoice['Invoice No'] || '';
     const invoiceDate = formatDateDDMMMYY(invoice['Date']);
 
-    const pAddress = partyDetail?.Address || '';
-    const pGstin   = partyDetail?.GSTIN   || '';
-    const pState   = partyDetail?.State   || '';
-    const pCode    = partyDetail?.Code    || '';
-    const pEmail   = partyDetail?.Email   || '';
-
-    const services = [];
+    /* ── Collect service rows (only non-empty ones) ── */
+    const allServices = [];
     for (let i = 1; i <= MAX_SERVICES; i++) {
         const desc = invoice[`Description of Service ${i}`];
         const hsn  = invoice[`HSN/SAC ${i}`];
         const qty  = invoice[`Quantity ${i}`];
         const rate = invoice[`Rate ${i}`];
         const amt  = invoice[`Amount ${i}`];
-        const hasAny = [desc, hsn, qty, rate, amt].some(v => v !== undefined && v !== null && String(v).trim() !== '');
+        const hasAny = [desc, hsn, qty, rate, amt]
+            .some(v => v !== undefined && v !== null && String(v).trim() !== '');
         if (!hasAny) continue;
-        services.push({ i, desc: desc || '', hsn: hsn || '', qty: qty || '', rate: rate || '', amt: amt || '' });
+        allServices.push({
+            i,
+            desc: desc || '',
+            hsn:  hsn  || '',
+            qty:  qty  || '',
+            rate: rate || '',
+            amt:  amt  || ''
+        });
     }
 
+    /* Main item row = first non-empty service; falls back to safe defaults */
+    const mainService = allServices[0] || { i: 1, desc: '', hsn: '', qty: '', rate: '', amt: '' };
+
+    /* ── Tax values ── */
     const cgstPct = parseFloat(invoice['CGST (%)']) || 0;
     const cgstAmt = parseFloat(invoice['CGST Amt']) || 0;
     const sgstPct = parseFloat(invoice['SGST (%)']) || 0;
@@ -2647,324 +2647,276 @@ function buildPrintHtml(invoice, partyDetail) {
     const igstPct = parseFloat(invoice['IGST (%)']) || 0;
     const igstAmt = parseFloat(invoice['IGST Amt']) || 0;
 
-    const mainRows = [];
+    /* ── Totals ── */
     let subTotal = 0;
-
-    services.forEach((s, idx) => {
-        const amtNum = parseFloat(String(s.amt).replace(/,/g, '')) || 0;
-        subTotal += amtNum;
-        const isFirst = idx === 0;
-
-        const descHtml = `
-            <div class="desc-text">${escapeHtml(s.desc)}</div>
-            ${isFirst ? buildInlineTaxBlock(invoice) : ''}
-        `;
-
-        mainRows.push(`
-            <tr>
-                <td class="ctr">${s.i}</td>
-                <td>${descHtml}</td>
-                <td class="ctr">${escapeHtml(s.hsn)}</td>
-                <td class="num">${escapeHtml(s.qty)}</td>
-                <td class="num">${s.rate ? formatINR(s.rate) : ''}</td>
-                <td class="ctr"></td>
-                <td class="num">${formatINR(amtNum)}</td>
-            </tr>
-        `);
+    allServices.forEach(s => {
+        subTotal += parseFloat(String(s.amt).replace(/,/g, '')) || 0;
     });
-
-    const minRows = 5;
-    for (let k = services.length; k < minRows; k++) {
-        mainRows.push(`
-            <tr>
-                <td class="ctr">&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-            </tr>
-        `);
-    }
-
     const taxTotal = cgstAmt + sgstAmt + igstAmt;
     const totalAmt = parseFloat(invoice['Total Amount']) || (subTotal + taxTotal);
 
     const grandInWords = numberToWordsIndian(totalAmt);
     const taxInWords   = numberToWordsIndian(taxTotal);
 
+    /* ── Party block (used twice — Consignee + Buyer) ── */
+    const partyBlock = (title) => `
+        <span class="label">${title}</span><br>
+        <span class="party-name">${escapeHtml(partyName)}</span><br>
+        ${pAddress ? escapeHtml(pAddress) + '<br>' : ''}
+        ${pGstin ? `GSTIN/UIN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: ${escapeHtml(pGstin)}<br>` : ''}
+        State Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: ${escapeHtml(pState || '—')}${pCode ? `, Code : ${escapeHtml(pCode)}` : ''}<br>
+        ${pEmail ? `E-Mail&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: ${escapeHtml(pEmail)}` : ''}
+    `;
+
+    /* ── Inline tax overlay (labels / rates / percent / amounts) ── */
+    const taxLabelLines = [];
+    const taxRateLines  = [];
+    const taxPctLines   = [];
+    const taxAmtLines   = [];
+
+    if (cgstPct > 0 || cgstAmt > 0) {
+        taxLabelLines.push('CGST');
+        taxRateLines.push(cgstPct ? String(cgstPct) : '');
+        taxPctLines.push('%');
+        taxAmtLines.push(cgstAmt ? formatINR(cgstAmt) : '');
+    }
+    if (sgstPct > 0 || sgstAmt > 0) {
+        taxLabelLines.push('SGST');
+        taxRateLines.push(sgstPct ? String(sgstPct) : '');
+        taxPctLines.push('%');
+        taxAmtLines.push(sgstAmt ? formatINR(sgstAmt) : '');
+    }
+    if (igstPct > 0 || igstAmt > 0) {
+        taxLabelLines.push('IGST');
+        taxRateLines.push(igstPct ? String(igstPct) : '');
+        taxPctLines.push('%');
+        taxAmtLines.push(igstAmt ? formatINR(igstAmt) : '');
+    }
+
+    const taxLabelHtml = taxLabelLines.join('<br>');
+    const taxRateHtml  = taxRateLines.map(r => r || '&nbsp;').join('<br>');
+    const taxPctHtml   = taxPctLines.map(p => p || '&nbsp;').join('<br>');
+    const taxAmtHtml   = taxAmtLines.map(a => a || '&nbsp;').join('<br>');
+
+    /* ── HSN summary — one row per unique, non-empty HSN ── */
     const hsnMap = new Map();
-    services.forEach(s => {
+    allServices.forEach(s => {
         const hsn = String(s.hsn || '').trim();
+        /* Skip rows with no HSN so we never render an empty first cell */
+        if (!hsn) return;
         const amt = parseFloat(String(s.amt).replace(/,/g, '')) || 0;
         if (!hsnMap.has(hsn)) hsnMap.set(hsn, { hsn, taxable: 0 });
         hsnMap.get(hsn).taxable += amt;
     });
 
     const hsnRows = [];
-    let hsnTotalTaxable = 0, hsnTotalCgst = 0, hsnTotalSgst = 0, hsnTotalTax = 0;
+    let hsnTotalTaxable = 0, hsnTotalCgst = 0, hsnTotalSgst = 0, hsnTotalIgst = 0, hsnTotalTax = 0;
 
     hsnMap.forEach(({ hsn, taxable }) => {
-        const c = (cgstPct > 0) ? (taxable * cgstPct / 100) : 0;
-        const s = (sgstPct > 0) ? (taxable * sgstPct / 100) : 0;
-        const rowTax = c + s;
+        const c  = (cgstPct > 0) ? (taxable * cgstPct / 100) : 0;
+        const s  = (sgstPct > 0) ? (taxable * sgstPct / 100) : 0;
+        const ig = (igstPct > 0) ? (taxable * igstPct / 100) : 0;
+        const rowTax = c + s + ig;
+
         hsnTotalTaxable += taxable;
-        hsnTotalCgst += c;
-        hsnTotalSgst += s;
-        hsnTotalTax  += rowTax;
+        hsnTotalCgst    += c;
+        hsnTotalSgst    += s;
+        hsnTotalIgst    += ig;
+        hsnTotalTax     += rowTax;
 
         hsnRows.push(`
             <tr>
-                <td class="ctr">${escapeHtml(hsn)}</td>
-                <td class="num">${formatINR(taxable)}</td>
-                <td class="ctr">${cgstPct > 0 ? cgstPct + '%' : ''}</td>
-                <td class="num">${cgstPct > 0 ? formatINR(c) : ''}</td>
-                <td class="ctr">${sgstPct > 0 ? sgstPct + '%' : ''}</td>
-                <td class="num">${sgstPct > 0 ? formatINR(s) : ''}</td>
-                <td class="num">${rowTax > 0 ? formatINR(rowTax) : ''}</td>
+                <td class="left" style="text-align: left; padding-left: 2mm;">${escapeHtml(hsn)}</td>
+                <td class="rightnum">${formatINR(taxable)}</td>
+                <td>${cgstPct > 0 ? cgstPct + '%' : ''}</td>
+                <td class="rightnum">${cgstPct > 0 ? formatINR(c) : ''}</td>
+                <td>${sgstPct > 0 ? sgstPct + '%' : ''}</td>
+                <td class="rightnum">${sgstPct > 0 ? formatINR(s) : ''}</td>
+                <td class="rightnum">${rowTax > 0 ? formatINR(rowTax) : ''}</td>
             </tr>
         `);
     });
 
-    const headerRight = `
-        <table class="sub">
-            <colgroup><col style="width:50%"><col style="width:50%"></colgroup>
-            <tbody>
-                <tr>
-                    <td><div class="lbl">Invoice No.</div><div class="val">${escapeHtml(invoiceNo)}</div></td>
-                    <td><div class="lbl">Dated</div><div class="val">${escapeHtml(invoiceDate)}</div></td>
-                </tr>
-                <tr>
-                    <td><div class="lbl">Delivery Note</div><div class="val">&nbsp;</div></td>
-                    <td><div class="lbl">Mode/Terms of Payment</div><div class="val">&nbsp;</div></td>
-                </tr>
-            </tbody>
-        </table>
-    `;
-
-    const headerFarRight = `
-        <table class="sub">
-            <colgroup><col style="width:50%"><col style="width:50%"></colgroup>
-            <tbody>
-                <tr>
-                    <td><div class="lbl">Reference No. &amp; Date.</div><div class="val">&nbsp;</div></td>
-                    <td><div class="lbl">Other References</div><div class="val">&nbsp;</div></td>
-                </tr>
-                <tr>
-                    <td><div class="lbl">Buyer's Order No.</div><div class="val">&nbsp;</div></td>
-                    <td><div class="lbl">Dated</div><div class="val">&nbsp;</div></td>
-                </tr>
-            </tbody>
-        </table>
-    `;
-
-    const headerMidRow = `
-        <table class="sub">
-            <colgroup><col style="width:50%"><col style="width:50%"></colgroup>
-            <tbody>
-                <tr>
-                    <td><div class="lbl">Dispatch Doc No.</div><div class="val">&nbsp;</div></td>
-                    <td><div class="lbl">Delivery Note Date</div><div class="val">&nbsp;</div></td>
-                </tr>
-                <tr>
-                    <td><div class="lbl">Dispatched through</div><div class="val">&nbsp;</div></td>
-                    <td><div class="lbl">Destination</div><div class="val">&nbsp;</div></td>
-                </tr>
-                <tr>
-                    <td colspan="2"><div class="lbl">Terms of Delivery</div><div class="val">&nbsp;</div></td>
-                </tr>
-            </tbody>
-        </table>
-    `;
-
-    const partyBlockHtml = (title) => `
-        <div class="party-label">${title}</div>
-        <div class="party-name">${escapeHtml(partyName)}</div>
-        ${pAddress ? `<div class="party-line">${escapeHtml(pAddress)}</div>` : ''}
-        ${pGstin ? `<div class="kv-row"><span class="k">GSTIN/UIN</span><span class="v">: ${escapeHtml(pGstin)}</span></div>` : ''}
-        <div class="kv-row">
-            <span class="k">State Name</span>
-            <span class="v">: ${escapeHtml(pState || '—')}${pCode ? `, Code : ${escapeHtml(pCode)}` : ''}</span>
-        </div>
-        ${pEmail ? `<div class="kv-row"><span class="k">E-Mail</span><span class="v">: ${escapeHtml(pEmail)}</span></div>` : ''}
-    `;
-
+    /* ═══════════════════════════════════════════════════════════════
+       ASSEMBLE — exact reference structure
+       ═══════════════════════════════════════════════════════════════ */
     return `
-    <div class="tax-invoice-print">
+    <div class="invoice">
+        <div class="heading">Tax Invoice</div>
 
-        <div class="inv-title">Tax Invoice</div>
+        <!-- ============ TOP: Seller + Consignee + Buyer | Meta grid ============ -->
+        <table class="top">
+            <colgroup><col style="width:56%"><col style="width:44%"></colgroup>
+            <tr>
+                <td class="company">
+                    <div class="company-block">
+                        <span class="company-name">Yash Transport</span><br>
+                        1668/15<br>
+                        Dapode<br>
+                        Bhiwandi<br>
+                        GSTIN/UIN: 27IHDPS9085K1ZC<br>
+                        State Name : Maharashtra, Code : 27
+                    </div>
+                    <div class="party-block" style="border-top:0.25mm solid #777; margin:0 -1mm; padding:0 1mm;">
+                        ${partyBlock('Consignee (Ship to)')}
+                    </div>
+                    <div class="buyer-block" style="border-top:0.25mm solid #777; margin:0 -1mm; padding:0 1mm;">
+                        ${partyBlock('Buyer (Bill to)')}
+                    </div>
+                </td>
+                <td class="meta">
+                    <table>
+                        <colgroup><col style="width:48%"><col style="width:52%"></colgroup>
+                        <tr>
+                            <td>Invoice No.<br><strong>${escapeHtml(invoiceNo)}</strong></td>
+                            <td>Dated<br><strong>${escapeHtml(invoiceDate)}</strong></td>
+                        </tr>
+                        <tr><td>Delivery Note</td><td>Mode/Terms of Payment</td></tr>
+                        <tr><td>Reference No. &amp; Date.</td><td>Other References</td></tr>
+                        <tr><td>Buyer's Order No.</td><td>Dated</td></tr>
+                        <tr><td>Dispatch Doc No.</td><td>Delivery Note Date</td></tr>
+                        <tr><td>Dispatched through</td><td>Destination</td></tr>
+                        <tr><td colspan="2" class="terms">Terms of Delivery</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
 
-        <table class="master">
+                       <!-- ============ ITEMS TABLE ============ -->
+        <table class="items">
             <colgroup>
-                <col style="width:38%">
-                <col style="width:31%">
-                <col style="width:31%">
+                <col class="sl"><col class="desc"><col class="hsn">
+                <col class="qty"><col class="rate"><col class="per"><col class="amount">
             </colgroup>
+            <tr>
+                <th>Sl<br>No.</th>
+                <th>Description of<br>Services</th>
+                <th>HSN/SAC</th>
+                <th>Quantity</th>
+                <th>Rate</th>
+                <th>per</th>
+                <th>Amount</th>
+            </tr>
+            <tr class="item-area">
+                <td class="num">${mainService.i}</td>
+                <td class="description">
+                    <span class="service">${escapeHtml(mainService.desc)}</span>
+                    ${taxLabelHtml ? `<div class="tax-labels">${taxLabelHtml}</div>` : ''}
+                </td>
+                <td>${escapeHtml(mainService.hsn)}</td>
+                <td class="num">${escapeHtml(mainService.qty)}</td>
+                <td class="rate-cell">
+                    ${taxRateHtml ? `<div class="tax-rates">${taxRateHtml}</div>` : ''}
+                </td>
+                <td class="per-cell">
+                    ${taxPctHtml ? `<div class="tax-percent">${taxPctHtml}</div>` : ''}
+                </td>
+                <td class="num amount-cell">
+                    <strong>${mainService.amt ? formatINR(mainService.amt) : ''}</strong>
+                    ${taxAmtHtml ? `<div class="tax-amounts">${taxAmtHtml}</div>` : ''}
+                </td>
+            </tr>
+            <tr class="total-rows">
+                <td colspan="2" class="text-right" style="text-align: right; font-weight: bold; padding-right: 5mm;">Total</td>
+                <td class="num">&nbsp;</td>
+                <td class="num">&nbsp;</td>
+                <td class="num">&nbsp;</td>
+                <td class="num">&nbsp;</td>
+                <td class="num grand">₹ ${formatINR(totalAmt)}</td>
+            </tr>
+        </table>
+
+                <!-- ============ AMOUNT IN WORDS (Below Table) ============ -->
+        <table>
+    <tr>
+        <!-- Left Column: Amount Chargeable in Words -->
+        <td class="words" style="border-top: none; border-right: none; width: 65%; vertical-align: top;">
+            Amount Chargeable (in words)<br>
+            <strong>INR ${escapeHtml(grandInWords)}</strong>
+        </td>
+        <!-- Right Column: E. & O.E (aligned bottom-right, no left border) -->
+        <td class="words" style="border-top: none; border-left: none; width: 35%; text-align: right; vertical-align: top; font-style: italic;">
+            E. &amp; O.E
+        </td>
+    </tr>
+</table>
+
+                <!-- ============ HSN SUMMARY (Corrected) ============ -->
+        <table class="tax-summarys" style="width:100%; text-align: center; table-layout:fixed; border-collapse:collapse;">
+            <colgroup>
+                <!-- Adjusted widths to match the reference image exactly -->
+                <col style="width: 36%;"> <!-- HSN/SAC -->
+                <col style="width: 13%;"> <!-- Taxable Value -->
+                <col style="width: 7%;">  <!-- CGST Rate -->
+                <col style="width: 12%;"> <!-- CGST Amount -->
+                <col style="width: 7%;">  <!-- SGST Rate -->
+                <col style="width: 12%;"> <!-- SGST Amount -->
+                <col style="width: 13%;"> <!-- Total Tax Amount -->
+            </colgroup>
+            <thead>
+                <tr>
+                    <th rowspan="2">HSN/SAC</th>
+                    <th rowspan="2">Taxable<br>Value</th>
+                    <th colspan="2">CGST</th>
+                    <th colspan="2">SGST/UTGST</th>
+                    <th rowspan="2">Total<br>Tax Amount</th>
+                </tr>
+                <tr>
+                    <th>Rate</th>
+                    <th>Amount</th>
+                    <th>Rate</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
             <tbody>
-
-                <tr>
-                    <td>
-                        <div class="seller-name">Yash Transport</div>
-                        <div class="seller-line">1668/15</div>
-                        <div class="seller-line">Dapode</div>
-                        <div class="seller-line">Bhiwandi</div>
-                        <div class="seller-line">GSTIN/UIN: 27IHDP S9085K1ZC</div>
-                        <div class="seller-line">State Name : Maharashtra, Code : 27</div>
-                    </td>
-                    <td class="no-border-td">${headerRight}</td>
-                    <td class="no-border-td">${headerFarRight}</td>
+                ${hsnRows.join('')}
+                <!-- Corrected Total Row: Total label is in the first column -->
+                <tr class="sumtotal">
+                    <td class="rightnum" style="font-weight: bold; text-align: right;">Total</td>
+                    <td class="rightnum" style="font-weight: bold; text-align: center;">${formatINR(hsnTotalTaxable)}</td>
+                    <td>&nbsp;</td> <!-- Rate is empty in total row -->
+                    <td class="rightnum" style="font-weight: bold; text-align: center;">${hsnTotalCgst > 0 ? formatINR(hsnTotalCgst) : ''}</td>
+                    <td>&nbsp;</td> <!-- Rate is empty in total row -->
+                    <td class="rightnum" style="font-weight: bold; text-align: center;">${hsnTotalSgst > 0 ? formatINR(hsnTotalSgst) : ''}</td>
+                    <td class="rightnum" style="font-weight: bold; text-align: center;">${hsnTotalTax > 0 ? formatINR(hsnTotalTax) : ''}</td>
                 </tr>
-
-                <tr>
-                    <td style="border-top:none;border-bottom:1px solid #000;">&nbsp;</td>
-                    <td colspan="2" class="no-border-td">${headerMidRow}</td>
-                </tr>
-
-                <tr>
-                    <td>${partyBlockHtml('Consignee (Ship to)')}</td>
-                    <td colspan="2">&nbsp;</td>
-                </tr>
-
-                <tr>
-                    <td>${partyBlockHtml('Buyer (Bill to)')}</td>
-                    <td colspan="2">&nbsp;</td>
-                </tr>
-
-                <tr>
-                    <td colspan="3" class="no-border-td">
-                        <table class="services">
-                            <colgroup>
-                                <col class="col-si">
-                                <col class="col-desc">
-                                <col class="col-hsn">
-                                <col class="col-qty">
-                                <col class="col-rate">
-                                <col class="col-per">
-                                <col class="col-amt">
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th class="col-si">SI<br>No.</th>
-                                    <th class="col-desc">Description of<br>Services</th>
-                                    <th class="col-hsn">HSN/SAC</th>
-                                    <th class="col-qty">Quantity</th>
-                                    <th class="col-rate">Rate</th>
-                                    <th class="col-per">per</th>
-                                    <th class="col-amt">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${mainRows.join('')}
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="6" class="total-label">Total</td>
-                                    <td class="total-value">₹ ${formatINR(totalAmt)}</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td colspan="3" class="no-border-td">
-                        <div class="words-block">
-                            <div class="small">Amount Chargeable (in words)</div>
-                            <div class="bold-words">INR ${escapeHtml(grandInWords)}</div>
-                        </div>
-                        <div class="eoe">E. &amp; O.E</div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td colspan="3" class="no-border-td">
-                        <table class="hsn">
-                            <colgroup>
-                                <col class="hsn-col-1">
-                                <col class="hsn-col-2">
-                                <col class="hsn-col-3">
-                                <col class="hsn-col-4">
-                                <col class="hsn-col-5">
-                                <col class="hsn-col-6">
-                                <col class="hsn-col-7">
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th rowspan="2">HSN/SAC</th>
-                                    <th rowspan="2">Taxable<br>Value</th>
-                                    <th colspan="2">CGST</th>
-                                    <th colspan="2">SGST/UTGST</th>
-                                    <th rowspan="2">Total<br>Tax Amount</th>
-                                </tr>
-                                <tr>
-                                    <th>Rate</th>
-                                    <th>Amount</th>
-                                    <th>Rate</th>
-                                    <th>Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${hsnRows.join('')}
-                                <tr class="total-row">
-                                    <td class="ctr">Total</td>
-                                    <td class="num">${formatINR(hsnTotalTaxable)}</td>
-                                    <td class="ctr"></td>
-                                    <td class="num">${hsnTotalCgst > 0 ? formatINR(hsnTotalCgst) : ''}</td>
-                                    <td class="ctr"></td>
-                                    <td class="num">${hsnTotalSgst > 0 ? formatINR(hsnTotalSgst) : ''}</td>
-                                    <td class="num">${hsnTotalTax > 0 ? formatINR(hsnTotalTax) : ''}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td colspan="3" class="no-border-td">
-                        <div class="tax-words">Tax Amount (in words) : INR ${escapeHtml(taxInWords)}</div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td colspan="3" class="no-border-td">
-                        <table class="footer">
-                            <colgroup>
-                                <col style="width:38%">
-                                <col style="width:62%">
-                            </colgroup>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="decl-title">Declaration</div>
-                                        <div class="decl-text">
-                                            We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="bank-title">Company's Bank Details</div>
-                                        <div class="bank-line"><span class="k">A/c Holder's Name</span><span class="v">: Yash Transport</span></div>
-                                        <div class="bank-line"><span class="k">Bank Name</span><span class="v">: Union Bank of India</span></div>
-                                        <div class="bank-line"><span class="k">A/c No.</span><span class="v">: 300421010000123</span></div>
-                                        <div class="bank-line"><span class="k">Branch &amp; IFS Code</span><span class="v">: Val &amp; UBI N0930041</span></div>
-                                        <div class="sign-for">for Yash Transport</div>
-                                        <div class="sign-sub">Authorised Signatory</div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-
             </tbody>
         </table>
 
-        <div class="computer-note">This is a Computer Generated Invoice</div>
+        <!-- ============ BOTTOM: Tax in words + Declaration + Bank ============ -->
+        <table class="bottom">
+            <tr>
+                <td colspan="2" style="height:10mm;">
+                    Tax Amount (in words) : &nbsp;<strong>INR ${escapeHtml(taxInWords)}</strong>
+                </td>
+            </tr>
+            <tr>
+                <td class="declaration">
+                    <div style="height:100%; display:flex; flex-direction:column; justify-content:flex-end;">
+                        <div>
+                            <u>Declaration</u><br>
+                            We declare that this invoice shows the actual price of the goods
+                            described and that all particulars are true and correct.
+                        </div>
+                    </div>
+                </td>
+                <td class="bank-cell">
+                    <div style="padding:0 1mm 1mm 1mm;">
+                        <div style="text-align:left;">Company's Bank Details</div>
+                        <div>A/c Holder's Name&nbsp;&nbsp;: &nbsp;<strong>Yash Transport</strong></div>
+                        <div>Bank Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;<strong>Union Bank of India</strong></div>
+                        <div>A/c No.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;<strong>300421010000123</strong></div>
+                        <div>Branch &amp; IFS Code : &nbsp;<strong>Val &amp; UBIN0930041</strong></div>
+                    </div>
+                    <div class="signature">for Yash Transport<span>Authorised Signatory</span></div>
+                </td>
+            </tr>
+        </table>
 
+        <div class="computer">This is a Computer Generated Invoice</div>
     </div>
     `;
 }
-
 async function printTaxInvoice() {
     if (!currentViewItem) {
         showToast('❌ No invoice selected', 'error');
